@@ -1,0 +1,191 @@
+# BindiMaps Action Plan (Visual Story)
+
+An web based action plan app designed to be used for people with sensory sensitivity to carefully plan their trip to a new place like a train station, airport, theatre, swimming pool etc.
+
+A sensory sensitivity action plan is a personalized, proactive, and reactive strategy designed to help individuals with hyper-sensitivities (over-responsivity) or hypo-sensitivities (under-responsivity) manage their sensory environment, reduce overwhelm, and regulate their nervous system.
+
+## Deliverables
+
+Milestone 3, which is due EDC + 13 months (well before september 2026), requires a Final Report: Prototype that includes the following deliverables:
+
+- Summary of user research and insights
+- MVP feature specifications
+- Summary of the MVP iterative cycle development process
+- Evaluation metrics and results
+- Recommendations for broader deployment
+
+## Problems to solve
+
+- Reduce sensory overload for people who suffer from sensory processing differences
+- User: Planning (more so than in location)
+- User: Experience “in the moment”
+- Location: Discovery of issues to address in venues
+- Reducing anxiety in general for visitors of a location
+
+## Requirements
+
+- Must focus on transport contexts
+- Must solve real problems for people with sensory sensitivity
+- Must align with BindiMaps technology and core philosophy
+- Should build on existing BindiMaps technology and research where possible
+- Should create commercial opportunities with Aspect
+- Should be generalizable and marketable to a broad range of BindiMaps customers
+- Must be technically feasible and maintainable
+- Should be adaptable to multiple types of spaces (e.g., airport, train station, shopping center, supermarket, event venues, etc.)
+- Must ensure security and respect user privacy
+- Must prioritize user safety and the perception of safety
+- Should closely follow WCAG guidelines (especially aspects relevant to autistic people)
+- Must adhere to the details of the contract with iMove
+
+## Background
+
+We are building the **3rd and last phase** of a multiphase project as a funded research project which should result in helping people with sensory sensitivity issues.  The project is a collaboration between BindiMaps (accessible digital indoor way-finding company) and iMove (national centre for transport and mobility R&D)
+
+Project website: [Sensory Sensitivity Wayfinding for Complex Public Transport Hubs](https://imoveaustralia.com/project/sensory-sensitivity-wayfinding-for-complex-public-transport-hubs/)
+
+> People with sensory sensitivities often face significant barriers when navigating public transport environments. These barriers include overwhelming noise, lighting, and crowding, which can make independent travel stressful or inaccessible. While tools like static sensory maps exist, BindiMaps’ early research has shown that such solutions are often generic and fail to address the complexity of individual sensory needs in real-time.  
+>
+> The Sensory Sensitivity Wayfinding project is being undertaken to explore how digital wayfinding technology can better serve this user group. By conducting user research, co-design workshops, and early prototyping, BindiMaps aims to develop a foundational understanding of what meaningful, personalised navigation support for sensory sensitivities should look like. This work will inform future feature development in BindiMaps’ infrastructure-free, accessible wayfinding platforms, and will generate valuable insights for the broader transport and accessibility sectors.
+
+The entire project agreement is [available in this folder](./3-048%20Sensory%20Sensitivity%20Wayfinding%20Project%20Agreement%20EXECUTED%2029%20JULY%202025.pdf).
+
+## Business opportunities
+
+We found in our research that many companies put effort into action plans and there is a lot of awareness of them in the Autistic community.
+
+We also found that many places have substandard maps for people with sensory sensitivities to plan their trip or nothing at all.
+
+We could potentially increase BindiMaps revenue by offering this service to potential clients and also us this as a way to get BindiMaps maps into new places.
+
+These opportunities are not the primary purpose of the project (which is to actually help people with our grant) but are hopefully another benefit of what we build.
+
+## Phase 1
+
+Phase 1 was research to understand people with sensory sensitivities and see what they need.  This initial research was heavily biased towards offering sensory maps but it became very clear during the user interviews that very few people seek these out, preferring to reply on other forms of planning, mostly using the destination website.
+
+## Phase 2
+
+We built an MVP which was a digital sensory map on top of the existing BindiMaps web map (BindiWeb).  Including these features
+
+- Standard digital way-finding map, search routes etc
+- Simple UI to view images of a venue and click though via the map
+- Overlays+icons on the map to show areas affected by things people could be sensitive to like smalls, noise, bright lights etc
+- Simple action plan with simple titles and option to view more detailed information
+
+We hired a team called ASPECT to travel to adelaide railway station to audit it for sensory sensitivity issues.  They produced a report with a floor plan marked up with danger zones of various categories and a very thorough text walkthrough of what to expect from the point of view of a person with sensory sensitivities
+
+It became clear that the map needed to be very busy in order to show all the hazards.  W would have to use a complicated UI to simplify this to the public.
+
+What also became clear was that this company excelled in creating text action plans and the quality of this side of things was vastly superior to the map the sent.
+
+We tested the MVP with users with lived experience and the maps overlays tested as expected.  Users found them confusing, messy and too much information.  It became clear that this wasn't the way forward.
+
+Users seemed to understand the action plan MVP better even though it was essentially color coded text and icons.
+
+[Milestone 2 report is here](./Static Sensory Mapping Report - Milestone 2.pdf)
+
+For further reference, the documentation and data from our previous MVP can be found here:
+
+- [Previous MVP `data.json` example](./previouseMVP/data.json)
+- [Supporting documentation and files in the `previouseMVP` folder](./previouseMVP/)
+
+## Phase 3
+
+***we should update this part of the document as the project progresses***
+
+This is what we are building now. This plan could easily and should change.
+
+IMPORTANT: challenge me on any of this or more where appropriate
+
+### Overview
+
+Build a new standalone app that displays action plans to users. One action plan per venue, supporting multiple venues.
+
+This is still an MVP so should not be overcooked or over-engineered, always pick the simplest option. We are building greenfield because small focused apps are easy to make in 2026.
+
+### Frontend Requirements
+
+- Starts VERY simple - cater for all cognitive levels, worst thing we can do is overwhelm
+- Information opens up progressively as needed (progressive disclosure)
+- Includes maps (optional)
+- Sensory categories clearly labelled and color coded
+  - [Icons available here](../assets/icons/)
+- MORE TODO
+
+### Backend Requirements
+
+- Secure authentication - multiple logins, company logins (only if quick and simple)
+- Parse free text and format with LLM into display model
+- Test/preview before publishing
+- Publish to frontend
+- Version history
+- Link items to BindiWeb map POI URLs
+- MORE TODO
+
+### Tech Stack
+
+- **Hosting**: Firebase (preferred) or Google Cloud - both already in use at BindiMaps
+- **Database**: Simple architecture, probably no SQL needed - blob/document storage likely sufficient
+- **Infrastructure**: IaC if simple
+- **Frontend**: Vite, React, TypeScript, Tailwind (or appropriate design system)
+- **Analytics**: Google Analytics, Microsoft Clarity
+- **Backend**: Node
+- MORE TODO
+
+### Admin Workflow
+
+1. **Upload**: Admin uploads PDF with mapping notes, map URLs, images, all data
+   - [Example mapping notes PDF](./ExampleMappingNotes.pdf)
+2. **Transform**: LLM converts text to view model
+   - [Example data.json from MVP](./previouseMVP/data.json) (starting point, will need more fields)
+3. **Review**: Admin previews/tests before publishing
+4. **Publish**: Content goes live (replaces current for that venue)
+
+### User Flow
+
+1. User loads page (probably embedded on company site)
+2. User browses action plan content progressively
+3. User can access maps as secondary reference
+4. MORE TODO
+
+### Testing Strategy
+
+We will employ ASPECT again for:
+
+- Frontend user testing (lived experience validation)
+- Backend admin workflow testing
+
+Test with testers before public release - no point spending time and tokens unless it helps UX.
+
+## Sensitivity Categories
+
+| Key | Label | Color | Icon |
+|-----|-------|-------|------|
+| `brightLight` | Bright Light | `#FFF5B1` | `overlay-light` |
+| `sound` | Sound | `#CDE7FF` | `overlay-sound2` |
+| `crowds` | Crowds | `#FFD6A5` | `overlay-crowd` |
+| `smells` | Smells | `#D9EACB` | `overlay-smell` |
+| `highSensory` | High Sensory | `#F3D6FF` | `overlay-sensory` |
+| `textures` | Textures | `#FFE3D9` | `overlay-texture` |
+| `alert` | Alert | `#FF6B6B` | `overlay-alert` |
+| `hazard` | Hazard | `#E63946` | `overlay-hazard` |
+| `staffOnly` | Staff Only | `#A0AEC0` | `overlay-staffOnly` |
+| `construction` | Construction | `#FFD700` | `overlay-construction` |
+| `maintenance` | Maintenance | `#4169E1` | `overlay-maintenance` |
+
+Icons located at: [../assets/icons/](../assets/icons/)
+
+## Existing Examples
+
+- [Australian Museum: Accessibility and Inclusion](https://australian.museum/visit/accessibility-and-inclusion/)
+- [Australian Museum: Visual Story](https://australian.museum/visit/access/visual-story/)
+- [Hobart Airport: Social Stories](https://hobartairport.com.au/travellers/airport-guide/accessibility/social-stories/)
+- [Scienceworks (Museums Victoria): The Autism Friendly Museum](https://museumsvictoria.com.au/scienceworks/plan-your-visit/accessibility/the-autism-friendly-museum/)
+- [Questacon: Sensory Sensitivity](https://www.questacon.edu.au/visiting/accessibility-and-inclusion/sensory-sensitivity)
+- [Stockland Burleigh Heads: Sensory Shopping Guide](https://www.stockland.com.au/shopping-centres/centres/stockland-burleigh-heads/offers-and-events/news/sensory-shopping-guide)
+
+**Relaxed Performance Guides:**
+
+- [TSO Venue Guide 2023 (PDF)](https://tso-files.s3.ca-central-1.amazonaws.com/RP+Venue+Guide+2023+(1).pdf)
+- [Stratford Festival: 2025 Annie Relaxed Guide (PDF)](https://cds.stratfordfestival.ca/uploadedFiles/Visit/Accessibility/American_Sign_Language_Performances(1)/2025_Annie-Relaxed-Guide.pdf)
+- [Arts Centre Melbourne: Visual Story Library for Relaxed Performances](https://www.artscentremelbourne.com.au/visit/accessibility/when-you-visit/relaxed-performances/visual-story-library)

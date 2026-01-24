@@ -1,0 +1,480 @@
+{
+    "actionCategoryIcons": {
+        "brightLight": {
+            "icon": "overlay-light",
+            "label": "Bright Light"
+        },
+        "sound": {
+            "icon": "overlay-sound2",
+            "label": "Sound"
+        },
+        "crowds": {
+            "icon": "overlay-crowd",
+            "label": "Crowds"
+        },
+        "smells": {
+            "icon": "overlay-smell",
+            "label": "Smells"
+        },
+        "highSensory": {
+            "icon": "overlay-sensory",
+            "label": "High Sensory"
+        },
+        "textures": {
+            "icon": "overlay-texture",
+            "label": "Textures"
+        },
+        "alert": {
+            "icon": "overlay-alert",
+            "label": "Alert"
+        },
+        "hazard": {
+            "icon": "overlay-hazard",
+            "label": "Hazard"
+        },
+        "staffOnly": {
+            "icon": "overlay-staffOnly",
+            "label": "Staff Only"
+        },
+        "construction": {
+            "icon": "overlay-construction",
+            "label": "Construction"
+        },
+        "maintenance": {
+            "icon": "overlay-maintenance",
+            "label": "Maintenance"
+        }
+    },
+    "DATA": [
+        {
+            "id": "entry-exit",
+            "title": "Entry/Exit Festival Drive",
+            "summary": "Bright sunlight, high contrast shadow line at entrance, and strong breeze from river.",
+            "categories": [
+                "brightLight",
+                "highSensory"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Bright sunlight reflects off light-colored paving and mirrored glass on nearby buildings.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Significant difference between interior and exterior lighting levels creates a high contrast shadow line on the floor at the entrance.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Strong breeze present from the direction of the river.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Absence of strong noises prior to entry.",
+                            "className": "positive"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "walkway",
+            "title": "Walkway from Newer Entrance",
+            "summary": "Comfortable cove lighting but uncomfortable uncovered pillar uplighting.",
+            "categories": [
+                "brightLight"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Ceiling cove lighting is solid, flicker-free, and approximately 3000K.",
+                            "className": "positive"
+                        },
+                        {
+                            "text": "Uncovered uplighting on the ground near the pillar is approximately 6500K.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Wide walkway width allows for navigation away from pillar lighting sources.",
+                            "className": "positive"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "north-entrance",
+            "title": "North Entrance",
+            "summary": "Narrow entrance with pillar uplighting at eye level.",
+            "categories": [
+                "brightLight",
+                "highSensory"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Entrance is narrow, placing pedestrians closer to lighting sources.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Pillar uplighting is positioned to shine directly at eye level.",
+                            "className": "warning"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "northside-concourse",
+            "title": "Northside Concourse",
+            "summary": "Local artwork with good lighting, but significant sound reverberation and high-frequency buildup.",
+            "categories": [
+                "sound",
+                "brightLight"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Western wall features local artwork with adequate lighting.",
+                            "className": "positive"
+                        },
+                        {
+                            "text": "Cooler airflow is present here compared to other building sections.",
+                            "className": "positive"
+                        },
+                        {
+                            "text": "Sound sources and volume levels increase upon entry.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Hard materials and large volume of space cause sound to reverberate.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Public address announcements are obscured by reverberation and announcement chimes.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Reverberation creates a buildup of high-frequency sounds.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Seating is available with adequate spacing between users.",
+                            "className": "positive"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "info-centre",
+            "title": "Info Centre",
+            "summary": "Quieter and cooler with reduced sound, but bright undiffused ceiling lighting.",
+            "categories": [
+                "brightLight",
+                "sound"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Walls and doors significantly reduce sound intrusion from the exterior.",
+                            "className": "positive"
+                        },
+                        {
+                            "text": "Air conditioning maintains a lower temperature than the surrounding concourse.",
+                            "className": "positive"
+                        },
+                        {
+                            "text": "Ceiling lighting is direct, undiffused, and approximately 6000K.",
+                            "className": "warning"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "guardsman",
+            "title": "The Guardsman",
+            "summary": "Closed doors prevent food odors, but music adds to sound sources.",
+            "categories": [
+                "sound",
+                "smells"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Closed doors prevent food odors from entering the common space.",
+                            "className": "positive"
+                        },
+                        {
+                            "text": "Music plays directly into the external area, adding to the number of active sound sources.",
+                            "className": "warning"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "main-concourse",
+            "title": "Main Concourse",
+            "summary": "Multiple sound sources, reflective tiled floor, bright ball lights, and espresso bar proximity.",
+            "categories": [
+                "sound",
+                "brightLight",
+                "smells"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Multiple sound sources emanate from varying directions, including outside.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Hard, reflective tiled flooring reflects lighting and surrounding surfaces.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Tiled flooring creates distinct footstep sounds that carry across the space.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Ball lights positioned high on the sides are warm (3000K) but high intensity.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Large western windows admit natural light.",
+                            "className": "positive"
+                        },
+                        {
+                            "text": "Eastern angles can allow bright light at eye level depending on positioning.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Proximity to espresso bar introduces coffee grinding sounds and smells during operating hours.",
+                            "className": "warning"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "toilet-area",
+            "title": "Toilet Area",
+            "summary": "Strong ammonia odor, flickering lights, loud hand dryers, and stainless steel fixtures.",
+            "categories": [
+                "smells",
+                "brightLight",
+                "sound",
+                "textures"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Strong ammonia odor present outside male and female facilities.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Ceiling downlights are undiffused, bright, and exhibit noticeable flicker.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Hand dryers are audible from the exterior of the facilities.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Toilets are stainless steel and lack seats.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Ceiling vent outside the accessible toilet creates a concentrated stream of moving air.",
+                            "className": "warning"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "turnstiles",
+            "title": "Turnstiles",
+            "summary": "Narrow passage with confirmation sounds and variable physical resistance.",
+            "categories": [
+                "sound",
+                "highSensory",
+                "textures"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Mechanism emits a 'ding' for confirmation or a buzzing sound for ticket failure.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Passage width is narrow.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Rotation requires physical pressure against metal bars which offer variable resistance.",
+                            "className": "warning"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "paid-main-concourse",
+            "title": "Paid Main Concourse",
+            "summary": "High visual load from backlit ads, flickering panels, and reflective ceiling; reduced footstep volume.",
+            "categories": [
+                "brightLight",
+                "sound",
+                "highSensory"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Environment contains high visual load from multiple backlit, moving advertisements and clear glass windows.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Rotating advertising panels display noticeable backlight flickering.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Reflective ceiling material mirrors bright signage and screens.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Ceiling downlights are steady at approximately 2700K.",
+                            "className": "positive"
+                        },
+                        {
+                            "text": "Reduced ceiling height and material change dampen footstep volume.",
+                            "className": "positive"
+                        },
+                        {
+                            "text": "Soundscape consists of beeping turnstiles, mechanical sounds, and advertising audio.",
+                            "className": "warning"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "platforms",
+            "title": "Platforms",
+            "summary": "LED screens with audio, repeated door beeping, variable engine noise, and increasing temperature.",
+            "categories": [
+                "sound",
+                "brightLight"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Large LED screens on odd-numbered platforms display synchronized content; advertising segments include audio.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Train doors emit repeated beeping sequences during opening and closing.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Engine noise varies in volume, pitch, and duration depending on train model.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Ambient temperature increases significantly along the platform length.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Red LED clocks exhibit noticeable flicker.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Seating available on most platforms; water fountain located at the start of platform 1.",
+                            "className": "positive"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "south-side-entrance",
+            "title": "South Side Entrance",
+            "summary": "Angled ceiling directs lights at eye level; loud train rumble and escalator noise.",
+            "categories": [
+                "brightLight",
+                "sound"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Angled ceiling sections at tunnel ends direct downlights toward eye level.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Overhead train movement creates loud, reverberating low-frequency rumble.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Escalator mechanism emits a loud metallic sound at ground level.",
+                            "className": "warning"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "main-station-rd-entrance",
+            "title": "Main Station Rd Entrance",
+            "summary": "Reflective surfaces create glare and amplify noise; steep walkway gradient.",
+            "categories": [
+                "brightLight",
+                "sound",
+                "textures",
+                "hazard"
+            ],
+            "blocks": [
+                {
+                    "type": "list",
+                    "items": [
+                        {
+                            "text": "Hard, reflective walkway surfaces create visual glare.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Hard surfaces amplify noise through reverberation.",
+                            "className": "warning"
+                        },
+                        {
+                            "text": "Walkway has a steep gradient.",
+                            "className": "warning"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
