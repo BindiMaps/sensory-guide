@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ***IMPORTANT: The high-level project overview is tracked and described in [docs/EXPLAINER.md](docs/EXPLAINER.md)***
 
+The project is being built roughly using BMAD Method.
+
 This is a **planning and specification project** for BindiMaps, using two integrated frameworks:
 
 - **Speckit**: Feature specification workflow (`.specify/` + `.claude/commands/speckit.*`)

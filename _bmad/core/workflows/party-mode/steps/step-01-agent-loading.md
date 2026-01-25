@@ -68,7 +68,28 @@ Create complete agent roster with merged personalities:
 - Validate agent availability and configuration completeness
 - Organize agents by expertise domains for intelligent selection
 
-### 4. Party Mode Activation
+### 4. Initialize Conversation Log
+
+Create or clear the conversation log file for this session:
+
+**Log File Setup:**
+
+- Create/overwrite `{output_folder}/party-log.md`
+- Write header with session info:
+
+```markdown
+# Party Mode Conversation Log
+
+**Session:** {{date}}
+**User:** {{user_name}}
+
+---
+
+```
+
+- Inform user: "📝 Full conversation will be logged to `{output_folder}/party-log.md` - open it in your editor for easier reading!"
+
+### 5. Party Mode Activation
 
 Generate enthusiastic party mode introduction:
 
@@ -88,7 +109,7 @@ Welcome {{user_name}}! I'm excited to facilitate an incredible multi-agent discu
 
 **What would you like to discuss with the team today?**"
 
-### 5. Present Continue Option
+### 6. Present Continue Option
 
 After agent loading and introduction:
 
@@ -97,7 +118,7 @@ After agent loading and introduction:
 **Ready to start the discussion?**
 [C] Continue - Begin multi-agent conversation
 
-### 6. Handle Continue Selection
+### 7. Handle Continue Selection
 
 #### If 'C' (Continue):
 

@@ -39,6 +39,16 @@ Load config from `{project-root}/_bmad/core/config.yaml` and resolve:
 - `installed_path` = `{project-root}/_bmad/core/workflows/party-mode`
 - `agent_manifest_path` = `{project-root}/_bmad/_config/agent-manifest.csv`
 - `standalone_mode` = `true` (party mode is an interactive workflow)
+- `conversation_log` = `{output_folder}/party-log.md` (full conversation history)
+
+### Conversation Logging
+
+Party mode maintains a conversation log file for easier reading and reference:
+
+- **Full responses** written to `{output_folder}/party-log.md`
+- **Terminal output** shows condensed version (agent name + first line + "..." for longer responses)
+- User can read log file in editor while terminal stays clean for input
+- Log persists across session for reference
 
 ---
 
@@ -121,6 +131,7 @@ date: '{{date}}'
 agents_loaded: true
 party_active: true
 exit_triggers: ['*exit', 'goodbye', 'end party', 'quit']
+conversation_log: '{{output_folder}}/party-log.md'
 ---
 ```
 
@@ -142,6 +153,7 @@ exit_triggers: ['*exit', 'goodbye', 'end party', 'quit']
 - Maintain professional discourse while being engaging
 - Respect each agent's expertise boundaries
 - Allow cross-talk and building on previous points
+- **Agents should comment on each other's suggestions** when they have genuine insight, see a gap, or can meaningfully build on the idea - but skip if it's just agreement or restating
 
 ---
 

@@ -6,7 +6,7 @@ A sensory sensitivity action plan is a personalized, proactive, and reactive str
 
 ## Deliverables
 
-Milestone 3, which is due EDC + 13 months (well before september 2026), requires a Final Report: Prototype that includes the following deliverables:
+Milestone 3, which is due strictly before september 2026 (which is plenty of time), requires a Final Report: Prototype that includes the following deliverables:
 
 - Summary of user research and insights
 - MVP feature specifications
@@ -57,6 +57,8 @@ We also found that many places have substandard maps for people with sensory sen
 
 We could potentially increase BindiMaps revenue by offering this service to potential clients and also us this as a way to get BindiMaps maps into new places.
 
+We could also enhance and augment ASPECT's work by helping them present their research (apid for by their clients) in a professional way and possibly add another service to their offering.
+
 These opportunities are not the primary purpose of the project (which is to actually help people with our grant) but are hopefully another benefit of what we build.
 
 ## Phase 1
@@ -95,6 +97,8 @@ For further reference, the documentation and data from our previous MVP can be f
 
 This is what we are building now. This plan could easily and should change.
 
+The whole thing should only take the order of a few weeks to build before testing.
+
 IMPORTANT: challenge me on any of this or more where appropriate
 
 ### Overview
@@ -103,6 +107,8 @@ Build a new standalone app that displays action plans to users. One action plan 
 
 This is still an MVP so should not be overcooked or over-engineered, always pick the simplest option. We are building greenfield because small focused apps are easy to make in 2026.
 
+Like a good MVP, we should prioritise features in order of unavoidable, core, then less valuable when we make plans for work to do
+
 ### Frontend Requirements
 
 - Starts VERY simple - cater for all cognitive levels, worst thing we can do is overwhelm
@@ -110,11 +116,18 @@ This is still an MVP so should not be overcooked or over-engineered, always pick
 - Includes maps (optional)
 - Sensory categories clearly labelled and color coded
   - [Icons available here](../assets/icons/)
+- Simple but professional design, this could be used by airports, government, entertainment etc on a public scale
+- very usable for mobile and desktop (responsive)
+- mobile version we could assume they are most likely in the venue
+  - for example, an easy way to call help quickly in case of a panic attack
+- printable
+- pdf-able
 - MORE TODO
 
 ### Backend Requirements
 
 - Secure authentication - multiple logins, company logins (only if quick and simple)
+- weill probably need to sanitise input quite a bit to avoid prompt injection
 - Parse free text and format with LLM into display model
 - Test/preview before publishing
 - Publish to frontend
@@ -127,7 +140,7 @@ This is still an MVP so should not be overcooked or over-engineered, always pick
 - **Hosting**: Firebase (preferred) or Google Cloud - both already in use at BindiMaps
 - **Database**: Simple architecture, probably no SQL needed - blob/document storage likely sufficient
 - **Infrastructure**: IaC if simple
-- **Frontend**: Vite, React, TypeScript, Tailwind (or appropriate design system)
+- **Frontend**: Vite, React, TypeScript, Tailwind (or appropriate design system), yarn workspaces
 - **Analytics**: Google Analytics, Microsoft Clarity
 - **Backend**: Node
 - MORE TODO
@@ -189,3 +202,192 @@ Icons located at: [../assets/icons/](../assets/icons/)
 - [TSO Venue Guide 2023 (PDF)](https://tso-files.s3.ca-central-1.amazonaws.com/RP+Venue+Guide+2023+(1).pdf)
 - [Stratford Festival: 2025 Annie Relaxed Guide (PDF)](https://cds.stratfordfestival.ca/uploadedFiles/Visit/Accessibility/American_Sign_Language_Performances(1)/2025_Annie-Relaxed-Guide.pdf)
 - [Arts Centre Melbourne: Visual Story Library for Relaxed Performances](https://www.artscentremelbourne.com.au/visit/accessibility/when-you-visit/relaxed-performances/visual-story-library)
+
+## BindiWeb Integration
+
+### Deep-link URL Format
+
+```
+https://demo.bindiweb.com/p/{locationId}?e={venueId}&ow=f&gid=f
+```
+
+- `p/{locationId}` - The location/project (e.g., `iQwHrzhpu3Q9s4braCpY26`)
+- `e={venueId}` - The venue/POI to highlight (from `locationData.json` venue IDs)
+- `ow=f&gid=f` - Display flags
+
+### Extractable Data from `locationData.json`
+
+The map data file contains venue information that can auto-populate action plan content:
+
+| Facility Type | Use Case |
+|--------------|----------|
+| Emergency Exit | "Get Me Out" quick escape |
+| Accessible Entry | Pre-arrival planning, alternative entry |
+| Secondary Entry | Avoid main entrance crowds |
+| Bathrooms (all types) | Quick bathroom finder |
+| Accessible Bathrooms | Accessibility needs |
+| Parents Room | Families with children |
+| Lifts | Vertical navigation |
+| Stairs | Alternative to lifts |
+| Breakout/Chat Rooms | Potential quiet zones |
+| Casual Seating | Rest spots |
+
+## Brainstorm Ideas (Unprioritized)
+
+Ideas from party mode brainstorm session. To be prioritized later.
+
+### Before / During / After Framework
+
+| Phase | User Need | Platform |
+|-------|-----------|----------|
+| **Before** | Plan and reduce anxiety | Desktop (primary), Mobile |
+| **During** | Navigate and cope in-venue | Mobile (primary) |
+| **After** | Reflect and contribute | Either |
+
+Simple assumption: Mobile = likely "during", Desktop = likely "before". No fancy detection needed.
+
+---
+
+## Key Decisions (from brainstorm session 2025-01-25)
+
+### What we're NOT building
+- ❌ Sensory maps as primary focus (tested poorly in Phase 2)
+- ❌ Complex wearables/AI prediction systems
+- ❌ Real-time location detection
+- ❌ Runtime data processing (all preprocessing at publish time)
+
+### What we ARE building
+- ✅ Action plans as the core solution
+- ✅ Maps as optional embeds (if content provider wants them)
+- ✅ Simple web app (not over-engineered)
+- ✅ Mobile-first with "during" features for in-venue use
+- ✅ Desktop for "before" planning
+- ✅ Backend with LLM transformation (PDF → display format) is critical path
+- ✅ Support for multiple map providers (not just BindiMaps)
+- ✅ Facility link extraction preprocessed at publish time
+
+### Architecture decisions
+- Preprocessing at publish time, not runtime
+- Multi-provider map support via abstract deep-link format
+- Progressive disclosure UI pattern
+- Quick shortcuts prominent on mobile
+
+### Data flow (admin publish pipeline)
+
+```
+PDF (ASPECT report) + Map data (optional)
+    ↓ [Upload]
+LLM Transform
+    ↓ [Parse + structure]
+Display Model (JSON)
+    ↓ [+ Facility links extracted from map data]
+Admin Reviews (preview)
+    ↓ [Publish]
+Frontend Consumes (static/pre-built)
+```
+
+### Multi-provider map link format
+
+```typescript
+interface MapLink {
+  provider: 'bindiweb' | 'google' | 'apple' | 'other';
+  url: string;        // pre-built at publish time
+  venueId?: string;   // for reference
+  venueName: string;
+}
+```
+
+Backend builds full URL per provider at publish time. Frontend just renders `<a href={url}>`.
+
+### Open questions (to resolve later)
+- Display model schema - extends previous MVP `data.json` but needs more fields
+- LLM transformation prompts - how to structure for consistent output
+- How to match facility names from map data to narrative sections (start simple)
+- Positive experience categories - which to add beyond existing sensitivity categories
+
+---
+
+## MVP Scope
+
+### MVP Foundation (must have)
+
+**Backend (Admin):**
+
+- PDF upload + LLM transformation to display format
+- Preview/test before publishing
+- Publish to frontend
+- Facility link extraction from map data (preprocessed at publish time, not runtime)
+- Support for multiple map providers (not just BindiMaps)
+
+**Frontend (User):**
+
+- Action plan content display (responsive)
+- Progressive disclosure UI (starts simple, details on demand)
+- Map integration (optional per venue, via deep-links)
+- Mobile-first design
+- Desktop planning view
+- Pre-generated facility quick-links (exits, bathrooms, parents room, lifts, etc.)
+- Emergency contact display
+
+### MVP 'During' Features
+
+- Quick shortcuts button (prominent on mobile)
+- Facility quick-links: exits, bathrooms, quiet spaces
+- One-tap to venue help/emergency number
+
+---
+
+## Post-MVP Ideas (prioritize later)
+
+### Quick Shortcuts Enhancements
+
+- **Panic Mode** - Triple-tap quick help → immediate "nearest exit + call for help"
+- **Staff scripts** - Pre-written cards to show staff when overwhelmed:
+  - "I'm feeling overwhelmed and need a quiet space"
+  - "I have sensory sensitivities - please speak softly"
+  - "Can you help me find the exit?"
+
+### Auto-populated Sections
+
+Parse `locationData.json` to auto-generate action plan sections:
+
+- "Exits are located at..." (with map deep-links)
+- "Bathrooms available..." (with accessibility info)
+- "Quiet spaces include..." (breakout rooms, chat rooms)
+- Floor-by-floor facility summary
+
+**Implementation note:** Start simple - try what's easy and likely to work. Options if needed:
+
+1. Use consistent naming conventions in LLM-generated content
+2. Generate facility sections separately from narrative sections
+
+### Positive Experience Categories
+
+Expand beyond hazard warnings to highlight good experiences:
+
+- Quiet zone
+- Dim lighting area
+- Low traffic times/areas
+- Staff trained in sensory needs
+- Sensory-friendly hours
+
+### User Feedback
+
+- "How did this plan work for you?" - thumbs up/down after visit
+- "Add your own tip" - user-contributed notes (moderated)
+
+### Action Plan Templates
+
+Pre-built plans for common scenarios:
+
+- First visit to a shopping centre
+- Taking my child to the movies
+- Job interview in unfamiliar building
+- Catching a train for the first time
+
+### Support Tools
+
+- Breathing/grounding prompts
+- "Share this plan with my carer/buddy"
+- Print summary card (wallet-sized essentials)
+- "What to tell venue staff if I need help"

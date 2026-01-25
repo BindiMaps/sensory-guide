@@ -8,6 +8,8 @@
 - 🔍 ENABLE NATURAL CROSS-TALK between agents for dynamic conversation
 - 💬 INTEGRATE TTS for each agent response immediately after text
 - ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
+- 📝 WRITE FULL RESPONSES to `{output_folder}/party-log.md` - terminal gets condensed version only
+- 🗜️ TERMINAL OUTPUT: Agent name + first sentence/~100 chars + "..." (unless response is already short)
 
 ## EXECUTION PROTOCOLS:
 
@@ -23,6 +25,7 @@
 - User topic and conversation history guide agent selection
 - Party mode is active with TTS integration enabled
 - Exit triggers: `*exit`, `goodbye`, `end party`, `quit`
+- Conversation log file: `{output_folder}/party-log.md` (write full responses here)
 
 ## YOUR TASK:
 
@@ -74,9 +77,16 @@ Generate authentic responses for each selected agent:
 **Response Structure:**
 [For each selected agent]:
 
-"[Icon Emoji] **[Agent Name]**: [Authentic in-character response]
+1. **Write full response to log file** (`{output_folder}/party-log.md`):
+   - Append: `## [Icon Emoji] [Agent Name]\n\n[Full authentic in-character response]\n\n---\n`
 
-[Bash: .claude/hooks/bmad-speak.sh \"[Agent Name]\" \"[Their response]\"]"
+2. **Show condensed version in terminal**:
+   - Format: `[Icon Emoji] **[Agent Name]**: [First sentence or ~100 chars]...`
+   - If response is short (< 150 chars), show full response
+   - Add: `_(full response in party-log.md)_` after condensed responses
+
+3. **TTS integration** (if enabled):
+   - `[Bash: .claude/hooks/bmad-speak.sh "[Agent Name]" "[Their response]"]`
 
 ### 4. Natural Cross-Talk Integration
 
@@ -89,12 +99,33 @@ Enable dynamic agent-to-agent interactions:
 - Respectful disagreements: "I see it differently than [Another Agent]..."
 - Follow-up questions between agents: "How would you handle [specific aspect]?"
 
+**Peer Commentary on Suggestions (IMPORTANT):**
+
+When an agent makes a suggestion, other agents SHOULD comment on it if useful:
+
+- **Constructive critique**: "That could work, but have you considered [edge case/issue]?"
+- **Building on ideas**: "Love that direction. What if we also [enhancement]?"
+- **Spotting gaps**: "One thing that might bite us - [potential problem]"
+- **Asking for clarity**: "Can you unpack the [specific part] a bit more?"
+- **Offering alternatives**: "Another angle worth considering: [different approach]"
+- **Validating from expertise**: "From a [domain] perspective, that checks out because..."
+
+**When to comment vs. stay quiet:**
+
+- ✅ Comment when you have genuine insight, concern, or complementary expertise
+- ✅ Comment when you see a risk or gap others might miss
+- ✅ Comment when you can meaningfully build on the idea
+- ❌ Don't comment just to agree or fill space
+- ❌ Don't pile on if the point has already been made
+- ❌ Skip commentary if you'd just be restating what was said
+
 **Conversation Flow:**
 
 - Allow natural conversational progression
 - Enable agents to ask each other questions
 - Maintain professional yet engaging discourse
 - Include personality-driven humor and quirks when appropriate
+- Agents should engage with each other's ideas, not just respond to user in isolation
 
 ### 5. Question Handling Protocol
 
@@ -118,12 +149,17 @@ Allow natural back-and-forth within the same response round for dynamic interact
 
 After generating all agent responses for the round:
 
-**Presentation Format:**
-[Agent 1 Response with TTS]
-[Empty line for readability]
-[Agent 2 Response with TTS, potentially referencing Agent 1]
-[Empty line for readability]
-[Agent 3 Response with TTS, building on or offering new perspective]
+**Log File Update:**
+- Also append user's message to log before agent responses:
+  `## 👤 User\n\n[User's message]\n\n---\n`
+- Each agent response appended as described in step 3
+
+**Terminal Presentation Format:**
+[Agent 1 Condensed Response]
+[Agent 2 Condensed Response, potentially referencing Agent 1]
+[Agent 3 Condensed Response, building on or offering new perspective]
+
+_(See party-log.md for full responses)_
 
 **Continue Option:**
 "[Agents have contributed their perspectives. Ready for more discussion?]
@@ -163,6 +199,8 @@ Check for exit conditions before continuing:
 ✅ [E] exit option presented after each response round
 ✅ Conversation context and state maintained throughout
 ✅ Graceful conversation flow without abrupt interruptions
+✅ Full responses logged to party-log.md
+✅ Terminal shows condensed, scannable output
 
 ## FAILURE MODES:
 
@@ -172,6 +210,8 @@ Check for exit conditions before continuing:
 ❌ Ignoring user questions or exit triggers
 ❌ Not enabling natural agent cross-talk and interactions
 ❌ Continuing conversation without user input when questions asked
+❌ Not writing full responses to log file
+❌ Showing full verbose responses in terminal (should be condensed)
 
 ## CONVERSATION ORCHESTRATION PROTOCOLS:
 
