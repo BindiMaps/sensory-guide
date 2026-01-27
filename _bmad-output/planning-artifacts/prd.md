@@ -400,13 +400,11 @@ Decision Point: Content OK?
     │           ↓
     │       [Copy shareable URL]
     │
-    └── No → Flag issues for regeneration
+    └── No → Re-upload corrected PDF
               ↓
-          [Select problem sections]
+          [Update source PDF with fixes]
               ↓
-          [Provide correction guidance]
-              ↓
-          [LLM regenerates flagged sections]
+          [Re-upload → LLM transforms again]
               ↓
           [Back to Preview]
 ```
@@ -416,8 +414,8 @@ Decision Point: Content OK?
 | What Goes Wrong | Recovery |
 |-----------------|----------|
 | PDF upload fails | Clear error message, retry |
-| LLM produces garbage | Admin review catches it, regenerate |
-| LLM misses sections | Admin flags, provides guidance |
+| LLM produces garbage | Admin review catches it, update PDF and re-upload |
+| LLM misses sections | Update source PDF, re-upload |
 | Wrong category assigned | Admin can correct category tags |
 | Images not extracted | Manual image upload fallback |
 
@@ -428,11 +426,9 @@ Decision Point: Content OK?
 - Clear upload flow
 - Preview that matches public view
 - Section-by-section review
-- Easy "flag this section" mechanic
-- Regenerate with guidance (not free-form editing)
+- Re-upload option if content is wrong (PDF is source of truth)
 - Publish confirmation
 - Shareable URL after publish
-- **PDF quality feedback** - Option to flag "PDF was inconsistent/hard to parse" to inform ASPECT template improvements
 
 ### Journey 2B: Admin - Update Existing Guide
 
@@ -443,23 +439,16 @@ Admin needs to update published guide
     ↓
 [View current published version]
     ↓
-Decision Point: Minor update or full re-upload?
-    ├── Full re-upload (new PDF)
-    │       ↓
-    │   [Upload new PDF → LLM transform → review → publish]
-    │   [Previous version saved to history]
-    │
-    └── Minor correction needed
-            ↓
-        [Flag section → provide guidance → regenerate section]
-            ↓
-        [Preview → Publish update]
+Decision Point: Need to update?
+    ↓
+[Upload updated PDF → LLM transforms → review → publish]
+    ↓
+[Previous version saved to history]
 ```
 
 **What Admin Needs:**
 
 - Version history visible
-- Clear "update" vs "replace" options
 - Previous versions accessible (rollback if needed)
 
 ### Journey Requirements Summary
@@ -469,8 +458,8 @@ Decision Point: Minor update or full re-upload?
 | End User - Before | Progressive disclosure UI, category filtering, image display, print view |
 | End User - During | Fast load, scannable structure, mobile-friendly |
 | End User - Print | Print CSS, clean layout, all content accessible |
-| Admin - Publish | PDF upload, LLM integration, preview, guided correction, publish flow |
-| Admin - Update | Version history, section regeneration, rollback |
+| Admin - Publish | PDF upload, LLM integration, preview, re-upload if wrong, publish flow |
+| Admin - Update | Version history, re-upload, rollback |
 
 **Future Enhancement (Growth):** Sensitivity filters will transform Journey 1A - users set their profile once, then all guides auto-highlight relevant sections and print personalised PDFs.
 
@@ -640,14 +629,11 @@ sensoryGuideApp/
 - **FR13:** Admin can upload PDF audit document for a venue
 - **FR14:** System transforms PDF content to structured guide format via LLM
 - **FR15:** Admin can preview generated guide before publishing
-- **FR16:** Admin can flag individual sections for regeneration
-- **FR17:** Admin can provide guidance text when flagging sections
-- **FR18:** System regenerates flagged sections incorporating admin guidance
-- **FR19:** Admin can publish guide to make it publicly accessible
-- **FR20:** Admin can copy shareable URL after publishing
-- **FR21:** Admin can update existing guide by uploading new PDF
-- **FR22:** Admin can view version history of published guides
-- **FR23:** Admin can flag PDF quality issues for template improvement feedback
+- **FR16:** Admin can re-upload PDF if guide content is incorrect (PDF is source of truth)
+- **FR17:** Admin can publish guide to make it publicly accessible
+- **FR18:** Admin can copy shareable URL after publishing
+- **FR19:** Admin can update existing guide by uploading new PDF
+- **FR20:** Admin can view version history of published guides
 
 ### Content Suggestions (Admin)
 
@@ -655,44 +641,42 @@ sensoryGuideApp/
 - **FR25:** Admin can view suggestions as bullet list via "Show Suggestions" button
 - **FR26:** Admin can re-upload updated PDF to incorporate suggestions
 
-### Organization Management
+### Venue Sharing (Doc-Style Model)
 
-- **FR27:** Admin can access only venues within their organization
-- **FR28:** Organization can manage multiple venues
-- **FR29:** Organization can have multiple admin users
-- **FR30:** System enforces organization data boundaries
+- **FR21:** Admin can view list of all venues they have edit access to
+- **FR22:** Admin can create new venues (creator becomes an editor)
+- **FR23:** Admin can add other users as editors to a venue (by email, max 5 editors)
+- **FR24:** Admin can remove editors from a venue (except last editor)
+- **FR25:** Last remaining editor can delete the venue
 
-### Super Admin (Global Management)
+### Super Admin (Support Access)
 
-- **FR43:** Super Admin can create and manage organizations
-- **FR44:** Super Admin can set and adjust LLM usage quotas per organization
-- **FR45:** Super Admin can view all venues across all organizations (support access)
-- **FR46:** Super Admin can view global analytics and system health
-- **FR47:** Super Admin can manage organization billing/status (active, suspended, etc.)
+- **FR43:** Super Admin can view all venues across all users (support access)
+- **FR44:** Super Admin can view global analytics and system health
 
 ### Authentication
 
-- **FR31:** Admin can authenticate to access admin portal
-- **FR32:** System restricts admin features to authenticated users
-- **FR33:** Public guides are accessible without authentication
+- **FR32:** Admin can authenticate to access admin portal
+- **FR33:** System restricts admin features to authenticated users
+- **FR34:** Public guides are accessible without authentication
 
 ### User Feedback & Analytics
 
-- **FR34:** User can submit thumbs up/down feedback on guide (captured via GA events, no Firebase writes)
-- **FR35:** System records page views per venue (via GA)
-- **FR36:** System records section expansion events (via GA)
-- **FR37:** System records print button usage (via GA)
+- **FR35:** User can submit thumbs up/down feedback on guide (captured via GA events, no Firebase writes)
+- **FR36:** System records page views per venue (via GA)
+- **FR37:** System records section expansion events (via GA)
+- **FR38:** System records print button usage (via GA)
 
 ### Accessibility Compliance
 
-- **FR38:** User can navigate entire guide using keyboard only
-- **FR39:** User can consume guide content via screen reader
-- **FR40:** System respects prefers-reduced-motion setting
-- **FR41:** System uses icons + text alongside colour indicators
+- **FR39:** User can navigate entire guide using keyboard only
+- **FR40:** User can consume guide content via screen reader
+- **FR41:** System respects prefers-reduced-motion setting
+- **FR42:** System uses icons + text alongside colour indicators
 
 ### Index Page
 
-- **FR42:** User can view BindiMaps information on landing page
+- **FR45:** User can view BindiMaps information on landing page
 
 ## Non-Functional Requirements
 
@@ -724,7 +708,7 @@ sensoryGuideApp/
 | Input Sanitization | All user input sanitized | Code review |
 | LLM Prompt Injection | Hardened prompts, no user input in system prompts | Security review |
 | Auth | Firebase Auth best practices | Config review |
-| Data Isolation | Org boundaries enforced | Integration tests |
+| Data Isolation | Venue editor access enforced | Integration tests |
 
 ### Integration
 

@@ -151,27 +151,32 @@ npx shadcn@latest add button card dialog form input
 | Uploaded PDFs | Cloud Storage | Large files |
 | Extracted images | Cloud Storage | Binary assets |
 | Version history blobs | Cloud Storage | Archival |
-| Org/User/Venue metadata | Firestore | Small docs, queryable |
+| Venue metadata | Firestore | Small docs, queryable |
+| Embed URLs (per section) | Firestore | Persist across PDF re-uploads |
 | LLM usage counters | Firestore | Rate limiting |
-| LLM usage logs | Firestore | Audit trail, rebuild counters |
+| LLM usage logs | Firestore | Audit trail |
 
-**Firestore Structure (Hierarchical):**
+**Firestore Structure (Flat, Doc-Sharing Model):**
 ```
-/organizations/{orgId}
-  name, settings, quotas
-  /venues/{venueId}
-    slug, name, status, storageRef
-  /members/{userId}
-    role, email
-  /usage/{period}
-    daily: { "2026-01-27": 5 }, monthly: {...}
-  /llmLogs/{logId}
-    userId, venueId, timestamp, uploadPath, tokensUsed, status
+/venues/{venueId}
+  slug, name, status, storageRef
+  editors: ["email1@example.com", "email2@example.com"]
+  createdBy: "email1@example.com"
+  createdAt, updatedAt
+
+/venues/{venueId}/embeddings
+  {"Section Title": "https://bindiweb.com/...", ...}
+
+/usage/{userEmail}/{date}
+  count: 5
+
+/llmLogs/{logId}
+  userEmail, venueId, timestamp, uploadPath, tokensUsed, status
 ```
 
 **Cloud Storage Structure:**
 ```
-/organizations/{orgId}/venues/{venueId}/
+/venues/{venueId}/
   uploads/{timestamp}_{logId}.pdf
   guide.json
   images/
@@ -187,39 +192,62 @@ npx shadcn@latest add button card dialog form input
 
 ### Authentication & Security
 
-**Authorization: Firebase Custom Claims**
+**Authorization: Doc-Style Sharing Model**
+
+No orgs, no complex claims. Venues are like Google Docs - creator owns it, shares by email.
+
+**Data Model:**
 ```ts
+// Firestore: /venues/{venueId}
 {
-  superAdmin?: true,
-  orgId?: string,
-  role?: 'admin'
+  name: "Adelaide Railway Station",
+  editors: ["creator@example.com", "auditor@aspect.org.au", "manager@venue.com"],
+  // ... other venue metadata
 }
 ```
-- Set via Admin SDK when user added to org
-- Force token refresh on role change
-- Check claims in all Callable Functions
+
+**Access Check:**
+```ts
+// Simple: is user's email in the editors array?
+if (!venue.editors.includes(user.email)) {
+  throw new HttpsError('permission-denied');
+}
+```
 
 **Role Model:**
-| Role | Scope | Access |
-|------|-------|--------|
-| Super Admin | Global | Create orgs, manage quotas, view all, support access |
-| Org Admin | Their org | Upload PDFs, publish guides, manage org members |
+| Role | How Identified | Access |
+|------|----------------|--------|
+| Super Admin | Hardcoded email list or custom claim | View all venues (support), global analytics |
+| Editor | Email in venue's `editors` array | Full edit access to that venue |
 
-**Rate Limiting: Firestore Counter**
-- `/organizations/{orgId}/usage/{period}` doc
+**Sharing Rules:**
+- Creator is just another editor (no special owner role)
+- Any editor can add other editors (by email)
+- Maximum 5 editors per venue
+- Any editor can remove other editors (except last one)
+- Last editor can delete the venue
+- Can't remove yourself if you're the last editor
+
+**Rate Limiting: Per-User Daily Cap**
+- `/usage/{userId}/{date}` counter
 - Check before LLM transform, increment after
-- Per-user daily cap (MVP), per-org quotas (growth)
+- Simple daily cap per user (MVP)
 
 **Audit Logging: Hybrid**
-- Firestore log collection for metadata + counter rebuild
+- Firestore log collection for metadata
 - GA events for analytics dashboards
 - Each upload gets unique name linked to log record
 
 **Firebase Security Rules:**
-- Org data isolation enforced via rules
+```
+match /venues/{venueId} {
+  allow read, write: if request.auth.token.email in resource.data.editors;
+}
+```
+- Venue access enforced via editors array
 - LLM usage counters protected (only Functions can write)
 - No public Firestore access (all public data from Storage URLs)
-- Super admin bypass where needed
+- Super admin bypass for support access
 
 ### API & Communication Patterns
 
@@ -234,13 +262,15 @@ export const transformPdf = onCall(async (request) => {
   if (!request.auth) {
     throw new HttpsError('unauthenticated', 'Must be logged in');
   }
-  const { orgId, superAdmin } = request.auth.token;
-  if (!orgId && !superAdmin) {
-    throw new HttpsError('permission-denied', 'Not authorized');
+
+  const userEmail = request.auth.token.email;
+  const venue = await getVenue(request.data.venueId);
+
+  // Check if user is an editor of this venue
+  if (!venue.editors.includes(userEmail) && !isSuperAdmin(userEmail)) {
+    throw new HttpsError('permission-denied', 'Not an editor of this venue');
   }
-  if (request.data.orgId !== orgId && !superAdmin) {
-    throw new HttpsError('permission-denied', 'Wrong organization');
-  }
+
   // ... actual logic
 });
 ```
@@ -566,11 +596,10 @@ sensoryGuideApp/
 │   │   ├── middleware/
 │   │   │   └── auth.ts               # Auth/claims checking
 │   │   ├── transforms/
-│   │   │   ├── transformPdf.ts
-│   │   │   └── regenerateSection.ts
+│   │   │   └── transformPdf.ts
 │   │   ├── admin/
-│   │   │   ├── createOrg.ts
-│   │   │   ├── manageVenue.ts
+│   │   │   ├── createVenue.ts
+│   │   │   ├── manageEditors.ts
 │   │   │   └── publishGuide.ts
 │   │   ├── storage/
 │   │   │   └── getSignedUploadUrl.ts

@@ -130,13 +130,15 @@ Like a good MVP, we should prioritise features in order of unavoidable, core, th
 
 ### Backend Requirements
 
-- Secure authentication - multiple logins, company logins (only if quick and simple)
-- weill probably need to sanitise input quite a bit to avoid prompt injection
+- Secure authentication via Firebase Auth
+- Doc-style sharing: venues have an editors list, anyone in the list can edit
+- Any editor can add/remove other editors (can't remove last editor without deleting venue)
+- Sanitise input to avoid prompt injection
 - Parse free text and format with LLM into display model
 - Test/preview before publishing
 - Publish to frontend
 - Version history
-- Link items to BindiWeb map POI URLs
+- Link items to embeddable URLs (maps, videos, etc.) - optional per section, persists across PDF re-uploads
 - MORE TODO
 
 ### Tech Stack
