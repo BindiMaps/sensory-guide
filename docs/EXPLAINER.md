@@ -361,6 +361,16 @@ Backend builds full URL per provider at publish time. Frontend just renders `<a 
 
 ## Post-MVP Ideas (prioritize later)
 
+### Sensitivity Filters (High Priority Post-MVP)
+
+- **Personal sensitivity profile** - User selects their triggers (sound, crowds, light, etc.) stored in localStorage (no account needed)
+- **Auto-highlight relevant sections** - Guides automatically emphasize content matching user's sensitivities
+- **Personalized print/PDF** - Print view includes only categories the user cares about
+- **Precomputed summaries** - Generate per-category summaries at publish time for instant filtering
+- **Cross-venue persistence** - Set profile once, applies to all venues
+
+> This feature aligns with core mission: not just for sensory sensitivities, but for anyone who likes to carefully plan. Filtering makes the tool work for broader audiences while serving core users better.
+
 ### Quick Shortcuts Enhancements
 
 - **Panic Mode** - Triple-tap quick help → immediate "nearest exit + call for help"

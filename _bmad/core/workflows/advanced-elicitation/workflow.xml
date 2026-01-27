@@ -27,6 +27,7 @@
         <i>method_name: Display name for the method</i>
         <i>description: Rich explanation of what the method does, when to use it, and why it's valuable</i>
         <i>output_pattern: Flexible flow guide using → arrows (e.g., "analysis → insights → action")</i>
+        <i>output_mode: "inline" (display in chat) or "review_file" (write to file for user to edit and submit back)</i>
       </csv-structure>
 
       <context-analysis>
@@ -63,10 +64,19 @@
           <i>Execute the selected method using its description from the CSV</i>
           <i>Adapt the method's complexity and output format based on the current context</i>
           <i>Apply the method creatively to the current section content being enhanced</i>
-          <i>Display the enhanced version showing what the method revealed or improved</i>
-          <i>CRITICAL: Ask the user if they would like to apply the changes to the doc (y/n/other) and HALT to await response.</i>
-          <i>CRITICAL: ONLY if Yes, apply the changes. IF No, discard your memory of the proposed changes. If any other reply, try best to
-            follow the instructions given by the user.</i>
+          <i>CHECK output_mode for the selected method:</i>
+          <i>  IF output_mode="review_file":</i>
+          <i>    - Write output to a review file: {planning_artifacts}/{method-name-slug}-insights-review.md</i>
+          <i>    - File should include checkboxes for each idea, space for notes, instructions for user</i>
+          <i>    - Tell user: "Created review file at [path]. Edit the file, mark your choices, and let me know when done."</i>
+          <i>    - HALT and wait for user to signal they've finished editing</i>
+          <i>    - When user signals done, read the file and apply their marked selections</i>
+          <i>  IF output_mode="inline" (or not specified):</i>
+          <i>    - Display the enhanced version showing what the method revealed or improved</i>
+          <i>    - Ask user if they would like to apply the changes (y/n/other)</i>
+          <i>CRITICAL: ONLY if Yes (or file review complete with selections), apply the changes.</i>
+          <i>CRITICAL: IF No, discard your memory of the proposed changes.</i>
+          <i>CRITICAL: If any other reply, try best to follow the instructions given by the user.</i>
           <i>CRITICAL: Re-present the same 1-5,r,x prompt to allow additional elicitations</i>
         </case>
         <case n="r">
@@ -97,6 +107,7 @@
     <step n="3" title="Execution Guidelines">
       <i>Method execution: Use the description from CSV to understand and apply each method</i>
       <i>Output pattern: Use the pattern as a flexible guide (e.g., "paths → evaluation → selection")</i>
+      <i>Output mode: Check output_mode column - "review_file" methods produce too much output for inline display</i>
       <i>Dynamic adaptation: Adjust complexity based on content needs (simple to sophisticated)</i>
       <i>Creative application: Interpret methods flexibly based on context while maintaining pattern consistency</i>
       <i>Focus on actionable insights</i>
@@ -108,9 +119,15 @@
       <i>Continue until user selects 'x' to proceed with enhanced content, confirm or ask the user what should be accepted from the session</i>
       <i>Each method application builds upon previous enhancements</i>
       <i>Content preservation: Track all enhancements made during elicitation</i>
+      <i>Review file format: For review_file methods, create markdown with:</i>
+      <i> - Instructions at top</i>
+      <i> - Checkboxes [ ] Yes [ ] No for each idea</i>
+      <i> - Notes field for each idea</i>
+      <i> - Grouped by priority/phase where appropriate</i>
+      <i> - Section at bottom for user's own additions</i>
       <i>Iterative enhancement: Each selected method (1-5) should:</i>
       <i> 1. Apply to the current enhanced version of the content</i>
-      <i> 2. Show the improvements made</i>
+      <i> 2. Show the improvements made (inline) or create review file (review_file)</i>
       <i> 3. Return to the prompt for additional elicitations or completion</i>
     </step>
   </flow>
