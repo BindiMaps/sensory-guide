@@ -6,6 +6,12 @@ stepsCompleted:
   - step-04-journeys
   - step-05-domain-skipped
   - step-06-innovation
+  - step-07-project-type
+  - step-08-scoping
+  - step-09-functional
+  - step-10-nonfunctional
+  - step-11-polish
+  - step-12-complete
 inputDocuments:
   - _bmad-output/planning-artifacts/product-brief-bindiMapsActionPlan-2026-01-25.md
   - docs/EXPLAINER.md
@@ -40,10 +46,21 @@ keyInsights:
   - "Web generates better PDFs - personalized print based on user's selections"
 ---
 
-# Product Requirements Document - bindiMapsActionPlan
+# Product Requirements Document - Sensory Guide
 
-**Author:** You
+**Author:** Keith
 **Date:** 2026-01-27
+**Status:** Complete
+
+## Executive Summary
+
+**Sensory Guide** is a web application that transforms ASPECT's venue accessibility audit PDFs into interactive, accessible sensory guides for people with sensory sensitivities. The primary use case is pre-visit planning - helping users know what to expect before arriving at a venue, reducing anxiety and increasing independence.
+
+**Key differentiator:** We generate better PDFs, not replace them. Web-first with first-class print output, personalized to each user's sensory triggers.
+
+**Timeline:** MVP ready for ASPECT user testing by July 2026, M3 research report due September 2026.
+
+**Tech stack:** React + TypeScript + Firebase, with Gemini (via Firebase) for PDF-to-structured-content transformation.
 
 ## Success Criteria
 
@@ -147,15 +164,11 @@ keyInsights:
 
 ### Technical Success
 
-| Requirement | Target | Verification |
-|-------------|--------|--------------|
-| Accessibility | Lighthouse ≥ 95 | CI/CD gate |
-| Screen reader | VoiceOver + NVDA pass | Manual testing checklist |
-| Security - dependencies | No high/critical vulns | `yarn audit` on every deploy |
-| Security - input | Sanitized, no prompt injection | Input validation + LLM prompt hardening |
-| Security - auth | Admin auth secure | Firebase Auth best practices |
-| Print quality | Clean, usable output | Manual QA + user testing |
-| Performance | Fast load on mobile | Lighthouse performance ≥ 80 |
+See **Non-Functional Requirements** section for detailed targets. Key gates:
+- Lighthouse Accessibility ≥95 (CI/CD gate)
+- Lighthouse Performance ≥80 (CI/CD gate)
+- `yarn audit` clean (CI/CD gate)
+- Print quality validated via manual QA + user testing
 
 ### Measurable Outcomes
 
@@ -216,7 +229,7 @@ keyInsights:
 - **Text-only mode** - Accessibility option: no images, structured text only. Faster, cleaner, screen-reader optimized.
 - **"If overwhelmed" escape plan** - Each venue has a clear "if you need to leave" section with nearest exit, quiet zone, and help contact
 - **Universal sensory iconography** - Standardized icon set across all venues (like airport symbols) for cross-venue consistency
-- **Admin prompts post-LLM** - After LLM transform, prompt admin with suggestions: "Have you considered adding X?" (mini-bmad style)
+- **Admin prompts post-LLM** - After LLM transform, prompt admin with suggestions: "Have you considered adding X?" (mini-bmad style). MVP uses hardcoded checklist; Growth adds venue-type-specific suggestions and potentially dynamic corpus learning.
 - **AI packing list** - Auto-generate "what to bring" with disclaimers (AI-generated), user can edit before saving/printing
 - ASPECT workflow automation (reduce their manual effort)
 - BindiWeb map embeds
@@ -494,4 +507,211 @@ Built from fundamental truths about the problem:
 - **M3 Testing:** Does filtered view reduce cognitive load vs unfiltered?
 - **Analytics:** Do users with filters engaged have better outcomes (lower bounce, more prints)?
 - **Qualitative:** "Did showing only your sensitivities help?" in user interviews
+
+## Web App Specific Requirements
+
+### Project-Type Overview
+
+**Architecture:** Single Page Application (SPA) with two distinct areas:
+- **Public:** `/` - Index page with BindiMaps info (simple, for completeness)
+- **Public:** `/venue/{slug}` - Static published guides (Firebase Hosting)
+- **Admin:** `/admin/*` - Protected admin portal (Firebase Auth + Functions)
+
+### Browser Support Matrix
+
+| Browser | Support Level |
+|---------|---------------|
+| Chrome, Firefox, Safari, Edge (last 2 versions) | Full |
+| iOS Safari, Chrome Android | Full |
+| IE11, legacy browsers | Not supported |
+
+**Policy:** Modern browsers only. No polyfills for legacy. Keep build simple.
+
+### Responsive Design
+
+| Breakpoint | Target |
+|------------|--------|
+| Mobile | 320px - 767px |
+| Tablet | 768px - 1023px |
+| Desktop | 1024px+ |
+
+**Approach:** Mobile-first CSS. Mobile = desktop in priority.
+
+### Performance Targets
+
+| Metric | Target |
+|--------|--------|
+| Lighthouse Performance | ≥80 |
+| Lighthouse Accessibility | ≥95 |
+| First Contentful Paint | <2s |
+| Time to Interactive | <3s |
+
+### SEO Strategy
+
+Basic only: meta tags, semantic HTML, Open Graph. Not a priority.
+
+### Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Language | **TypeScript** (frontend and backend) |
+| Framework | React + Vite |
+| **UI - Admin** | **Shadcn/ui** (Tailwind + Radix) - fast dashboard development |
+| **UI - Public** | **Radix primitives + custom Tailwind** - warm, calming aesthetic |
+| Styling | Tailwind CSS |
+| State Management | Zustand |
+| Routing | React Router |
+| Backend | Node.js + Firebase Functions |
+| Database | Firestore |
+| Auth | Firebase Auth |
+| Hosting | Firebase Hosting |
+
+### Design System Split
+
+| Area | Approach | Rationale |
+|------|----------|-----------|
+| Admin portal | Shadcn/ui defaults | Fast dev, forms/tables/modals ready |
+| Public guides | Custom Tailwind + Radix | Warm, calming, not clinical |
+| Shared | Radix accessibility primitives | Both accessible, consistent behavior |
+
+**Performance note:** Use lazy loading for UI components to minimize bundle size. Bundle size is an accessibility concern - don't make users with slow connections wait.
+
+### Code Location & Structure
+
+All application code lives in `/sensoryGuideApp/` folder (separate from planning docs):
+
+```
+sensoryGuideApp/
+├── src/                  # Frontend React app
+├── functions/            # Firebase Functions (backend)
+├── shared/               # Shared TypeScript types
+├── public/               # Static assets (icons, etc.)
+├── package.json
+├── firebase.json
+├── tsconfig.json
+└── vite.config.ts
+```
+
+### Implementation Considerations
+
+| Consideration | Decision |
+|---------------|----------|
+| Repo structure | Single repo, folder-based (not yarn workspaces) |
+| Testing | Vitest + React Testing Library + Playwright |
+| Linting | ESLint + Prettier |
+| CI/CD | GitHub Actions (yarn audit gate, Lighthouse gate) |
+
+## Functional Requirements
+
+### Venue Discovery & Access
+
+- **FR1:** User can access venue's Sensory Guide via direct URL
+- **FR2:** User can view venue overview (name, summary, category badges)
+- **FR3:** User can view venue address and contact information
+- **FR4:** User can view accuracy disclaimer with last-updated date
+
+### Guide Content Display
+
+- **FR5:** User can expand/collapse content sections by sensory category
+- **FR6:** User can view all sections expanded simultaneously
+- **FR7:** User can view images associated with specific sensory warnings
+- **FR8:** User can navigate to external venue resources (maps, websites)
+- **FR9:** User can locate key facilities (exits, bathrooms, quiet zones) quickly
+
+### Print & Export
+
+- **FR10:** User can print guide with clean, print-optimized layout
+- **FR11:** User can preview print view before printing
+- **FR12:** Printed output includes all content sections expanded
+
+### Content Management (Admin)
+
+- **FR13:** Admin can upload PDF audit document for a venue
+- **FR14:** System transforms PDF content to structured guide format via LLM
+- **FR15:** Admin can preview generated guide before publishing
+- **FR16:** Admin can flag individual sections for regeneration
+- **FR17:** Admin can provide guidance text when flagging sections
+- **FR18:** System regenerates flagged sections incorporating admin guidance
+- **FR19:** Admin can publish guide to make it publicly accessible
+- **FR20:** Admin can copy shareable URL after publishing
+- **FR21:** Admin can update existing guide by uploading new PDF
+- **FR22:** Admin can view version history of published guides
+- **FR23:** Admin can flag PDF quality issues for template improvement feedback
+
+### Content Suggestions (Admin)
+
+- **FR24:** System generates content improvement suggestions after LLM transform
+- **FR25:** Admin can view suggestions as bullet list via "Show Suggestions" button
+- **FR26:** Admin can re-upload updated PDF to incorporate suggestions
+
+### Organization Management
+
+- **FR27:** Admin can access only venues within their organization
+- **FR28:** Organization can manage multiple venues
+- **FR29:** Organization can have multiple admin users
+- **FR30:** System enforces organization data boundaries
+
+### Authentication
+
+- **FR31:** Admin can authenticate to access admin portal
+- **FR32:** System restricts admin features to authenticated users
+- **FR33:** Public guides are accessible without authentication
+
+### User Feedback & Analytics
+
+- **FR34:** User can submit thumbs up/down feedback on guide
+- **FR35:** System records page views per venue
+- **FR36:** System records section expansion events
+- **FR37:** System records print button usage
+
+### Accessibility Compliance
+
+- **FR38:** User can navigate entire guide using keyboard only
+- **FR39:** User can consume guide content via screen reader
+- **FR40:** System respects prefers-reduced-motion setting
+- **FR41:** System uses icons + text alongside color indicators
+
+### Index Page
+
+- **FR42:** User can view BindiMaps information on landing page
+
+## Non-Functional Requirements
+
+### Accessibility (Critical)
+
+| Requirement | Target | Verification |
+|-------------|--------|--------------|
+| WCAG Compliance | 2.2 AA | Manual audit |
+| Lighthouse Accessibility | ≥95 | CI/CD gate |
+| Screen Reader | VoiceOver + NVDA compatible | Manual testing |
+| Keyboard Navigation | Full functionality | Manual testing |
+| Motion | Respects prefers-reduced-motion | CSS audit |
+| Color | Never sole indicator | Design review |
+
+### Performance
+
+| Requirement | Target | Verification |
+|-------------|--------|--------------|
+| Lighthouse Performance | ≥80 | CI/CD gate |
+| First Contentful Paint | <2s | Lighthouse |
+| Time to Interactive | <3s | Lighthouse |
+| Bundle Size | Lazy load UI components | Build audit |
+
+### Security
+
+| Requirement | Target | Verification |
+|-------------|--------|--------------|
+| Dependencies | No high/critical vulns | `yarn audit` CI gate |
+| Input Sanitization | All user input sanitized | Code review |
+| LLM Prompt Injection | Hardened prompts, no user input in system prompts | Security review |
+| Auth | Firebase Auth best practices | Config review |
+| Data Isolation | Org boundaries enforced | Integration tests |
+
+### Integration
+
+| Requirement | Target | Verification |
+|-------------|--------|--------------|
+| LLM API | Gemini (via Firebase), graceful degradation on failure | Error handling tests |
+| Analytics | GA4 + Clarity | Integration test |
+| Firebase Services | Auth, Firestore, Hosting, Functions | E2E tests |
 
