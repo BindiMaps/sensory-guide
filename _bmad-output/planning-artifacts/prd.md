@@ -48,7 +48,7 @@ keyInsights:
 
 # Product Requirements Document - Sensory Guide
 
-**Author:** Keith
+**Author:** Keith Urquhart
 **Date:** 2026-01-27
 **Status:** Complete
 
@@ -662,6 +662,14 @@ sensoryGuideApp/
 - **FR29:** Organization can have multiple admin users
 - **FR30:** System enforces organization data boundaries
 
+### Super Admin (Global Management)
+
+- **FR43:** Super Admin can create and manage organizations
+- **FR44:** Super Admin can set and adjust LLM usage quotas per organization
+- **FR45:** Super Admin can view all venues across all organizations (support access)
+- **FR46:** Super Admin can view global analytics and system health
+- **FR47:** Super Admin can manage organization billing/status (active, suspended, etc.)
+
 ### Authentication
 
 - **FR31:** Admin can authenticate to access admin portal
@@ -670,10 +678,10 @@ sensoryGuideApp/
 
 ### User Feedback & Analytics
 
-- **FR34:** User can submit thumbs up/down feedback on guide
-- **FR35:** System records page views per venue
-- **FR36:** System records section expansion events
-- **FR37:** System records print button usage
+- **FR34:** User can submit thumbs up/down feedback on guide (captured via GA events, no Firebase writes)
+- **FR35:** System records page views per venue (via GA)
+- **FR36:** System records section expansion events (via GA)
+- **FR37:** System records print button usage (via GA)
 
 ### Accessibility Compliance
 
