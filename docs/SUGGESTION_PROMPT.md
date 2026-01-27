@@ -106,6 +106,7 @@ I will provide you with a draft social story or visual guide. Please analyse it 
 - [ ] Highlights "high sensory" areas/exhibits explicitly
 
 ### Practical Information
+- [ ] States venue name and address
 - [ ] States opening hours
 - [ ] Includes toilet/restroom locations
 - [ ] Identifies quiet spaces with specific locations
@@ -152,14 +153,15 @@ Please be specific and practical in your suggestions. Include example text where
 
 At minimum, an effective social story should include:
 
-1. First-person narrative ("I will visit...")
-2. Photo for each major section
-3. Toilet locations
-4. At least one quiet space identified
-5. How to identify staff
-6. Sound and light levels for main areas
-7. What to do if overwhelmed
-8. Positive closing statement
+1. Venue name and address
+2. First-person narrative ("I will visit...")
+3. Photo for each major section
+4. Toilet locations
+5. At least one quiet space identified
+6. How to identify staff
+7. Sound and light levels for main areas
+8. What to do if overwhelmed
+9. Positive closing statement
 
 ---
 

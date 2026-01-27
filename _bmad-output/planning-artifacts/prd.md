@@ -42,8 +42,8 @@ keyInsights:
   - "Multi-tenant is a solved problem - AI builds quickly"
   - "M2 was successful - validated action plans over maps"
   - "Most existing guides are PDFs - web must demonstrably improve on this"
-  - "Sensitivity filters enable personalization - show only what matters to each user"
-  - "Web generates better PDFs - personalized print based on user's selections"
+  - "Sensitivity filters enable personalisation - show only what matters to each user"
+  - "Web generates better PDFs - personalised print based on user's selections"
 ---
 
 # Product Requirements Document - Sensory Guide
@@ -54,9 +54,9 @@ keyInsights:
 
 ## Executive Summary
 
-**Sensory Guide** is a web application that transforms ASPECT's venue accessibility audit PDFs into interactive, accessible sensory guides for people with sensory sensitivities. The primary use case is pre-visit planning - helping users know what to expect before arriving at a venue, reducing anxiety and increasing independence.
+**Sensory Guide** is a web application that transforms venue accessibility audit PDFs from ASPECT and other organizations into interactive, accessible sensory guides for people with sensory sensitivities. The primary use case is pre-visit planning—helping users know what to expect before arriving at a venue, reducing anxiety, and increasing independence.
 
-**Key differentiator:** We generate better PDFs, not replace them. Web-first with first-class print output, personalized to each user's sensory triggers.
+**Key differentiator:** Unlike most sensory guides—which are typically just static web pages or PDFs—our solution is web-first, interactive, and can dynamically personalise content based on each user's individual sensory triggers.
 
 **Timeline:** MVP ready for ASPECT user testing by July 2026, M3 research report due September 2026.
 
@@ -78,7 +78,7 @@ keyInsights:
 | **Confidence increased** | User feels more prepared than without guide | Pre/post comparison: anxiety level self-report |
 | **Shareable** | User can share plan with support person/carer | Testing: share/print workflow completes |
 | **Printable** | User gets usable printed output | Testing: print matches expectations, is legible |
-| **Personalization mental model** | User mentally filters to *their* sensitivities | Interview: "I focused on [category] because that's my thing" |
+| **Personalisation mental model** | User mentally filters to *their* sensitivities | Interview: "I focused on [category] because that's my thing" |
 
 > **Growth Enhancement:** Sensitivity filters (see Innovation section) will automate this - users set profile once, guides auto-highlight relevant content.
 
@@ -98,7 +98,7 @@ keyInsights:
 |-------------------|-------------------|----------------|
 | **UI doesn't add overload** | Clean interface, no competing stimuli | Testing: no comments about busy/overwhelming UI |
 | **No unexpected motion** | Respects prefers-reduced-motion | Technical: CSS audit + testing |
-| **Color not sole indicator** | Icons + text accompany color coding | Technical: color blindness simulation passes |
+| **Colour not sole indicator** | Icons + text accompany colour coding | Technical: colour blindness simulation passes |
 | **Readable typography** | Font size, spacing, contrast all comfortable | Testing: no squinting, zooming complaints |
 
 #### Technical Accessibility Success
@@ -165,6 +165,7 @@ keyInsights:
 ### Technical Success
 
 See **Non-Functional Requirements** section for detailed targets. Key gates:
+
 - Lighthouse Accessibility ≥95 (CI/CD gate)
 - Lighthouse Performance ≥80 (CI/CD gate)
 - `yarn audit` clean (CI/CD gate)
@@ -173,6 +174,7 @@ See **Non-Functional Requirements** section for detailed targets. Key gates:
 ### Measurable Outcomes
 
 **Quantitative (Analytics):**
+
 - Page views per venue
 - Section expansion rate (progressive disclosure usage)
 - Print button clicks
@@ -180,6 +182,7 @@ See **Non-Functional Requirements** section for detailed targets. Key gates:
 - Thumbs up/down feedback ratio
 
 **Qualitative (Testing):**
+
 - User interview transcripts
 - Anecdotal "better than PDF" comparisons
 - ASPECT tester observations
@@ -189,6 +192,7 @@ See **Non-Functional Requirements** section for detailed targets. Key gates:
 ### MVP - Minimum Viable Product
 
 **Must ship for M3:**
+
 - Multi-venue support (any PDF → any venue)
 - Multi-tenant admin (orgs manage their own venues)
 - Simple role model (admin creates/edits/publishes within their org)
@@ -206,10 +210,12 @@ See **Non-Functional Requirements** section for detailed targets. Key gates:
 **M3 Testing Focus:** Adelaide Railway Station (but software isn't artificially limited)
 
 **Architecture Constraints:**
+
 - **Pre-compute at publish time** - No runtime LLM calls. All transformation happens during admin publish flow.
-- **Static hosting for user-facing** - Published guides served via Firebase Hosting (static). Backend only for admin functions. Minimizes cost and maximizes performance.
+- **Static hosting for user-facing** - Published guides served via Firebase Hosting (static). Backend only for admin functions. Minimises cost and maximizes performance.
 
 **Milestone Timeline (working backwards from Sept 2026):**
+
 | Milestone | Target | Notes |
 |-----------|--------|-------|
 | M3 Report Due | Sept 2026 | Hard deadline |
@@ -222,13 +228,13 @@ See **Non-Functional Requirements** section for detailed targets. Key gates:
 
 ### Growth Features (Post-MVP)
 
-- **Sensitivity filters** - User selects their triggers (sound, crowds, light, etc.), guide highlights/filters to show only relevant sections. Stored in local storage (no account needed). Precompute per-category summaries at publish time for instant filtering.
-- **Smart PDF generation** - Print view respects filter selections, generating personalized PDF with only the user's relevant categories
+- **Sensitivity filters** - User selects their triggers (sound, crowds, light, etc.), guide highlights/filters to show only relevant sections. Stored in local storage (no account needed). Precompute per-category summaries at publish time for instant filtering. Defaults to showing everything.
+- **Smart PDF generation** - Print view respects filter selections, generating personalised PDF with only the user's relevant categories
 - **Prep checklist generator** - Auto-generate "what to bring" based on venue's sensory profile (e.g., "Sound issues → Consider noise-canceling headphones")
-- **Wallet card print** - Tiny printable (wallet/phone-sized) with just essentials: exits, bathrooms, quiet spots, emergency number
-- **Text-only mode** - Accessibility option: no images, structured text only. Faster, cleaner, screen-reader optimized.
+- **Wallet card print** - Tiny printable (wallet/phone-sized) with just essentials: exits, bathrooms, quiet spots, emergency number. Content based on user filter selections.
+- **Text-only mode** - Accessibility option: no images, structured text only. Faster, cleaner, screen-reader optimised.
 - **"If overwhelmed" escape plan** - Each venue has a clear "if you need to leave" section with nearest exit, quiet zone, and help contact
-- **Universal sensory iconography** - Standardized icon set across all venues (like airport symbols) for cross-venue consistency
+- **Universal sensory iconography** - Standardised icon set across all venues (like airport symbols) for cross-venue consistency
 - **Admin prompts post-LLM** - After LLM transform, prompt admin with suggestions: "Have you considered adding X?" (mini-bmad style). MVP uses hardcoded checklist; Growth adds venue-type-specific suggestions and potentially dynamic corpus learning.
 - **AI packing list** - Auto-generate "what to bring" with disclaimers (AI-generated), user can edit before saving/printing
 - ASPECT workflow automation (reduce their manual effort)
@@ -241,7 +247,6 @@ See **Non-Functional Requirements** section for detailed targets. Key gates:
 
 ### Vision (Future)
 
-- Template library for common venue types
 - Staff communication cards ("I'm overwhelmed, need quiet space")
 - Panic mode (quick escape + call help)
 - API for venue websites to embed
@@ -252,7 +257,7 @@ See **Non-Functional Requirements** section for detailed targets. Key gates:
 
 ### Design Principles
 
-- **UI is always calming** - No "calm mode" toggle needed; the default IS calm. Muted colors, generous whitespace, no competing elements.
+- **UI is always calming** - No "calm mode" toggle needed; the default IS calm. Muted colours, generous whitespace, no competing elements.
 - **UI so simple no docs needed** - Strive for self-explanatory interfaces. If we need documentation to explain how to use it, the UI has failed.
 - **Mobile = desktop** - Mobile is equal priority, not secondary. The fundamental design includes both from day one.
 
@@ -306,6 +311,7 @@ Landing
 | Info seems outdated | Show "last updated" date |
 
 **What They Need to See:**
+
 - Venue name + address
 - Overview summary (1-2 sentences)
 - Category badges (quick scan of what's flagged)
@@ -339,6 +345,7 @@ Already at venue, need quick info
 | Info doesn't match reality | Trust broken - need accuracy + update process |
 
 **What They Need:**
+
 - Fast load
 - Clear headings (scannable)
 - Facility locations prominent (exits, bathrooms)
@@ -350,10 +357,10 @@ User decides to print
     ↓
 [Click print button]
     ↓
-[Print-optimized view renders]
+[Print-optimised view renders]
     ├── Clean layout, no nav chrome
     ├── All sections expanded
-    ├── Images included but optimized
+    ├── Images included but optimised
     └── Readable fonts, good contrast
     ↓
 [Browser print dialog]
@@ -417,6 +424,7 @@ Decision Point: Content OK?
 **Photo Requirement:** ASPECT PDFs should include photos of specific trigger areas (e.g., "the loud PA speaker area"). Photo-based warnings are more concrete than icons alone. Ensure ASPECT audit spec includes photo requirements.
 
 **What Admin Needs:**
+
 - Clear upload flow
 - Preview that matches public view
 - Section-by-section review
@@ -449,6 +457,7 @@ Decision Point: Minor update or full re-upload?
 ```
 
 **What Admin Needs:**
+
 - Version history visible
 - Clear "update" vs "replace" options
 - Previous versions accessible (rollback if needed)
@@ -463,31 +472,32 @@ Decision Point: Minor update or full re-upload?
 | Admin - Publish | PDF upload, LLM integration, preview, guided correction, publish flow |
 | Admin - Update | Version history, section regeneration, rollback |
 
-**Future Enhancement (Growth):** Sensitivity filters will transform Journey 1A - users set their profile once, then all guides auto-highlight relevant sections and print personalized PDFs.
+**Future Enhancement (Growth):** Sensitivity filters will transform Journey 1A - users set their profile once, then all guides auto-highlight relevant sections and print personalised PDFs.
 
 ## Innovation & Differentiation
 
 ### Core Innovation: Web as PDF Generator, Not PDF Replacement
 
-The key insight: we're not replacing PDFs, we're **generating better PDFs**. Most sensory guides are static PDFs. Our web approach doesn't compete with PDF - it produces superior, personalized PDFs while adding web-only benefits.
+The key insight: we're not replacing PDFs, we're **generating better PDFs**. Most sensory guides are static PDFs. Our web approach doesn't compete with PDF - it produces superior, personalised PDFs while adding web-only benefits.
 
 | Aspect | Static PDF | Our Approach |
 |--------|-----------|--------------|
-| Personalization | One-size-fits-all | Filter by user's sensitivities |
+| Personalisation | One-size-fits-all | Filter by user's sensitivities |
 | Updates | Redownload entire doc | Live updates, versioned |
 | Print | Generic printout | Personalized PDF with only relevant sections |
 | Analytics | None | Track what content helps users |
-| Accessibility | Fixed | Dynamic text size, screen reader optimized |
+| Accessibility | Fixed | Dynamic text size, screen reader optimised |
 
-### Sensitivity Filters: Personalization Without Accounts
+### Sensitivity Filters: Personalisation Without Accounts
 
 **Innovation:** User sets their sensitivity profile (sound, crowds, light, etc.) once in local storage. Every guide they visit automatically highlights relevant sections. No login required.
 
 **Technical approach (Growth phase):**
+
 - Precompute per-category summaries at publish time
 - Store user preferences in localStorage
 - Filter/highlight client-side for instant response
-- Print generates personalized PDF based on active filters
+- Print generates personalised PDF based on active filters
 
 ### First Principles Foundation
 
@@ -496,7 +506,7 @@ Built from fundamental truths about the problem:
 | Truth | Design Implication |
 |-------|-------------------|
 | Predictability reduces anxiety | Primary value is "know what to expect" |
-| Different people, different triggers | Personalization > one-size-fits-all |
+| Different people, different triggers | Personalisation > one-size-fits-all |
 | Preparation > Navigation | "Before" mode is primary, not "during" |
 | Trust is everything | Accuracy is existential - admin review required |
 | Cognitive load is the enemy | Progressive disclosure, not information dump |
@@ -513,6 +523,7 @@ Built from fundamental truths about the problem:
 ### Project-Type Overview
 
 **Architecture:** Single Page Application (SPA) with two distinct areas:
+
 - **Public:** `/` - Index page with BindiMaps info (simple, for completeness)
 - **Public:** `/venue/{slug}` - Static published guides (Firebase Hosting)
 - **Admin:** `/admin/*` - Protected admin portal (Firebase Auth + Functions)
@@ -572,9 +583,9 @@ Basic only: meta tags, semantic HTML, Open Graph. Not a priority.
 |------|----------|-----------|
 | Admin portal | Shadcn/ui defaults | Fast dev, forms/tables/modals ready |
 | Public guides | Custom Tailwind + Radix | Warm, calming, not clinical |
-| Shared | Radix accessibility primitives | Both accessible, consistent behavior |
+| Shared | Radix accessibility primitives | Both accessible, consistent behaviour |
 
-**Performance note:** Use lazy loading for UI components to minimize bundle size. Bundle size is an accessibility concern - don't make users with slow connections wait.
+**Performance note:** Use lazy loading for UI components to minimise bundle size. Bundle size is an accessibility concern - don't make users with slow connections wait.
 
 ### Code Location & Structure
 
@@ -620,7 +631,7 @@ sensoryGuideApp/
 
 ### Print & Export
 
-- **FR10:** User can print guide with clean, print-optimized layout
+- **FR10:** User can print guide with clean, print-optimised layout
 - **FR11:** User can preview print view before printing
 - **FR12:** Printed output includes all content sections expanded
 
@@ -669,7 +680,7 @@ sensoryGuideApp/
 - **FR38:** User can navigate entire guide using keyboard only
 - **FR39:** User can consume guide content via screen reader
 - **FR40:** System respects prefers-reduced-motion setting
-- **FR41:** System uses icons + text alongside color indicators
+- **FR41:** System uses icons + text alongside colour indicators
 
 ### Index Page
 
@@ -686,7 +697,7 @@ sensoryGuideApp/
 | Screen Reader | VoiceOver + NVDA compatible | Manual testing |
 | Keyboard Navigation | Full functionality | Manual testing |
 | Motion | Respects prefers-reduced-motion | CSS audit |
-| Color | Never sole indicator | Design review |
+| Colour | Never sole indicator | Design review |
 
 ### Performance
 
@@ -714,4 +725,3 @@ sensoryGuideApp/
 | LLM API | Gemini (via Firebase), graceful degradation on failure | Error handling tests |
 | Analytics | GA4 + Clarity | Integration test |
 | Firebase Services | Auth, Firestore, Hosting, Functions | E2E tests |
-
