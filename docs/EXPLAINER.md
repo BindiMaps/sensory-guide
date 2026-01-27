@@ -194,12 +194,26 @@ Icons located at: [../assets/icons/](../assets/icons/)
 
 ## Existing Examples
 
+> **Note:** Most existing sensory guides are PDFs. This is the status quo for good reasons (easy to print, easy to produce, works offline). Our web-based approach must demonstrably improve on PDFs, not just replicate them. Key differentiators: progressive disclosure, live updates, mobile "during" features, embedded maps, analytics, and accessibility features (dynamic text size, screen reader optimization).
+
+**Museums & Venues:**
+
 - [Australian Museum: Accessibility and Inclusion](https://australian.museum/visit/accessibility-and-inclusion/)
 - [Australian Museum: Visual Story](https://australian.museum/visit/access/visual-story/)
-- [Hobart Airport: Social Stories](https://hobartairport.com.au/travellers/airport-guide/accessibility/social-stories/)
 - [Scienceworks (Museums Victoria): The Autism Friendly Museum](https://museumsvictoria.com.au/scienceworks/plan-your-visit/accessibility/the-autism-friendly-museum/)
 - [Questacon: Sensory Sensitivity](https://www.questacon.edu.au/visiting/accessibility-and-inclusion/sensory-sensitivity)
+
+**Transport:**
+
+- [Hobart Airport: Social Stories](https://hobartairport.com.au/travellers/airport-guide/accessibility/social-stories/)
+
+**Shopping:**
+
 - [Stockland Burleigh Heads: Sensory Shopping Guide](https://www.stockland.com.au/shopping-centres/centres/stockland-burleigh-heads/offers-and-events/news/sensory-shopping-guide)
+
+**Local Government (PDF examples):**
+
+- [Mitchell Shire Council: Sensory Resource Guides](https://www.mitchellshire.vic.gov.au/community/diversity-inclusion-and-support/sensory-resource-guides) - PDF guides for libraries and community centres
 
 **Relaxed Performance Guides:**
 
