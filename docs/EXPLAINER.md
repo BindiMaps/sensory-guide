@@ -74,15 +74,19 @@ We built an MVP which was a digital sensory map on top of the existing BindiMaps
 - Overlays+icons on the map to show areas affected by things people could be sensitive to like smalls, noise, bright lights etc
 - Simple action plan with simple titles and option to view more detailed information
 
-We hired a team called ASPECT to travel to adelaide railway station to audit it for sensory sensitivity issues.  They produced a report with a floor plan marked up with danger zones of various categories and a very thorough text walkthrough of what to expect from the point of view of a person with sensory sensitivities
+We hired a team from ASPECT to travel to Adelaide railway station to audit it for sensory sensitivity issues.  They produced a report with a floor plan marked up with danger zones of various categories and a very thorough text walkthrough of what to expect from the point of view of a person with sensory sensitivities
 
-It became clear that the map needed to be very busy in order to show all the hazards.  W would have to use a complicated UI to simplify this to the public.
+_Aspect (Autism Spectrum Australia) is a child safe organisation committed to protecting the rights and interests of children and vulnerable people by providing them with a safe environment. This commitment extends to ensuring a culturally safe and inclusive environment that recognises and respects an individual’s heritage, relationships and cultural practices._
+
+It became clear that the map needed to be very busy in order to show all the hazards.  We would have to use a complicated UI to simplify this to the public.
 
 What also became clear was that this company excelled in creating text action plans and the quality of this side of things was vastly superior to the map the sent.
 
 We tested the MVP with users with lived experience and the maps overlays tested as expected.  Users found them confusing, messy and too much information.  It became clear that this wasn't the way forward.
 
 Users seemed to understand the action plan MVP better even though it was essentially color coded text and icons.
+
+In my opinion, the original plan was flawed in terms of helping people in a pragmatic way.  I assume the original decision was influenced by the fact that BindiMaps primarily produced maps, so the assumption was that maps were the answer.  As more research was done it because clear that this assumption was wrong.
 
 [Milestone 2 report is here](./Static Sensory Mapping Report - Milestone 2.pdf)
 
@@ -93,7 +97,7 @@ For further reference, the documentation and data from our previous MVP can be f
 
 ## Phase 3
 
-***we should update this part of the document as the project progresses***
+_**we should update this part of the document as the project progresses**_
 
 This is what we are building now. This plan could easily and should change.
 
@@ -251,12 +255,14 @@ Simple assumption: Mobile = likely "during", Desktop = likely "before". No fancy
 ## Key Decisions (from brainstorm session 2025-01-25)
 
 ### What we're NOT building
+
 - ❌ Sensory maps as primary focus (tested poorly in Phase 2)
 - ❌ Complex wearables/AI prediction systems
 - ❌ Real-time location detection
 - ❌ Runtime data processing (all preprocessing at publish time)
 
 ### What we ARE building
+
 - ✅ Action plans as the core solution
 - ✅ Maps as optional embeds (if content provider wants them)
 - ✅ Simple web app (not over-engineered)
@@ -267,6 +273,7 @@ Simple assumption: Mobile = likely "during", Desktop = likely "before". No fancy
 - ✅ Facility link extraction preprocessed at publish time
 
 ### Architecture decisions
+
 - Preprocessing at publish time, not runtime
 - Multi-provider map support via abstract deep-link format
 - Progressive disclosure UI pattern
@@ -300,6 +307,7 @@ interface MapLink {
 Backend builds full URL per provider at publish time. Frontend just renders `<a href={url}>`.
 
 ### Open questions (to resolve later)
+
 - Display model schema - extends previous MVP `data.json` but needs more fields
 - LLM transformation prompts - how to structure for consistent output
 - How to match facility names from map data to narrative sections (start simple)
