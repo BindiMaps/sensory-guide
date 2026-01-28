@@ -1,0 +1,2301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sensory Guide - Design Directions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: #FDFBF7;
+      --foreground: #2D2A26;
+      --muted: #F5F2ED;
+      --muted-foreground: #6B6560;
+      --border: #E8E4DD;
+      --primary: #2A7D7D;
+      --primary-foreground: #FFFFFF;
+
+      /* Category colours */
+      --sound: #CDE7FF;
+      --light: #FFF5B1;
+      --crowds: #FFD6A5;
+      --smells: #D9EACB;
+      --sensory: #F3D6FF;
+      --textures: #FFE3D9;
+      --alert: #FF6B6B;
+      --hazard: #E63946;
+
+      --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius: 8px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: #1a1a1a;
+      color: var(--foreground);
+      line-height: 1.6;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #2D2A26;
+      color: white;
+      padding: 1rem 2rem;
+      z-index: 1000;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .nav h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-right: auto;
+    }
+
+    .nav button {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* Mockup container */
+    .mockup-container {
+      padding-top: 80px;
+      min-height: 100vh;
+    }
+
+    .mockup {
+      display: none !important;
+      min-height: calc(100vh - 80px);
+    }
+
+    .mockup.active {
+      display: block !important;
+    }
+
+    /* Override for flex/grid layouts - must come after .active rule */
+    .d4.active { display: flex !important; }
+    .d11.active { display: grid !important; }
+
+    /* Shared mockup styles */
+    .mockup-label {
+      background: var(--primary);
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+
+    /* Debug: make each direction label a different color */
+    .d5 .mockup-label { background: #e74c3c; } /* red */
+    .d6 .mockup-label { background: #9b59b6; } /* purple */
+    .d7 .mockup-label { background: #3498db; } /* blue */
+    .d8 .mockup-label { background: #e67e22; } /* orange */
+    .d9 .mockup-label { background: #1abc9c; } /* teal */
+    .d10 .mockup-label { background: #e91e63; } /* pink */
+    .d11 .mockup-label { background: #795548; } /* brown */
+
+    /* Category badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .badge-sound { background: var(--sound); }
+    .badge-light { background: var(--light); }
+    .badge-crowds { background: var(--crowds); }
+    .badge-smells { background: var(--smells); }
+    .badge-sensory { background: var(--sensory); }
+
+    /* Chevron */
+    .chevron {
+      transition: transform 0.2s;
+    }
+
+    .expanded .chevron {
+      transform: rotate(90deg);
+    }
+
+    /* ========================================
+       DIRECTION 1: Single Column Minimal
+       ======================================== */
+    .d1 {
+      background: var(--background);
+    }
+
+    .d1 .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .d1 .venue-header {
+      margin-bottom: 2rem;
+    }
+
+    .d1 .venue-name {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .d1 .venue-meta {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    }
+
+    .d1 .section {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .d1 .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 0;
+      cursor: pointer;
+    }
+
+    .d1 .section-header:hover {
+      background: var(--muted);
+      margin: 0 -1rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .d1 .section-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .d1 .badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .d1 .section-content {
+      padding: 0 0 1.5rem 1.5rem;
+      display: none;
+    }
+
+    .d1 .section.expanded .section-content {
+      display: block;
+    }
+
+    .d1 .category {
+      margin-bottom: 1rem;
+    }
+
+    .d1 .category-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .d1 .category-text {
+      color: var(--muted-foreground);
+      font-size: 0.9375rem;
+    }
+
+    .d1 .actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .d1 .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      font-size: 0.9375rem;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-sans);
+    }
+
+    .d1 .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .d1 .btn-secondary {
+      background: var(--muted);
+      color: var(--foreground);
+    }
+
+    /* ========================================
+       DIRECTION 2: Card-Based
+       ======================================== */
+    .d2 {
+      background: var(--muted);
+    }
+
+    .d2 .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .d2 .venue-card {
+      background: white;
+      border-radius: calc(var(--radius) * 2);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .d2 .venue-name {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .d2 .venue-meta {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    }
+
+    .d2 .section-card {
+      background: white;
+      border-radius: calc(var(--radius) * 1.5);
+      margin-bottom: 1rem;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .d2 .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .d2 .section-header:hover {
+      background: var(--muted);
+    }
+
+    .d2 .section-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .d2 .badges {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .d2 .section-content {
+      padding: 0 1.5rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+
+    .d2 .section-card.expanded .section-content {
+      display: block;
+      padding-top: 1.5rem;
+    }
+
+    .d2 .category {
+      margin-bottom: 1rem;
+    }
+
+    .d2 .category-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .d2 .category-text {
+      color: var(--muted-foreground);
+    }
+
+    /* ========================================
+       DIRECTION 3: Full-Width Bold
+       ======================================== */
+    .d3 {
+      background: var(--background);
+    }
+
+    .d3 .venue-hero {
+      background: var(--primary);
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .d3 .venue-name {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .d3 .venue-meta {
+      opacity: 0.8;
+    }
+
+    .d3 .sections {
+      max-width: 100%;
+    }
+
+    .d3 .section {
+      border-bottom: 2px solid var(--border);
+    }
+
+    .d3 .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.5rem 2rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .d3 .section-header:hover {
+      background: var(--muted);
+    }
+
+    .d3 .section-number {
+      width: 40px;
+      height: 40px;
+      background: var(--muted);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .d3 .section.expanded .section-number {
+      background: var(--primary);
+      color: white;
+    }
+
+    .d3 .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .d3 .badges {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .d3 .section-content {
+      padding: 0 2rem 2rem 5.5rem;
+      display: none;
+    }
+
+    .d3 .section.expanded .section-content {
+      display: block;
+    }
+
+    .d3 .category {
+      margin-bottom: 1.25rem;
+      padding: 1rem;
+      background: var(--muted);
+      border-radius: var(--radius);
+    }
+
+    .d3 .category-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .d3 .category-text {
+      color: var(--muted-foreground);
+    }
+
+    /* ========================================
+       DIRECTION 4: Sidebar Navigation
+       ======================================== */
+    .d4 {
+      background: var(--background);
+      display: flex;
+    }
+
+    .d4 .sidebar {
+      width: 280px;
+      background: white;
+      border-right: 1px solid var(--border);
+      padding: 2rem 0;
+      position: sticky;
+      top: 80px;
+      height: calc(100vh - 80px);
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .d4 .sidebar-header {
+      padding: 0 1.5rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .d4 .venue-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .d4 .venue-meta {
+      color: var(--muted-foreground);
+      font-size: 0.8125rem;
+    }
+
+    .d4 .nav-section {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+    }
+
+    .d4 .nav-section:hover {
+      background: var(--muted);
+    }
+
+    .d4 .nav-section.active {
+      background: var(--muted);
+      border-left-color: var(--primary);
+    }
+
+    .d4 .nav-title {
+      font-weight: 500;
+      font-size: 0.9375rem;
+    }
+
+    .d4 .nav-badges {
+      display: flex;
+      gap: 0.25rem;
+      margin-left: auto;
+    }
+
+    .d4 .nav-badges .badge {
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border-radius: 50%;
+    }
+
+    .d4 .main-content {
+      flex: 1;
+      padding: 2rem 3rem;
+      max-width: 720px;
+    }
+
+    .d4 .content-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .d4 .content-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .d4 .badges {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .d4 .category {
+      margin-bottom: 1.5rem;
+    }
+
+    .d4 .category-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .d4 .category-text {
+      color: var(--muted-foreground);
+      line-height: 1.7;
+    }
+
+    /* ========================================
+       DIRECTION 5: Compact/Dense
+       ======================================== */
+    .d5 {
+      background: var(--background);
+    }
+
+    .d5 .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    .d5 .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .d5 .venue-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .d5 .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .d5 .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.8125rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      font-family: var(--font-sans);
+    }
+
+    .d5 .sections-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .d5 .section-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .d5 .section-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(42, 125, 125, 0.1);
+    }
+
+    .d5 .section-title {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .d5 .badges {
+      display: flex;
+      gap: 0.375rem;
+      flex-wrap: wrap;
+    }
+
+    .d5 .badge {
+      font-size: 0.6875rem;
+      padding: 0.125rem 0.375rem;
+    }
+
+    .d5 .section-preview {
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ========================================
+       DIRECTION 6: Extra Spacious/Zen
+       ======================================== */
+    .d6 {
+      background: var(--background);
+    }
+
+    .d6 .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 4rem 2rem 6rem;
+    }
+
+    .d6 .venue-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .d6 .venue-name {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .d6 .venue-meta {
+      color: var(--muted-foreground);
+    }
+
+    .d6 .section {
+      margin-bottom: 1rem;
+    }
+
+    .d6 .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.75rem 0;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .d6 .section-title {
+      font-size: 1.375rem;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .d6 .badges {
+      display: flex;
+      gap: 0.625rem;
+    }
+
+    .d6 .section-content {
+      padding: 2.5rem 0;
+      display: none;
+    }
+
+    .d6 .section.expanded .section-content {
+      display: block;
+    }
+
+    .d6 .category {
+      margin-bottom: 2.5rem;
+    }
+
+    .d6 .category-title {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .d6 .category-text {
+      color: var(--muted-foreground);
+      font-size: 1.0625rem;
+      line-height: 1.8;
+    }
+
+    .d6 .cta {
+      text-align: center;
+      margin-top: 4rem;
+      padding-top: 3rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .d6 .btn-zen {
+      background: var(--primary);
+      color: white;
+      padding: 1rem 2.5rem;
+      border: none;
+      border-radius: 9999px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--font-sans);
+    }
+
+    /* ========================================
+       DIRECTION 7: Timeline/Journey
+       ======================================== */
+    .d7 {
+      background: var(--background);
+    }
+
+    .d7 .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .d7 .venue-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .d7 .venue-name {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .d7 .venue-meta {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    }
+
+    .d7 .journey-intro {
+      background: var(--muted);
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+      font-size: 0.9375rem;
+      color: var(--muted-foreground);
+    }
+
+    .d7 .timeline {
+      position: relative;
+      padding-left: 2.5rem;
+    }
+
+    .d7 .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .d7 .timeline-item {
+      position: relative;
+      margin-bottom: 0;
+      padding-bottom: 1.5rem;
+    }
+
+    .d7 .timeline-dot {
+      position: absolute;
+      left: -2.5rem;
+      top: 0.25rem;
+      width: 18px;
+      height: 18px;
+      background: var(--background);
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    .d7 .timeline-item.expanded .timeline-dot {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .d7 .timeline-header {
+      cursor: pointer;
+      padding: 0.5rem 0;
+    }
+
+    .d7 .timeline-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .d7 .badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .d7 .timeline-content {
+      display: none;
+      padding: 1rem 0;
+      margin-left: 0;
+    }
+
+    .d7 .timeline-item.expanded .timeline-content {
+      display: block;
+    }
+
+    .d7 .category {
+      margin-bottom: 1rem;
+      padding: 0.75rem 1rem;
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .d7 .category-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .d7 .category-text {
+      color: var(--muted-foreground);
+      font-size: 0.9375rem;
+    }
+
+    /* ========================================
+       DIRECTION 8: Tabs
+       ======================================== */
+    .d8 {
+      background: var(--background);
+    }
+
+    .d8 .header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem 0;
+    }
+
+    .d8 .venue-name {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .d8 .tabs {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .d8 .tab {
+      padding: 0.875rem 1.25rem;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .d8 .tab:hover {
+      color: var(--foreground);
+    }
+
+    .d8 .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .d8 .tab-badges {
+      display: inline-flex;
+      gap: 0.25rem;
+      margin-left: 0.5rem;
+    }
+
+    .d8 .tab-badges .badge {
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border-radius: 50%;
+    }
+
+    .d8 .content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .d8 .tab-panel {
+      display: none;
+    }
+
+    .d8 .tab-panel.active {
+      display: block;
+    }
+
+    .d8 .panel-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .d8 .panel-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .d8 .badges {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .d8 .category {
+      margin-bottom: 1.5rem;
+    }
+
+    .d8 .category-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .d8 .category-text {
+      color: var(--muted-foreground);
+      line-height: 1.7;
+    }
+
+    /* ========================================
+       DIRECTION 9: Magazine/Editorial
+       ======================================== */
+    .d9 {
+      background: var(--background);
+    }
+
+    .d9 .hero {
+      padding: 4rem 2rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .d9 .venue-label {
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .d9 .venue-name {
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .d9 .venue-intro {
+      max-width: 500px;
+      margin: 0 auto;
+      color: var(--muted-foreground);
+      font-size: 1.125rem;
+      line-height: 1.7;
+    }
+
+    .d9 .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .d9 .section {
+      margin-bottom: 3rem;
+    }
+
+    .d9 .section-header {
+      margin-bottom: 1.5rem;
+      cursor: pointer;
+    }
+
+    .d9 .section-number {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted-foreground);
+      margin-bottom: 0.5rem;
+    }
+
+    .d9 .section-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .d9 .badges {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .d9 .section-content {
+      display: none;
+    }
+
+    .d9 .section.expanded .section-content {
+      display: block;
+    }
+
+    .d9 .pull-quote {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--primary);
+      border-left: 3px solid var(--primary);
+      padding-left: 1.5rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+    }
+
+    .d9 .category {
+      margin-bottom: 1.5rem;
+    }
+
+    .d9 .category-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .d9 .category-text {
+      color: var(--muted-foreground);
+      font-size: 1.0625rem;
+      line-height: 1.8;
+    }
+
+    .d9 .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 2rem 0;
+    }
+
+    /* ========================================
+       DIRECTION 10: Mobile Stack
+       ======================================== */
+    .d10 {
+      background: var(--muted);
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: calc(100vh - 80px);
+    }
+
+    .d10 .mobile-header {
+      background: var(--primary);
+      color: white;
+      padding: 1.25rem 1rem;
+      position: sticky;
+      top: 80px;
+      z-index: 10;
+    }
+
+    .d10 .venue-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .d10 .quick-actions {
+      display: flex;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: white;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .d10 .quick-btn {
+      flex: 1;
+      padding: 0.75rem;
+      background: var(--muted);
+      border: none;
+      border-radius: var(--radius);
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .d10 .quick-btn-icon {
+      font-size: 1.25rem;
+    }
+
+    .d10 .sections {
+      padding: 0.75rem;
+    }
+
+    .d10 .section-card {
+      background: white;
+      border-radius: var(--radius);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+
+    .d10 .section-header {
+      padding: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .d10 .section-title {
+      font-weight: 600;
+      font-size: 1rem;
+      flex: 1;
+    }
+
+    .d10 .badges {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .d10 .badge {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    .d10 .section-content {
+      display: none;
+      padding: 0 1rem 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .d10 .section-card.expanded .section-content {
+      display: block;
+      padding-top: 1rem;
+    }
+
+    .d10 .category {
+      margin-bottom: 0.75rem;
+    }
+
+    .d10 .category-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .d10 .category-text {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    }
+
+    /* ========================================
+       DIRECTION 11: Split View
+       ======================================== */
+    .d11 {
+      background: var(--background);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: calc(100vh - 80px);
+    }
+
+    .d11 .left-panel {
+      background: white;
+      padding: 2rem;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      max-height: calc(100vh - 80px);
+      position: sticky;
+      top: 80px;
+    }
+
+    .d11 .venue-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .d11 .venue-meta {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      margin-bottom: 2rem;
+    }
+
+    .d11 .overview-title {
+      font-weight: 600;
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted-foreground);
+      margin-bottom: 1rem;
+    }
+
+    .d11 .overview-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.875rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+      transition: background 0.15s;
+    }
+
+    .d11 .overview-item:hover,
+    .d11 .overview-item.active {
+      background: var(--muted);
+    }
+
+    .d11 .overview-item.active {
+      border-left: 3px solid var(--primary);
+      margin-left: -3px;
+    }
+
+    .d11 .overview-name {
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .d11 .overview-badges {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .d11 .overview-badges .badge {
+      width: 10px;
+      height: 10px;
+      padding: 0;
+      border-radius: 50%;
+    }
+
+    .d11 .right-panel {
+      padding: 2rem 3rem;
+      overflow-y: auto;
+    }
+
+    .d11 .detail-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .d11 .detail-title {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .d11 .badges {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .d11 .category {
+      margin-bottom: 2rem;
+    }
+
+    .d11 .category-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .d11 .category-text {
+      color: var(--muted-foreground);
+      line-height: 1.7;
+      font-size: 1.0625rem;
+    }
+
+    .d11 .nav-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .d11 .nav-btn {
+      padding: 0.75rem 1.5rem;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: var(--radius);
+      font-family: var(--font-sans);
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .d11 .nav-btn:hover {
+      background: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <h1>Sensory Guide - Design Directions</h1>
+    <button class="active" onclick="showMockup(1)">1. Single Column</button>
+    <button onclick="showMockup(2)">2. Card-Based</button>
+    <button onclick="showMockup(3)">3. Full-Width Bold</button>
+    <button onclick="showMockup(4)">4. Sidebar Nav</button>
+    <button onclick="showMockup(5)">5. Compact Grid</button>
+    <button onclick="showMockup(6)">6. Extra Zen</button>
+    <button onclick="showMockup(7)">7. Timeline</button>
+    <button onclick="showMockup(8)">8. Tabs</button>
+    <button onclick="showMockup(9)">9. Magazine</button>
+    <button onclick="showMockup(10)">10. Mobile Stack</button>
+    <button onclick="showMockup(11)">11. Split View</button>
+  </nav>
+
+  <div class="mockup-container">
+
+    <!-- DIRECTION 1: Single Column Minimal -->
+    <div id="mockup-1" class="mockup d1 active">
+      <div class="mockup-label">Direction 1: Single Column Minimal - Clean, focused, Notion-inspired</div>
+      <div class="container">
+        <header class="venue-header">
+          <h1 class="venue-name">Adelaide Railway Station</h1>
+          <p class="venue-meta">Last updated 15 January 2026</p>
+        </header>
+
+        <div class="sections">
+          <div class="section expanded" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <span class="chevron">&#9658;</span>
+              <h2 class="section-title">Main Concourse</h2>
+              <div class="badges">
+                <span class="badge badge-sound">Sound</span>
+                <span class="badge badge-light">Light</span>
+                <span class="badge badge-crowds">Crowds</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <div class="category-title">
+                  <span class="badge badge-sound">Sound</span>
+                </div>
+                <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings. Consider noise-cancelling headphones during peak hours.</p>
+              </div>
+              <div class="category">
+                <div class="category-title">
+                  <span class="badge badge-light">Bright Light</span>
+                </div>
+                <p class="category-text">Large skylights create bright conditions midday. Fluorescent backup lighting throughout. Sunglasses may help on sunny days.</p>
+              </div>
+              <div class="category">
+                <div class="category-title">
+                  <span class="badge badge-crowds">Crowds</span>
+                </div>
+                <p class="category-text">Busiest 7:30-9:00am and 4:30-6:00pm weekdays. Quieter periods mid-morning and early afternoon.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <span class="chevron">&#9658;</span>
+              <h2 class="section-title">Platform Access</h2>
+              <div class="badges">
+                <span class="badge badge-sound">Sound</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <div class="category-title">
+                  <span class="badge badge-sound">Sound</span>
+                </div>
+                <p class="category-text">Train arrival announcements are loud. Trains can be noisy when departing.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <span class="chevron">&#9658;</span>
+              <h2 class="section-title">Ticketing Area</h2>
+              <div class="badges">
+                <span class="badge badge-crowds">Crowds</span>
+                <span class="badge badge-light">Light</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-text">Content for ticketing area...</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <span class="chevron">&#9658;</span>
+              <h2 class="section-title">Restrooms</h2>
+              <div class="badges">
+                <span class="badge badge-smells">Smells</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-text">Content for restrooms...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary">Print Guide</button>
+          <button class="btn btn-secondary">Quick Links</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIRECTION 2: Card-Based -->
+    <div id="mockup-2" class="mockup d2">
+      <div class="mockup-label">Direction 2: Card-Based - Each section as a distinct card</div>
+      <div class="container">
+        <div class="venue-card">
+          <h1 class="venue-name">Adelaide Railway Station</h1>
+          <p class="venue-meta">Last updated 15 January 2026</p>
+        </div>
+
+        <div class="section-card expanded" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <span class="chevron">&#9658;</span>
+            <h2 class="section-title">Main Concourse</h2>
+            <div class="badges">
+              <span class="badge badge-sound">Sound</span>
+              <span class="badge badge-light">Light</span>
+              <span class="badge badge-crowds">Crowds</span>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <div class="category-title">Sound</div>
+              <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings.</p>
+            </div>
+            <div class="category">
+              <div class="category-title">Bright Light</div>
+              <p class="category-text">Large skylights create bright conditions midday.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <span class="chevron">&#9658;</span>
+            <h2 class="section-title">Platform Access</h2>
+            <div class="badges">
+              <span class="badge badge-sound">Sound</span>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <p class="category-text">Train arrival announcements are loud.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <span class="chevron">&#9658;</span>
+            <h2 class="section-title">Ticketing Area</h2>
+            <div class="badges">
+              <span class="badge badge-crowds">Crowds</span>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <p class="category-text">Can get busy during peak times.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <span class="chevron">&#9658;</span>
+            <h2 class="section-title">Restrooms</h2>
+            <div class="badges">
+              <span class="badge badge-smells">Smells</span>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <p class="category-text">Located near the main entrance.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIRECTION 3: Full-Width Bold -->
+    <div id="mockup-3" class="mockup d3">
+      <div class="mockup-label">Direction 3: Full-Width Bold - Hero header, numbered sections</div>
+      <div class="venue-hero">
+        <h1 class="venue-name">Adelaide Railway Station</h1>
+        <p class="venue-meta">Sensory Guide - Last updated 15 January 2026</p>
+      </div>
+
+      <div class="sections">
+        <div class="section expanded" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <span class="section-number">1</span>
+            <h2 class="section-title">Main Concourse</h2>
+            <div class="badges">
+              <span class="badge badge-sound">Sound</span>
+              <span class="badge badge-light">Light</span>
+              <span class="badge badge-crowds">Crowds</span>
+            </div>
+            <span class="chevron">&#9658;</span>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <div class="category-title">Sound</div>
+              <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings. Consider noise-cancelling headphones.</p>
+            </div>
+            <div class="category">
+              <div class="category-title">Bright Light</div>
+              <p class="category-text">Large skylights create bright conditions midday. Fluorescent backup lighting.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <span class="section-number">2</span>
+            <h2 class="section-title">Platform Access</h2>
+            <div class="badges">
+              <span class="badge badge-sound">Sound</span>
+            </div>
+            <span class="chevron">&#9658;</span>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <p class="category-text">Content here...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <span class="section-number">3</span>
+            <h2 class="section-title">Ticketing Area</h2>
+            <div class="badges">
+              <span class="badge badge-crowds">Crowds</span>
+            </div>
+            <span class="chevron">&#9658;</span>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <p class="category-text">Content here...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <span class="section-number">4</span>
+            <h2 class="section-title">Restrooms</h2>
+            <div class="badges">
+              <span class="badge badge-smells">Smells</span>
+            </div>
+            <span class="chevron">&#9658;</span>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <p class="category-text">Content here...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIRECTION 4: Sidebar Navigation -->
+    <div id="mockup-4" class="mockup d4">
+      <div class="mockup-label">Direction 4: Sidebar Navigation - Desktop-focused with persistent nav</div>
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h1 class="venue-name">Adelaide Railway Station</h1>
+          <p class="venue-meta">Last updated 15 January 2026</p>
+        </div>
+
+        <nav>
+          <div class="nav-section active">
+            <span class="nav-title">Main Concourse</span>
+            <div class="nav-badges">
+              <span class="badge badge-sound"></span>
+              <span class="badge badge-light"></span>
+              <span class="badge badge-crowds"></span>
+            </div>
+          </div>
+          <div class="nav-section">
+            <span class="nav-title">Platform Access</span>
+            <div class="nav-badges">
+              <span class="badge badge-sound"></span>
+            </div>
+          </div>
+          <div class="nav-section">
+            <span class="nav-title">Ticketing Area</span>
+            <div class="nav-badges">
+              <span class="badge badge-crowds"></span>
+            </div>
+          </div>
+          <div class="nav-section">
+            <span class="nav-title">Restrooms</span>
+            <div class="nav-badges">
+              <span class="badge badge-smells"></span>
+            </div>
+          </div>
+          <div class="nav-section">
+            <span class="nav-title">Exits</span>
+            <div class="nav-badges"></div>
+          </div>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="content-header">
+          <h2 class="content-title">Main Concourse</h2>
+          <div class="badges">
+            <span class="badge badge-sound">Sound</span>
+            <span class="badge badge-light">Bright Light</span>
+            <span class="badge badge-crowds">Crowds</span>
+          </div>
+        </header>
+
+        <div class="category">
+          <div class="category-title">
+            <span class="badge badge-sound">Sound</span>
+          </div>
+          <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings. Consider noise-cancelling headphones during peak hours. The acoustic environment can be challenging for those sensitive to sudden loud noises.</p>
+        </div>
+
+        <div class="category">
+          <div class="category-title">
+            <span class="badge badge-light">Bright Light</span>
+          </div>
+          <p class="category-text">Large skylights create bright conditions midday. Fluorescent backup lighting throughout. Sunglasses may help on sunny days. The lighting is fairly consistent but can be quite intense around noon.</p>
+        </div>
+
+        <div class="category">
+          <div class="category-title">
+            <span class="badge badge-crowds">Crowds</span>
+          </div>
+          <p class="category-text">Busiest 7:30-9:00am and 4:30-6:00pm weekdays. Quieter periods mid-morning and early afternoon. Weekend mornings are generally calmer.</p>
+        </div>
+      </main>
+    </div>
+
+    <!-- DIRECTION 5: Compact Grid -->
+    <div id="mockup-5" class="mockup d5">
+      <div class="mockup-label">Direction 5: Compact Grid - Information-dense, scannable cards</div>
+      <div class="container">
+        <div class="header-row">
+          <h1 class="venue-name">Adelaide Railway Station</h1>
+          <div class="actions">
+            <button class="btn-sm">Print</button>
+            <button class="btn-sm">Quick Links</button>
+          </div>
+        </div>
+
+        <div class="sections-grid">
+          <div class="section-card">
+            <h3 class="section-title">Main Concourse</h3>
+            <div class="badges">
+              <span class="badge badge-sound">Sound</span>
+              <span class="badge badge-light">Light</span>
+              <span class="badge badge-crowds">Crowds</span>
+            </div>
+            <p class="section-preview">PA announcements every 2-3 minutes. Echoes due to high ceilings. Large skylights...</p>
+          </div>
+
+          <div class="section-card">
+            <h3 class="section-title">Platform Access</h3>
+            <div class="badges">
+              <span class="badge badge-sound">Sound</span>
+            </div>
+            <p class="section-preview">Train arrival announcements are loud. Trains can be noisy when departing...</p>
+          </div>
+
+          <div class="section-card">
+            <h3 class="section-title">Ticketing Area</h3>
+            <div class="badges">
+              <span class="badge badge-crowds">Crowds</span>
+              <span class="badge badge-light">Light</span>
+            </div>
+            <p class="section-preview">Can get busy during peak hours. Machines have bright screens...</p>
+          </div>
+
+          <div class="section-card">
+            <h3 class="section-title">Restrooms</h3>
+            <div class="badges">
+              <span class="badge badge-smells">Smells</span>
+              <span class="badge badge-light">Light</span>
+            </div>
+            <p class="section-preview">Located near the main entrance. Automatic hand dryers can be loud...</p>
+          </div>
+
+          <div class="section-card">
+            <h3 class="section-title">Food Court</h3>
+            <div class="badges">
+              <span class="badge badge-smells">Smells</span>
+              <span class="badge badge-crowds">Crowds</span>
+            </div>
+            <p class="section-preview">Mixed food smells throughout. Busy during lunch hours...</p>
+          </div>
+
+          <div class="section-card">
+            <h3 class="section-title">Exits & Entrances</h3>
+            <div class="badges">
+              <span class="badge badge-crowds">Crowds</span>
+            </div>
+            <p class="section-preview">Multiple exits available. Main entrance is busiest...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIRECTION 6: Extra Zen -->
+    <div id="mockup-6" class="mockup d6">
+      <div class="mockup-label">Direction 6: Extra Spacious/Zen - Maximum breathing room, calm focus</div>
+      <div class="container">
+        <header class="venue-header">
+          <h1 class="venue-name">Adelaide Railway Station</h1>
+          <p class="venue-meta">Sensory Guide</p>
+        </header>
+
+        <div class="sections">
+          <div class="section expanded" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <h2 class="section-title">Main Concourse</h2>
+              <div class="badges">
+                <span class="badge badge-sound">Sound</span>
+                <span class="badge badge-light">Light</span>
+                <span class="badge badge-crowds">Crowds</span>
+              </div>
+              <span class="chevron">&#9658;</span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <div class="category-title">
+                  <span class="badge badge-sound">Sound</span>
+                </div>
+                <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings. Consider noise-cancelling headphones during peak hours.</p>
+              </div>
+
+              <div class="category">
+                <div class="category-title">
+                  <span class="badge badge-light">Bright Light</span>
+                </div>
+                <p class="category-text">Large skylights create bright conditions midday. Fluorescent backup lighting throughout. Sunglasses may help on sunny days.</p>
+              </div>
+
+              <div class="category">
+                <div class="category-title">
+                  <span class="badge badge-crowds">Crowds</span>
+                </div>
+                <p class="category-text">Busiest 7:30-9:00am and 4:30-6:00pm weekdays. Quieter periods mid-morning and early afternoon.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <h2 class="section-title">Platform Access</h2>
+              <div class="badges">
+                <span class="badge badge-sound">Sound</span>
+              </div>
+              <span class="chevron">&#9658;</span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-text">Content here...</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <h2 class="section-title">Ticketing Area</h2>
+              <div class="badges">
+                <span class="badge badge-crowds">Crowds</span>
+              </div>
+              <span class="chevron">&#9658;</span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-text">Content here...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta">
+          <button class="btn-zen">Print This Guide</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIRECTION 7: Timeline/Journey -->
+    <div id="mockup-7" class="mockup d7">
+      <div class="mockup-label">Direction 7: Timeline/Journey - Vertical timeline emphasizing the path through venue</div>
+      <div class="container">
+        <header class="venue-header">
+          <h1 class="venue-name">Adelaide Railway Station</h1>
+          <p class="venue-meta">Last updated 15 January 2026</p>
+        </header>
+
+        <div class="journey-intro">
+          Follow your journey through the station. Each stop shows what to expect as you move through the space.
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-item expanded" onclick="this.classList.toggle('expanded')">
+            <div class="timeline-dot"></div>
+            <div class="timeline-header">
+              <h3 class="timeline-title">Main Concourse</h3>
+              <div class="badges">
+                <span class="badge badge-sound">Sound</span>
+                <span class="badge badge-light">Light</span>
+                <span class="badge badge-crowds">Crowds</span>
+              </div>
+            </div>
+            <div class="timeline-content">
+              <div class="category">
+                <div class="category-title">Sound</div>
+                <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings.</p>
+              </div>
+              <div class="category">
+                <div class="category-title">Bright Light</div>
+                <p class="category-text">Large skylights create bright conditions midday.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item" onclick="this.classList.toggle('expanded')">
+            <div class="timeline-dot"></div>
+            <div class="timeline-header">
+              <h3 class="timeline-title">Ticketing Area</h3>
+              <div class="badges">
+                <span class="badge badge-crowds">Crowds</span>
+              </div>
+            </div>
+            <div class="timeline-content">
+              <div class="category">
+                <p class="category-text">Can get busy during peak times.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item" onclick="this.classList.toggle('expanded')">
+            <div class="timeline-dot"></div>
+            <div class="timeline-header">
+              <h3 class="timeline-title">Platform Access</h3>
+              <div class="badges">
+                <span class="badge badge-sound">Sound</span>
+              </div>
+            </div>
+            <div class="timeline-content">
+              <div class="category">
+                <p class="category-text">Train arrival announcements are loud.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item" onclick="this.classList.toggle('expanded')">
+            <div class="timeline-dot"></div>
+            <div class="timeline-header">
+              <h3 class="timeline-title">Platform & Boarding</h3>
+              <div class="badges">
+                <span class="badge badge-sound">Sound</span>
+                <span class="badge badge-crowds">Crowds</span>
+              </div>
+            </div>
+            <div class="timeline-content">
+              <div class="category">
+                <p class="category-text">Trains can be noisy. Platform can be crowded at peak.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIRECTION 8: Tabs -->
+    <div id="mockup-8" class="mockup d8">
+      <div class="mockup-label">Direction 8: Tabs - Horizontal tabs for quick section switching</div>
+      <div class="header">
+        <h1 class="venue-name">Adelaide Railway Station</h1>
+        <div class="tabs">
+          <button class="tab active" onclick="showTab(this, 'panel-1')">
+            Main Concourse
+            <span class="tab-badges">
+              <span class="badge badge-sound"></span>
+              <span class="badge badge-light"></span>
+              <span class="badge badge-crowds"></span>
+            </span>
+          </button>
+          <button class="tab" onclick="showTab(this, 'panel-2')">
+            Platform Access
+            <span class="tab-badges">
+              <span class="badge badge-sound"></span>
+            </span>
+          </button>
+          <button class="tab" onclick="showTab(this, 'panel-3')">
+            Ticketing
+            <span class="tab-badges">
+              <span class="badge badge-crowds"></span>
+            </span>
+          </button>
+          <button class="tab" onclick="showTab(this, 'panel-4')">
+            Restrooms
+            <span class="tab-badges">
+              <span class="badge badge-smells"></span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="content">
+        <div id="panel-1" class="tab-panel active">
+          <div class="panel-header">
+            <h2 class="panel-title">Main Concourse</h2>
+            <div class="badges">
+              <span class="badge badge-sound">Sound</span>
+              <span class="badge badge-light">Bright Light</span>
+              <span class="badge badge-crowds">Crowds</span>
+            </div>
+          </div>
+          <div class="category">
+            <div class="category-title"><span class="badge badge-sound">Sound</span></div>
+            <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings. Consider noise-cancelling headphones during peak hours.</p>
+          </div>
+          <div class="category">
+            <div class="category-title"><span class="badge badge-light">Bright Light</span></div>
+            <p class="category-text">Large skylights create bright conditions midday. Fluorescent backup lighting throughout.</p>
+          </div>
+          <div class="category">
+            <div class="category-title"><span class="badge badge-crowds">Crowds</span></div>
+            <p class="category-text">Busiest 7:30-9:00am and 4:30-6:00pm weekdays. Quieter mid-morning.</p>
+          </div>
+        </div>
+        <div id="panel-2" class="tab-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Platform Access</h2>
+            <div class="badges"><span class="badge badge-sound">Sound</span></div>
+          </div>
+          <div class="category">
+            <p class="category-text">Train arrival announcements are loud. Trains can be noisy when departing.</p>
+          </div>
+        </div>
+        <div id="panel-3" class="tab-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Ticketing</h2>
+            <div class="badges"><span class="badge badge-crowds">Crowds</span></div>
+          </div>
+          <div class="category">
+            <p class="category-text">Can get busy during peak times. Ticket machines have bright screens.</p>
+          </div>
+        </div>
+        <div id="panel-4" class="tab-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Restrooms</h2>
+            <div class="badges"><span class="badge badge-smells">Smells</span></div>
+          </div>
+          <div class="category">
+            <p class="category-text">Located near the main entrance. Automatic hand dryers can be loud.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIRECTION 9: Magazine/Editorial -->
+    <div id="mockup-9" class="mockup d9">
+      <div class="mockup-label">Direction 9: Magazine/Editorial - Large type, pull quotes, editorial feel</div>
+      <div class="hero">
+        <p class="venue-label">Sensory Guide</p>
+        <h1 class="venue-name">Adelaide Railway Station</h1>
+        <p class="venue-intro">Your guide to navigating the station with confidence. Know what to expect before you arrive.</p>
+      </div>
+
+      <div class="container">
+        <div class="section expanded" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <p class="section-number">Section 01</p>
+            <h2 class="section-title">Main Concourse</h2>
+            <div class="badges">
+              <span class="badge badge-sound">Sound</span>
+              <span class="badge badge-light">Light</span>
+              <span class="badge badge-crowds">Crowds</span>
+            </div>
+          </div>
+          <div class="section-content">
+            <p class="pull-quote">"The main concourse can be overwhelming during peak hours. Plan to arrive during quieter periods if possible."</p>
+            <div class="category">
+              <div class="category-title">Sound Environment</div>
+              <p class="category-text">PA announcements every 2-3 minutes. The high ceilings create echoes that can amplify sounds. Consider noise-cancelling headphones during peak hours.</p>
+            </div>
+            <div class="category">
+              <div class="category-title">Lighting Conditions</div>
+              <p class="category-text">Large skylights create bright conditions, especially around midday. Fluorescent backup lighting is present throughout. Sunglasses may help on sunny days.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <p class="section-number">Section 02</p>
+            <h2 class="section-title">Platform Access</h2>
+            <div class="badges">
+              <span class="badge badge-sound">Sound</span>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <p class="category-text">Train arrival announcements are loud. Be prepared for sudden noise.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <p class="section-number">Section 03</p>
+            <h2 class="section-title">Ticketing Area</h2>
+            <div class="badges">
+              <span class="badge badge-crowds">Crowds</span>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <p class="category-text">Can get busy during peak hours.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIRECTION 10: Mobile Stack -->
+    <div id="mockup-10" class="mockup d10">
+      <div class="mockup-label">Direction 10: Mobile Stack - Designed mobile-first with quick action buttons</div>
+      <div class="mobile-header">
+        <h1 class="venue-name">Adelaide Railway Station</h1>
+      </div>
+
+      <div class="quick-actions">
+        <button class="quick-btn">
+          <span class="quick-btn-icon">🚪</span>
+          Exits
+        </button>
+        <button class="quick-btn">
+          <span class="quick-btn-icon">🚻</span>
+          Toilets
+        </button>
+        <button class="quick-btn">
+          <span class="quick-btn-icon">📞</span>
+          Help
+        </button>
+        <button class="quick-btn">
+          <span class="quick-btn-icon">🖨️</span>
+          Print
+        </button>
+      </div>
+
+      <div class="sections">
+        <div class="section-card expanded" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <h3 class="section-title">Main Concourse</h3>
+            <div class="badges">
+              <span class="badge badge-sound">🔊</span>
+              <span class="badge badge-light">💡</span>
+              <span class="badge badge-crowds">👥</span>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <div class="category-title">Sound</div>
+              <p class="category-text">PA every 2-3 min. Echoes from high ceilings.</p>
+            </div>
+            <div class="category">
+              <div class="category-title">Light</div>
+              <p class="category-text">Skylights - bright midday. Fluorescent throughout.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <h3 class="section-title">Platform Access</h3>
+            <div class="badges">
+              <span class="badge badge-sound">🔊</span>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <p class="category-text">Loud train announcements. Noisy departures.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <h3 class="section-title">Ticketing</h3>
+            <div class="badges">
+              <span class="badge badge-crowds">👥</span>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <p class="category-text">Busy at peak times.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card" onclick="this.classList.toggle('expanded')">
+          <div class="section-header">
+            <h3 class="section-title">Restrooms</h3>
+            <div class="badges">
+              <span class="badge badge-smells">🌿</span>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="category">
+              <p class="category-text">Near main entrance. Loud hand dryers.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIRECTION 11: Split View -->
+    <div id="mockup-11" class="mockup d11">
+      <div class="mockup-label">Direction 11: Split View - Overview list + detail panel side by side</div>
+      <div class="left-panel">
+        <h1 class="venue-name">Adelaide Railway Station</h1>
+        <p class="venue-meta">Sensory Guide - Last updated 15 January 2026</p>
+
+        <p class="overview-title">Journey Sections</p>
+
+        <div class="overview-item active">
+          <span class="overview-name">Main Concourse</span>
+          <div class="overview-badges">
+            <span class="badge badge-sound"></span>
+            <span class="badge badge-light"></span>
+            <span class="badge badge-crowds"></span>
+          </div>
+        </div>
+
+        <div class="overview-item">
+          <span class="overview-name">Platform Access</span>
+          <div class="overview-badges">
+            <span class="badge badge-sound"></span>
+          </div>
+        </div>
+
+        <div class="overview-item">
+          <span class="overview-name">Ticketing Area</span>
+          <div class="overview-badges">
+            <span class="badge badge-crowds"></span>
+          </div>
+        </div>
+
+        <div class="overview-item">
+          <span class="overview-name">Restrooms</span>
+          <div class="overview-badges">
+            <span class="badge badge-smells"></span>
+          </div>
+        </div>
+
+        <div class="overview-item">
+          <span class="overview-name">Food Court</span>
+          <div class="overview-badges">
+            <span class="badge badge-smells"></span>
+            <span class="badge badge-crowds"></span>
+          </div>
+        </div>
+
+        <div class="overview-item">
+          <span class="overview-name">Exits</span>
+          <div class="overview-badges"></div>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <header class="detail-header">
+          <h2 class="detail-title">Main Concourse</h2>
+          <div class="badges">
+            <span class="badge badge-sound">Sound</span>
+            <span class="badge badge-light">Bright Light</span>
+            <span class="badge badge-crowds">Crowds</span>
+          </div>
+        </header>
+
+        <div class="category">
+          <div class="category-title"><span class="badge badge-sound">Sound</span></div>
+          <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings. Consider noise-cancelling headphones during peak hours. The acoustic environment can be challenging for those sensitive to sudden loud noises.</p>
+        </div>
+
+        <div class="category">
+          <div class="category-title"><span class="badge badge-light">Bright Light</span></div>
+          <p class="category-text">Large skylights create bright conditions midday. Fluorescent backup lighting throughout. Sunglasses may help on sunny days. The lighting is fairly consistent but can be quite intense around noon.</p>
+        </div>
+
+        <div class="category">
+          <div class="category-title"><span class="badge badge-crowds">Crowds</span></div>
+          <p class="category-text">Busiest 7:30-9:00am and 4:30-6:00pm weekdays. Quieter periods mid-morning and early afternoon. Weekend mornings are generally calmer.</p>
+        </div>
+
+        <div class="nav-buttons">
+          <button class="nav-btn">← Previous</button>
+          <button class="nav-btn">Next: Platform Access →</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function showTab(btn, panelId) {
+      // Update tabs
+      btn.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      // Update panels
+      btn.closest('.d8').querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById(panelId).classList.add('active');
+    }
+
+    function showMockup(num) {
+      document.querySelectorAll('.mockup').forEach(m => m.classList.remove('active'));
+      document.getElementById('mockup-' + num).classList.add('active');
+      document.querySelectorAll('.nav button').forEach((btn, i) => {
+        btn.classList.toggle('active', i === num - 1);
+      });
+    }
+  </script>
+</body>
+</html>
