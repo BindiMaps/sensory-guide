@@ -41,7 +41,7 @@ story_location: _bmad-output/implementation-artifacts
 
 development_status:
   # Epic 1: Project Foundation (Sprint 0)
-  epic-1: in-progress
+  epic-1: done
   1-1-initialise-react-project-with-vite-and-typescript: done
   1-2-firebase-project-setup-and-local-development: done
   1-3-ci-cd-pipeline-with-quality-gates: done
