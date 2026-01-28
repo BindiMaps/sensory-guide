@@ -10,6 +10,26 @@ _Critical rules and patterns that AI agents must follow. Focus on unobvious deta
 
 ---
 
+## Design System (CRITICAL)
+
+**The public UI MUST follow the approved design system: `planning-artifacts/design-system-v5.md`**
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| Primary Font | Inter | All public UI text |
+| Accent Colour | `#B8510D` | Actions, expanded states, left borders |
+| Sensory Low | `#2A6339` | Calm areas |
+| Sensory Medium | `#8A5F08` | Moderate activity |
+| Sensory High | `#9E3322` | Potentially overwhelming |
+
+**Key rules:**
+- Use `<button>` for expandable sections (NOT div+onclick)
+- All badges must use verified contrast colours from design-system-v5.md
+- 28px minimum touch targets on toggles
+- Reference implementation: `planning-artifacts/ux-design-direction-v5.html`
+
+---
+
 ## Technology Stack
 
 | Category | Tech | Notes |

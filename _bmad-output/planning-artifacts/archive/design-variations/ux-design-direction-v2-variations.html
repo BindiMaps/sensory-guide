@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sensory Guide - Design Variations v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: #FFFFFF;
+      --surface: #F7F7F5;
+      --text: #2C2C2C;
+      --text-muted: #5C5C5C;
+      --border: #E5E5E3;
+      --accent: #C75B12;
+      --accent-light: #FFF4ED;
+      --sensory-low: #4A7C59;
+      --sensory-medium: #D4880F;
+      --sensory-high: #C44536;
+      --font: "Source Sans 3", -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius: 4px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      background: #1a1a1a;
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    /* Nav */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #2C2C2C;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      z-index: 1000;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .nav h1 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-right: auto;
+      opacity: 0.7;
+    }
+
+    .nav button {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 0.8125rem;
+      transition: all 0.15s;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* Mockup container */
+    .mockup-container {
+      padding-top: 60px;
+      min-height: 100vh;
+    }
+
+    .mockup {
+      display: none !important;
+      min-height: calc(100vh - 60px);
+      background: var(--background);
+    }
+
+    .mockup.active {
+      display: block !important;
+    }
+
+    /* Shared styles */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+    }
+
+    .header-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .header-btn {
+      background: none;
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      font-family: var(--font);
+      font-size: 0.875rem;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: var(--radius);
+    }
+
+    .main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    .venue-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .venue-name {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    .venue-meta {
+      color: var(--text-muted);
+      font-size: 0.9375rem;
+    }
+
+    .intro {
+      background: var(--surface);
+      padding: 1.25rem 1.5rem;
+      border-radius: var(--radius);
+      margin-bottom: 2.5rem;
+      border-left: 3px solid var(--accent);
+    }
+
+    .intro-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .intro-text {
+      color: var(--text-muted);
+      font-size: 0.9375rem;
+    }
+
+    .badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.625rem;
+      border-radius: 2px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-sound { background: #E8F0F3; color: #4A6E7F; }
+    .badge-light { background: #FDF6E3; color: #8B7000; }
+    .badge-crowds { background: #F5EDE8; color: #6B5344; }
+    .badge-smells { background: #EDF5EE; color: #4A6B4E; }
+
+    .sensory-level {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: auto;
+      padding-left: 1rem;
+    }
+
+    .sensory-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    .sensory-indicator.low { background: var(--sensory-low); }
+    .sensory-indicator.medium { background: var(--sensory-medium); }
+    .sensory-indicator.high { background: var(--sensory-high); }
+
+    .sensory-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .sensory-key {
+      margin-top: 2rem;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border-radius: var(--radius);
+    }
+
+    .sensory-key-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .sensory-key-items {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .sensory-key-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    /* ========================================
+       VARIATION 1: Baseline (from v2)
+       ======================================== */
+    .v1 .sections {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .v1 .section {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .v1 .section-header {
+      padding: 1.25rem 0;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .v1 .section-header:hover {
+      background: var(--surface);
+      margin: 0 -1.5rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    .v1 .section-toggle {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: all 0.15s ease;
+    }
+
+    .v1 .section-toggle::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid var(--text-muted);
+      border-bottom: 2px solid var(--text-muted);
+      transform: rotate(-45deg);
+      margin-left: -2px;
+      transition: transform 0.15s ease;
+    }
+
+    .v1 .section.expanded .section-toggle {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+
+    .v1 .section.expanded .section-toggle::before {
+      border-color: white;
+      transform: rotate(45deg);
+      margin-top: -2px;
+      margin-left: 0;
+    }
+
+    .v1 .section-info { flex: 1; }
+
+    .v1 .section-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.375rem;
+    }
+
+    .v1 .section-content {
+      display: none;
+      padding: 0 0 1.5rem 2.5rem;
+    }
+
+    .v1 .section.expanded .section-content {
+      display: block;
+    }
+
+    .v1 .category { margin-bottom: 1.25rem; }
+    .v1 .category:last-child { margin-bottom: 0; }
+
+    .v1 .category-title {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .v1 .category-text {
+      color: var(--text-muted);
+      font-size: 0.9375rem;
+      line-height: 1.65;
+    }
+
+    /* ========================================
+       VARIATION 2: Numbered Sections
+       ======================================== */
+    .v2 .sections {
+      display: flex;
+      flex-direction: column;
+      counter-reset: section;
+    }
+
+    .v2 .section {
+      border-bottom: 1px solid var(--border);
+      counter-increment: section;
+    }
+
+    .v2 .section-header {
+      padding: 1.25rem 0;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .v2 .section-header:hover {
+      background: var(--surface);
+      margin: 0 -1.5rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    .v2 .section-number {
+      width: 32px;
+      height: 32px;
+      background: var(--surface);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .v2 .section-number::before {
+      content: counter(section);
+    }
+
+    .v2 .section.expanded .section-number {
+      background: var(--accent);
+      color: white;
+    }
+
+    .v2 .section-info { flex: 1; }
+
+    .v2 .section-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.375rem;
+    }
+
+    .v2 .expand-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .v2 .section.expanded .expand-hint { display: none; }
+
+    .v2 .section-content {
+      display: none;
+      padding: 0 0 1.5rem 3rem;
+    }
+
+    .v2 .section.expanded .section-content { display: block; }
+
+    .v2 .category { margin-bottom: 1.25rem; }
+    .v2 .category:last-child { margin-bottom: 0; }
+    .v2 .category-title { font-weight: 600; font-size: 0.9375rem; margin-bottom: 0.25rem; }
+    .v2 .category-text { color: var(--text-muted); font-size: 0.9375rem; line-height: 1.65; }
+
+    /* ========================================
+       VARIATION 3: Cards
+       ======================================== */
+    .v3 .sections {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .v3 .section {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: white;
+    }
+
+    .v3 .section.expanded {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .v3 .section-header {
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .v3 .section-info { flex: 1; }
+
+    .v3 .section-title {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      margin-bottom: 0.375rem;
+    }
+
+    .v3 .section-toggle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      transition: transform 0.15s;
+    }
+
+    .v3 .section.expanded .section-toggle {
+      transform: rotate(180deg);
+      color: var(--accent);
+    }
+
+    .v3 .section-content {
+      display: none;
+      padding: 0 1.25rem 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .v3 .section.expanded .section-content {
+      display: block;
+      padding-top: 1rem;
+    }
+
+    .v3 .category { margin-bottom: 1rem; }
+    .v3 .category:last-child { margin-bottom: 0; }
+    .v3 .category-title { font-weight: 600; font-size: 0.9375rem; margin-bottom: 0.25rem; }
+    .v3 .category-text { color: var(--text-muted); font-size: 0.9375rem; line-height: 1.65; }
+
+    /* ========================================
+       VARIATION 4: Left Border Accent
+       ======================================== */
+    .v4 .sections {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .v4 .section {
+      border-bottom: 1px solid var(--border);
+      border-left: 3px solid transparent;
+      margin-left: -1.5rem;
+      padding-left: 1.5rem;
+    }
+
+    .v4 .section.expanded {
+      border-left-color: var(--accent);
+      background: linear-gradient(to right, var(--accent-light) 0%, transparent 100px);
+    }
+
+    .v4 .section-header {
+      padding: 1.25rem 0;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .v4 .section-info { flex: 1; }
+
+    .v4 .section-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.375rem;
+    }
+
+    .v4 .section-arrow {
+      color: var(--text-muted);
+      font-size: 1.25rem;
+      transition: transform 0.15s;
+    }
+
+    .v4 .section.expanded .section-arrow {
+      transform: rotate(90deg);
+      color: var(--accent);
+    }
+
+    .v4 .section-content {
+      display: none;
+      padding: 0 0 1.5rem 0;
+    }
+
+    .v4 .section.expanded .section-content { display: block; }
+
+    .v4 .category { margin-bottom: 1.25rem; }
+    .v4 .category:last-child { margin-bottom: 0; }
+    .v4 .category-title { font-weight: 600; font-size: 0.9375rem; margin-bottom: 0.25rem; }
+    .v4 .category-text { color: var(--text-muted); font-size: 0.9375rem; line-height: 1.65; }
+
+    /* ========================================
+       VARIATION 5: Compact/Dense
+       ======================================== */
+    .v5 .intro { margin-bottom: 1.5rem; padding: 1rem 1.25rem; }
+
+    .v5 .sections {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .v5 .section {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .v5 .section-header {
+      padding: 0.875rem 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .v5 .section-header:hover {
+      background: var(--surface);
+      margin: 0 -1.5rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    .v5 .section-toggle {
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .v5 .section.expanded .section-toggle {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .v5 .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .v5 .badges { gap: 0.375rem; }
+    .v5 .badge { padding: 0.125rem 0.5rem; font-size: 0.6875rem; }
+
+    .v5 .section-content {
+      display: none;
+      padding: 0 0 1rem 1.75rem;
+    }
+
+    .v5 .section.expanded .section-content { display: block; }
+
+    .v5 .category { margin-bottom: 0.75rem; }
+    .v5 .category:last-child { margin-bottom: 0; }
+    .v5 .category-title { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.125rem; }
+    .v5 .category-text { color: var(--text-muted); font-size: 0.875rem; line-height: 1.6; }
+
+    /* ========================================
+       VARIATION 6: Bold Headers + Dividers
+       ======================================== */
+    .v6 .venue-name { font-size: 2.25rem; }
+
+    .v6 .sections {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .v6 .section {
+      padding-bottom: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .v6 .section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .v6 .section-header {
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .v6 .section-title {
+      font-size: 1.375rem;
+      font-weight: 700;
+      flex: 1;
+      color: var(--text);
+    }
+
+    .v6 .section.expanded .section-title {
+      color: var(--accent);
+    }
+
+    .v6 .section-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .v6 .expand-text {
+      font-size: 0.8125rem;
+      color: var(--accent);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .v6 .section.expanded .expand-text::before { content: 'Hide details'; }
+    .v6 .section:not(.expanded) .expand-text::before { content: 'Show details'; }
+
+    .v6 .section-content {
+      display: none;
+      padding-top: 1rem;
+      margin-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .v6 .section.expanded .section-content { display: block; }
+
+    .v6 .category { margin-bottom: 1.25rem; }
+    .v6 .category:last-child { margin-bottom: 0; }
+    .v6 .category-title { font-weight: 600; font-size: 1rem; margin-bottom: 0.375rem; }
+    .v6 .category-text { color: var(--text-muted); font-size: 0.9375rem; line-height: 1.7; }
+
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <h1>Design Variations</h1>
+    <button class="active" onclick="showMockup(1)">1. Baseline</button>
+    <button onclick="showMockup(2)">2. Numbered</button>
+    <button onclick="showMockup(3)">3. Cards</button>
+    <button onclick="showMockup(4)">4. Left Border</button>
+    <button onclick="showMockup(5)">5. Compact</button>
+    <button onclick="showMockup(6)">6. Bold Headers</button>
+  </nav>
+
+  <div class="mockup-container">
+
+    <!-- VARIATION 1: Baseline -->
+    <div id="mockup-1" class="mockup v1 active">
+      <header class="header">
+        <div class="header-inner">
+          <div class="brand">Sensory Guide</div>
+          <div class="header-actions">
+            <button class="header-btn">Download PDF</button>
+            <button class="header-btn">Print</button>
+          </div>
+        </div>
+      </header>
+      <main class="main">
+        <div class="venue-header">
+          <h1 class="venue-name">Adelaide Railway Station</h1>
+          <p class="venue-meta">North Terrace, Adelaide SA 5000 · Updated January 2026</p>
+        </div>
+        <div class="intro">
+          <p class="intro-title">About this guide</p>
+          <p class="intro-text">This guide describes what you might see, hear, and experience at each area of the station.</p>
+        </div>
+        <div class="sections">
+          <div class="section expanded" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-toggle"></div>
+              <div class="section-info">
+                <h2 class="section-title">Main Concourse</h2>
+                <div class="badges">
+                  <span class="badge badge-sound">Sound</span>
+                  <span class="badge badge-light">Light</span>
+                  <span class="badge badge-crowds">Crowds</span>
+                </div>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator medium"></div>
+                <span class="sensory-label">Medium</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Sound</p>
+                <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings. Consider noise-cancelling headphones during peak hours.</p>
+              </div>
+              <div class="category">
+                <p class="category-title">Bright Light</p>
+                <p class="category-text">Large skylights create bright conditions midday. Sunglasses may help on sunny days.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-toggle"></div>
+              <div class="section-info">
+                <h2 class="section-title">Platform Access</h2>
+                <div class="badges">
+                  <span class="badge badge-sound">Sound</span>
+                </div>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator high"></div>
+                <span class="sensory-label">High</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Loud Sounds</p>
+                <p class="category-text">Train announcements are loud and sudden. Noise-cancelling headphones recommended.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-toggle"></div>
+              <div class="section-info">
+                <h2 class="section-title">Ticketing Area</h2>
+                <div class="badges">
+                  <span class="badge badge-crowds">Crowds</span>
+                </div>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator low"></div>
+                <span class="sensory-label">Low</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Crowds</p>
+                <p class="category-text">Can get busy during peak times. Self-service machines available.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-toggle"></div>
+              <div class="section-info">
+                <h2 class="section-title">Restrooms</h2>
+                <div class="badges">
+                  <span class="badge badge-sound">Sound</span>
+                  <span class="badge badge-smells">Smells</span>
+                </div>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator medium"></div>
+                <span class="sensory-label">Medium</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Hand Dryers</p>
+                <p class="category-text">Automatic dryers are loud. Paper towels also available.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sensory-key">
+          <p class="sensory-key-title">Sensory Level Key</p>
+          <div class="sensory-key-items">
+            <div class="sensory-key-item"><div class="sensory-indicator low"></div><span>Low — Calm</span></div>
+            <div class="sensory-key-item"><div class="sensory-indicator medium"></div><span>Medium — Some activity</span></div>
+            <div class="sensory-key-item"><div class="sensory-indicator high"></div><span>High — May be overwhelming</span></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- VARIATION 2: Numbered -->
+    <div id="mockup-2" class="mockup v2">
+      <header class="header">
+        <div class="header-inner">
+          <div class="brand">Sensory Guide</div>
+          <div class="header-actions">
+            <button class="header-btn">Download PDF</button>
+            <button class="header-btn">Print</button>
+          </div>
+        </div>
+      </header>
+      <main class="main">
+        <div class="venue-header">
+          <h1 class="venue-name">Adelaide Railway Station</h1>
+          <p class="venue-meta">North Terrace, Adelaide SA 5000 · Updated January 2026</p>
+        </div>
+        <div class="intro">
+          <p class="intro-title">About this guide</p>
+          <p class="intro-text">This guide describes what you might see, hear, and experience at each area of the station.</p>
+        </div>
+        <div class="sections">
+          <div class="section expanded" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-number"></div>
+              <div class="section-info">
+                <h2 class="section-title">Main Concourse</h2>
+                <div class="badges">
+                  <span class="badge badge-sound">Sound</span>
+                  <span class="badge badge-light">Light</span>
+                  <span class="badge badge-crowds">Crowds</span>
+                </div>
+                <p class="expand-hint">Tap to expand</p>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator medium"></div>
+                <span class="sensory-label">Medium</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Sound</p>
+                <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings.</p>
+              </div>
+              <div class="category">
+                <p class="category-title">Bright Light</p>
+                <p class="category-text">Large skylights create bright conditions midday.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-number"></div>
+              <div class="section-info">
+                <h2 class="section-title">Platform Access</h2>
+                <div class="badges"><span class="badge badge-sound">Sound</span></div>
+                <p class="expand-hint">Tap to expand</p>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator high"></div>
+                <span class="sensory-label">High</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Loud Sounds</p>
+                <p class="category-text">Train announcements are loud and sudden.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-number"></div>
+              <div class="section-info">
+                <h2 class="section-title">Ticketing Area</h2>
+                <div class="badges"><span class="badge badge-crowds">Crowds</span></div>
+                <p class="expand-hint">Tap to expand</p>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator low"></div>
+                <span class="sensory-label">Low</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Crowds</p>
+                <p class="category-text">Can get busy during peak times.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-number"></div>
+              <div class="section-info">
+                <h2 class="section-title">Restrooms</h2>
+                <div class="badges"><span class="badge badge-sound">Sound</span><span class="badge badge-smells">Smells</span></div>
+                <p class="expand-hint">Tap to expand</p>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator medium"></div>
+                <span class="sensory-label">Medium</span>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Hand Dryers</p>
+                <p class="category-text">Automatic dryers are loud.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sensory-key">
+          <p class="sensory-key-title">Sensory Level Key</p>
+          <div class="sensory-key-items">
+            <div class="sensory-key-item"><div class="sensory-indicator low"></div><span>Low — Calm</span></div>
+            <div class="sensory-key-item"><div class="sensory-indicator medium"></div><span>Medium — Some activity</span></div>
+            <div class="sensory-key-item"><div class="sensory-indicator high"></div><span>High — May be overwhelming</span></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- VARIATION 3: Cards -->
+    <div id="mockup-3" class="mockup v3">
+      <header class="header">
+        <div class="header-inner">
+          <div class="brand">Sensory Guide</div>
+          <div class="header-actions">
+            <button class="header-btn">Download PDF</button>
+            <button class="header-btn">Print</button>
+          </div>
+        </div>
+      </header>
+      <main class="main">
+        <div class="venue-header">
+          <h1 class="venue-name">Adelaide Railway Station</h1>
+          <p class="venue-meta">North Terrace, Adelaide SA 5000 · Updated January 2026</p>
+        </div>
+        <div class="intro">
+          <p class="intro-title">About this guide</p>
+          <p class="intro-text">This guide describes what you might see, hear, and experience at each area of the station.</p>
+        </div>
+        <div class="sections">
+          <div class="section expanded" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-info">
+                <h2 class="section-title">Main Concourse</h2>
+                <div class="badges">
+                  <span class="badge badge-sound">Sound</span>
+                  <span class="badge badge-light">Light</span>
+                  <span class="badge badge-crowds">Crowds</span>
+                </div>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator medium"></div>
+                <span class="sensory-label">Medium</span>
+              </div>
+              <span class="section-toggle">▼</span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Sound</p>
+                <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings.</p>
+              </div>
+              <div class="category">
+                <p class="category-title">Bright Light</p>
+                <p class="category-text">Large skylights create bright conditions midday.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-info">
+                <h2 class="section-title">Platform Access</h2>
+                <div class="badges"><span class="badge badge-sound">Sound</span></div>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator high"></div>
+                <span class="sensory-label">High</span>
+              </div>
+              <span class="section-toggle">▼</span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Loud Sounds</p>
+                <p class="category-text">Train announcements are loud and sudden.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-info">
+                <h2 class="section-title">Ticketing Area</h2>
+                <div class="badges"><span class="badge badge-crowds">Crowds</span></div>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator low"></div>
+                <span class="sensory-label">Low</span>
+              </div>
+              <span class="section-toggle">▼</span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Crowds</p>
+                <p class="category-text">Can get busy during peak times.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-info">
+                <h2 class="section-title">Restrooms</h2>
+                <div class="badges"><span class="badge badge-sound">Sound</span><span class="badge badge-smells">Smells</span></div>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator medium"></div>
+                <span class="sensory-label">Medium</span>
+              </div>
+              <span class="section-toggle">▼</span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Hand Dryers</p>
+                <p class="category-text">Automatic dryers are loud.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sensory-key">
+          <p class="sensory-key-title">Sensory Level Key</p>
+          <div class="sensory-key-items">
+            <div class="sensory-indicator low"></div><span>Low</span>
+            <div class="sensory-indicator medium"></div><span>Medium</span>
+            <div class="sensory-indicator high"></div><span>High</span>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- VARIATION 4: Left Border -->
+    <div id="mockup-4" class="mockup v4">
+      <header class="header">
+        <div class="header-inner">
+          <div class="brand">Sensory Guide</div>
+          <div class="header-actions">
+            <button class="header-btn">Download PDF</button>
+            <button class="header-btn">Print</button>
+          </div>
+        </div>
+      </header>
+      <main class="main">
+        <div class="venue-header">
+          <h1 class="venue-name">Adelaide Railway Station</h1>
+          <p class="venue-meta">North Terrace, Adelaide SA 5000 · Updated January 2026</p>
+        </div>
+        <div class="intro">
+          <p class="intro-title">About this guide</p>
+          <p class="intro-text">This guide describes what you might see, hear, and experience at each area of the station.</p>
+        </div>
+        <div class="sections">
+          <div class="section expanded" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-info">
+                <h2 class="section-title">Main Concourse</h2>
+                <div class="badges">
+                  <span class="badge badge-sound">Sound</span>
+                  <span class="badge badge-light">Light</span>
+                  <span class="badge badge-crowds">Crowds</span>
+                </div>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator medium"></div>
+                <span class="sensory-label">Medium</span>
+              </div>
+              <span class="section-arrow">›</span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Sound</p>
+                <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings.</p>
+              </div>
+              <div class="category">
+                <p class="category-title">Bright Light</p>
+                <p class="category-text">Large skylights create bright conditions midday.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-info">
+                <h2 class="section-title">Platform Access</h2>
+                <div class="badges"><span class="badge badge-sound">Sound</span></div>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator high"></div>
+                <span class="sensory-label">High</span>
+              </div>
+              <span class="section-arrow">›</span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Loud Sounds</p>
+                <p class="category-text">Train announcements are loud and sudden.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-info">
+                <h2 class="section-title">Ticketing Area</h2>
+                <div class="badges"><span class="badge badge-crowds">Crowds</span></div>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator low"></div>
+                <span class="sensory-label">Low</span>
+              </div>
+              <span class="section-arrow">›</span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Crowds</p>
+                <p class="category-text">Can get busy during peak times.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-info">
+                <h2 class="section-title">Restrooms</h2>
+                <div class="badges"><span class="badge badge-sound">Sound</span><span class="badge badge-smells">Smells</span></div>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator medium"></div>
+                <span class="sensory-label">Medium</span>
+              </div>
+              <span class="section-arrow">›</span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Hand Dryers</p>
+                <p class="category-text">Automatic dryers are loud.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sensory-key">
+          <p class="sensory-key-title">Sensory Level Key</p>
+          <div class="sensory-key-items">
+            <div class="sensory-key-item"><div class="sensory-indicator low"></div><span>Low — Calm</span></div>
+            <div class="sensory-key-item"><div class="sensory-indicator medium"></div><span>Medium — Some activity</span></div>
+            <div class="sensory-key-item"><div class="sensory-indicator high"></div><span>High — May be overwhelming</span></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- VARIATION 5: Compact -->
+    <div id="mockup-5" class="mockup v5">
+      <header class="header">
+        <div class="header-inner">
+          <div class="brand">Sensory Guide</div>
+          <div class="header-actions">
+            <button class="header-btn">PDF</button>
+            <button class="header-btn">Print</button>
+          </div>
+        </div>
+      </header>
+      <main class="main">
+        <div class="venue-header">
+          <h1 class="venue-name">Adelaide Railway Station</h1>
+          <p class="venue-meta">North Terrace, Adelaide SA 5000 · Updated January 2026</p>
+        </div>
+        <div class="intro">
+          <p class="intro-title">About this guide</p>
+          <p class="intro-text">Sensory information for each area of the station.</p>
+        </div>
+        <div class="sections">
+          <div class="section expanded" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-toggle">+</div>
+              <h2 class="section-title">Main Concourse</h2>
+              <div class="badges">
+                <span class="badge badge-sound">Sound</span>
+                <span class="badge badge-light">Light</span>
+                <span class="badge badge-crowds">Crowds</span>
+              </div>
+              <div class="sensory-level">
+                <div class="sensory-indicator medium"></div>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Sound</p>
+                <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings.</p>
+              </div>
+              <div class="category">
+                <p class="category-title">Bright Light</p>
+                <p class="category-text">Large skylights create bright conditions midday.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-toggle">+</div>
+              <h2 class="section-title">Platform Access</h2>
+              <div class="badges"><span class="badge badge-sound">Sound</span></div>
+              <div class="sensory-level"><div class="sensory-indicator high"></div></div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Loud Sounds</p>
+                <p class="category-text">Train announcements are loud and sudden.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-toggle">+</div>
+              <h2 class="section-title">Ticketing Area</h2>
+              <div class="badges"><span class="badge badge-crowds">Crowds</span></div>
+              <div class="sensory-level"><div class="sensory-indicator low"></div></div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Crowds</p>
+                <p class="category-text">Can get busy during peak times.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <div class="section-toggle">+</div>
+              <h2 class="section-title">Restrooms</h2>
+              <div class="badges"><span class="badge badge-sound">Sound</span><span class="badge badge-smells">Smells</span></div>
+              <div class="sensory-level"><div class="sensory-indicator medium"></div></div>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Hand Dryers</p>
+                <p class="category-text">Automatic dryers are loud.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sensory-key">
+          <p class="sensory-key-title">Sensory Levels</p>
+          <div class="sensory-key-items">
+            <div class="sensory-key-item"><div class="sensory-indicator low"></div><span>Low</span></div>
+            <div class="sensory-key-item"><div class="sensory-indicator medium"></div><span>Medium</span></div>
+            <div class="sensory-key-item"><div class="sensory-indicator high"></div><span>High</span></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- VARIATION 6: Bold Headers -->
+    <div id="mockup-6" class="mockup v6">
+      <header class="header">
+        <div class="header-inner">
+          <div class="brand">Sensory Guide</div>
+          <div class="header-actions">
+            <button class="header-btn">Download PDF</button>
+            <button class="header-btn">Print</button>
+          </div>
+        </div>
+      </header>
+      <main class="main">
+        <div class="venue-header">
+          <h1 class="venue-name">Adelaide Railway Station</h1>
+          <p class="venue-meta">North Terrace, Adelaide SA 5000 · Updated January 2026</p>
+        </div>
+        <div class="intro">
+          <p class="intro-title">About this guide</p>
+          <p class="intro-text">This guide describes what you might see, hear, and experience at each area of the station.</p>
+        </div>
+        <div class="sections">
+          <div class="section expanded" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <h2 class="section-title">Main Concourse</h2>
+              <div class="sensory-level">
+                <div class="sensory-indicator medium"></div>
+                <span class="sensory-label">Medium</span>
+              </div>
+            </div>
+            <div class="section-meta">
+              <div class="badges">
+                <span class="badge badge-sound">Sound</span>
+                <span class="badge badge-light">Light</span>
+                <span class="badge badge-crowds">Crowds</span>
+              </div>
+              <span class="expand-text"></span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Sound</p>
+                <p class="category-text">PA announcements every 2-3 minutes. Echoes due to high ceilings. Consider noise-cancelling headphones during peak hours.</p>
+              </div>
+              <div class="category">
+                <p class="category-title">Bright Light</p>
+                <p class="category-text">Large skylights create bright conditions midday. Sunglasses may help on sunny days.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <h2 class="section-title">Platform Access</h2>
+              <div class="sensory-level">
+                <div class="sensory-indicator high"></div>
+                <span class="sensory-label">High</span>
+              </div>
+            </div>
+            <div class="section-meta">
+              <div class="badges"><span class="badge badge-sound">Sound</span></div>
+              <span class="expand-text"></span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Loud Sounds</p>
+                <p class="category-text">Train announcements are loud and sudden. Noise-cancelling headphones recommended.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <h2 class="section-title">Ticketing Area</h2>
+              <div class="sensory-level">
+                <div class="sensory-indicator low"></div>
+                <span class="sensory-label">Low</span>
+              </div>
+            </div>
+            <div class="section-meta">
+              <div class="badges"><span class="badge badge-crowds">Crowds</span></div>
+              <span class="expand-text"></span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Crowds</p>
+                <p class="category-text">Can get busy during peak times. Self-service machines available.</p>
+              </div>
+            </div>
+          </div>
+          <div class="section" onclick="this.classList.toggle('expanded')">
+            <div class="section-header">
+              <h2 class="section-title">Restrooms</h2>
+              <div class="sensory-level">
+                <div class="sensory-indicator medium"></div>
+                <span class="sensory-label">Medium</span>
+              </div>
+            </div>
+            <div class="section-meta">
+              <div class="badges"><span class="badge badge-sound">Sound</span><span class="badge badge-smells">Smells</span></div>
+              <span class="expand-text"></span>
+            </div>
+            <div class="section-content">
+              <div class="category">
+                <p class="category-title">Hand Dryers</p>
+                <p class="category-text">Automatic dryers are loud. Paper towels also available.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sensory-key">
+          <p class="sensory-key-title">Sensory Level Key</p>
+          <div class="sensory-key-items">
+            <div class="sensory-key-item"><div class="sensory-indicator low"></div><span>Low — Calm</span></div>
+            <div class="sensory-key-item"><div class="sensory-indicator medium"></div><span>Medium — Some activity</span></div>
+            <div class="sensory-key-item"><div class="sensory-indicator high"></div><span>High — May be overwhelming</span></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+  </div>
+
+  <script>
+    function showMockup(num) {
+      document.querySelectorAll('.mockup').forEach(m => m.classList.remove('active'));
+      document.getElementById('mockup-' + num).classList.add('active');
+      document.querySelectorAll('.nav button').forEach((btn, i) => {
+        btn.classList.toggle('active', i === num - 1);
+      });
+    }
+  </script>
+</body>
+</html>

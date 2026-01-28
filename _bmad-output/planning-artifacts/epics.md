@@ -1058,3 +1058,1060 @@ So that **I can monitor system health and usage**.
 
 **And** only super admins can access this dashboard
 
+---
+
+## Additional Stories (Extended Breakdown)
+
+---
+
+## Epic 1: Project Foundation (Extended)
+
+### Story 1.5: Design System Configuration - Admin
+
+As a **developer**,
+I want **Shadcn/ui configured with admin-appropriate theming**,
+So that **the admin portal has a consistent, professional UI**.
+
+**Acceptance Criteria:**
+
+**Given** the project with shadcn init complete
+**When** I configure the admin theme
+**Then** core shadcn components are available (Button, Card, Dialog, Form, Input, Table)
+**And** the theme uses neutral professional colours
+**And** dark mode is NOT enabled (keep it simple)
+**And** components are properly typed with TypeScript
+
+---
+
+### Story 1.6: Design System Configuration - Public
+
+As a **developer**,
+I want **Radix primitives with custom warm styling for public pages**,
+So that **public guides have a calm, welcoming aesthetic**.
+
+**Acceptance Criteria:**
+
+**Given** the project with Tailwind configured
+**When** I set up public design tokens
+**Then** CSS variables are defined for warm palette:
+  - `--background: #FDFBF7` (cream)
+  - `--foreground: #2D2A26` (soft charcoal)
+  - `--primary: #2A7D7D` (warm teal)
+**And** Plus Jakarta Sans is the default font
+**And** base spacing uses 8px grid
+**And** public components do NOT import from shadcn
+
+---
+
+### Story 1.7: Error Boundary and 404 Page
+
+As a **user**,
+I want **graceful error handling when things go wrong**,
+So that **I understand what happened and know what to do next**.
+
+**Acceptance Criteria:**
+
+**Given** an unhandled error occurs in the React app
+**When** the error boundary catches it
+**Then** a friendly error page displays (not a white screen)
+**And** the error is logged to console (dev) or analytics (prod)
+**And** a "Go Home" button is available
+
+**Given** I visit a non-existent route
+**When** the page loads
+**Then** I see a 404 page with helpful message
+**And** I see links to home and admin
+
+---
+
+### Story 1.8: Environment Configuration
+
+As a **developer**,
+I want **environment-based configuration for dev vs prod**,
+So that **the app connects to the right Firebase project**.
+
+**Acceptance Criteria:**
+
+**Given** the app is configured
+**When** I run in development
+**Then** it uses `sensory-guide-dev` Firebase project
+**And** console logging is verbose
+
+**Given** the app is deployed to production
+**When** it loads
+**Then** it uses `sensory-guide-prod` Firebase project
+**And** console logging is minimal
+
+**And** `.env.example` documents all required variables
+**And** no secrets are committed to the repo
+
+---
+
+## Epic 2: Admin Authentication & Venue Sharing (Extended)
+
+### Story 2.6: Auth State Loading UI
+
+As an **admin user**,
+I want **a loading state while auth is being checked**,
+So that **I don't see a flash of login page before redirect**.
+
+**Acceptance Criteria:**
+
+**Given** I navigate to `/admin` while logged in
+**When** Firebase auth is initialising
+**Then** I see a loading spinner, NOT the login page
+**And** once auth resolves, I see the dashboard
+
+**Given** I navigate to `/admin` while NOT logged in
+**When** auth check completes
+**Then** I am redirected to `/admin/login`
+
+---
+
+### Story 2.7: Auth Error Handling
+
+As an **admin user**,
+I want **clear error messages when login fails**,
+So that **I know what went wrong and how to fix it**.
+
+**Acceptance Criteria:**
+
+**Given** I enter wrong email/password
+**When** I submit the form
+**Then** I see "Invalid email or password"
+
+**Given** my account is disabled
+**When** I try to login
+**Then** I see "Account disabled. Contact support."
+
+**Given** the network is unavailable
+**When** I try to login
+**Then** I see "Network error. Check your connection."
+
+**And** error messages are accessible (aria-live, colour not sole indicator)
+
+---
+
+### Story 2.8: Email Validation for Editor Invites
+
+As an **admin user**,
+I want **email validation when adding editors**,
+So that **I don't accidentally add invalid emails**.
+
+**Acceptance Criteria:**
+
+**Given** I am adding an editor
+**When** I enter an invalid email format
+**Then** I see "Please enter a valid email address"
+**And** the Add button is disabled
+
+**Given** I enter an email that's already an editor
+**When** I try to add
+**Then** I see "This person is already an editor"
+
+**Given** I enter my own email
+**When** I try to add
+**Then** I see "You're already an editor"
+
+---
+
+### Story 2.9: Venue Card Quick Actions
+
+As an **admin user**,
+I want **quick actions available on venue cards**,
+So that **I can manage venues without navigating to each one**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing my venues list
+**When** I hover over a venue card
+**Then** I see quick action buttons: View, Edit, Copy URL (if published)
+
+**Given** a venue is published
+**When** I click "Copy URL"
+**Then** the shareable URL is copied to clipboard
+**And** I see a toast: "URL copied!"
+
+**Given** I'm on mobile (no hover)
+**When** I tap a venue card
+**Then** quick actions appear in a bottom sheet
+
+---
+
+### Story 2.10: Venue Slug Conflict Resolution
+
+As an **admin user**,
+I want **automatic slug suggestions when my preferred slug is taken**,
+So that **I don't get stuck trying to find a unique slug**.
+
+**Acceptance Criteria:**
+
+**Given** I enter a venue name
+**When** the auto-generated slug already exists
+**Then** I see "Slug taken. Suggestions: [venue-name-2], [venue-name-adelaide]"
+**And** I can click a suggestion to use it
+
+**Given** I manually enter a slug that's taken
+**When** I try to submit
+**Then** I see the same suggestions UI
+
+---
+
+## Epic 3: Guide Creation & Publishing (Extended)
+
+### Story 3.6: PDF Upload Progress Details
+
+As an **admin user**,
+I want **detailed progress during PDF upload and processing**,
+So that **I know what's happening and how long to wait**.
+
+**Acceptance Criteria:**
+
+**Given** I upload a PDF
+**When** the upload is in progress
+**Then** I see:
+  - Upload percentage (0-100%)
+  - File name being uploaded
+  - Cancel button
+
+**Given** the upload completes and processing begins
+**When** I'm watching progress
+**Then** I see distinct stages with completion indicators:
+  - ✓ Uploaded
+  - ○ Extracting text...
+  - ○ Analysing structure...
+  - ○ Generating guide...
+
+---
+
+### Story 3.7: Rate Limit Warning Before Upload
+
+As an **admin user**,
+I want **to see my remaining transforms BEFORE uploading**,
+So that **I don't waste time uploading when I've hit my limit**.
+
+**Acceptance Criteria:**
+
+**Given** I am on the venue edit page
+**When** I view the upload section
+**Then** I see "Transforms today: 2 of 10 used"
+
+**Given** I have 0 transforms remaining
+**When** I view the upload section
+**Then** I see "Daily limit reached. Resets at midnight UTC."
+**And** the upload button is disabled
+
+**Given** I have 1 transform remaining
+**When** I view the upload section
+**Then** I see a warning: "Last transform for today"
+
+---
+
+### Story 3.8: LLM Retry with Backoff
+
+As an **admin user**,
+I want **automatic retry when LLM processing fails transiently**,
+So that **temporary issues don't require manual intervention**.
+
+**Acceptance Criteria:**
+
+**Given** the LLM API times out
+**When** the error is retryable
+**Then** the system automatically retries (max 3 attempts)
+**And** I see "Retrying... (attempt 2 of 3)"
+
+**Given** all retries fail
+**When** the final attempt errors
+**Then** I see "Processing failed after 3 attempts. Please try again."
+**And** my rate limit counter is NOT decremented
+
+**Given** the error is non-retryable (malformed PDF)
+**When** the error occurs
+**Then** no retry happens
+**And** I see "Could not process PDF. Please check the file format."
+
+---
+
+### Story 3.9: Guide JSON Schema Validation
+
+As an **admin user**,
+I want **validation that LLM output matches expected schema**,
+So that **malformed guides don't break the public view**.
+
+**Acceptance Criteria:**
+
+**Given** the LLM generates content
+**When** the output is received
+**Then** it's validated against Zod schema for Guide type
+**And** missing required fields cause a validation error
+
+**Given** validation fails
+**When** the error is caught
+**Then** I see "Generated content was invalid. Please try again."
+**And** the invalid JSON is logged for debugging
+
+**Given** validation passes
+**When** the guide is saved
+**Then** it's stored with schema version number for future migrations
+
+---
+
+### Story 3.10: Preview Mode Navigation
+
+As an **admin user**,
+I want **to navigate through the preview as users would**,
+So that **I can verify the entire guide experience**.
+
+**Acceptance Criteria:**
+
+**Given** I am in preview mode
+**When** I interact with the guide
+**Then** I can expand/collapse all sections
+**And** I can use keyboard navigation
+**And** I can test the "Expand all" button
+
+**Given** I finish reviewing
+**When** I want to exit preview
+**Then** I have clear "Exit Preview" and "Publish" buttons
+**And** "Publish" is disabled if no changes since last publish
+
+---
+
+### Story 3.11: Publish Confirmation with Diff
+
+As an **admin user**,
+I want **to see what changed before publishing an update**,
+So that **I confirm the right changes are going live**.
+
+**Acceptance Criteria:**
+
+**Given** I already have a published guide
+**When** I click "Publish" on an update
+**Then** I see a summary of changes:
+  - Sections added/removed
+  - Content significantly changed
+  - Images added/removed
+
+**Given** I'm publishing for the first time
+**When** I click "Publish"
+**Then** I see "This will make the guide publicly visible" (no diff needed)
+
+---
+
+### Story 3.12: Suggestions Quality Ranking
+
+As an **admin user**,
+I want **suggestions prioritised by impact**,
+So that **I focus on the most important improvements first**.
+
+**Acceptance Criteria:**
+
+**Given** the LLM generates suggestions
+**When** I view the suggestions panel
+**Then** suggestions are grouped by priority:
+  - High: Missing critical info (exits, warnings)
+  - Medium: Content improvements (more detail, clarity)
+  - Low: Nice-to-have (photos, additional context)
+
+**And** each suggestion has a brief explanation of why it matters
+
+---
+
+## Epic 4: Public Guide Experience (Extended)
+
+### Story 4.6: Category Badge Filtering (Scanning Aid)
+
+As an **end user**,
+I want **to see which sensory categories apply to each section**,
+So that **I can quickly find areas relevant to my sensitivities**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing a collapsed section
+**When** I look at the section header
+**Then** I see small category badges (Sound, Light, Crowds, etc.) for categories flagged in that section
+**And** badges use the defined category colours (Sound=#CDE7FF, etc.)
+**And** badges have text labels (not icons alone)
+
+**Given** a section has no sensory warnings
+**When** I view the header
+**Then** no badges appear (clean header)
+
+---
+
+### Story 4.7: External Link Treatment
+
+As an **end user**,
+I want **clear indication when links go to external sites**,
+So that **I'm not surprised when leaving the guide**.
+
+**Acceptance Criteria:**
+
+**Given** a link goes to an external site (maps, venue website)
+**When** I view the link
+**Then** it has a small external link indicator (↗ or similar)
+**And** clicking opens in a new tab
+**And** the link has `rel="noopener noreferrer"`
+
+**Given** I use a screen reader
+**When** I focus on an external link
+**Then** it announces "opens in new tab"
+
+---
+
+### Story 4.8: Skip to Content Link
+
+As a **keyboard/screen reader user**,
+I want **a skip link to bypass navigation**,
+So that **I can get to the main content quickly**.
+
+**Acceptance Criteria:**
+
+**Given** I navigate to a guide page
+**When** I press Tab as first action
+**Then** a "Skip to main content" link becomes visible
+**And** clicking it jumps focus to the guide content
+
+**Given** I'm not using keyboard navigation
+**When** the page loads
+**Then** the skip link is visually hidden but still accessible
+
+---
+
+### Story 4.9: Section Deep Linking
+
+As an **end user**,
+I want **to link directly to a specific section**,
+So that **I can share or bookmark specific venue areas**.
+
+**Acceptance Criteria:**
+
+**Given** I expand a section
+**When** the section opens
+**Then** the URL updates to include the section anchor (e.g., `/venue/slug#entry-hall`)
+
+**Given** I navigate to a URL with a section anchor
+**When** the page loads
+**Then** that section is automatically expanded
+**And** the page scrolls to that section
+
+**Given** I copy the URL while a section is expanded
+**When** I share the URL
+**Then** recipients see that section expanded when they open it
+
+---
+
+### Story 4.10: Loading State for Guide Fetch
+
+As an **end user**,
+I want **a pleasant loading state while the guide loads**,
+So that **I'm not staring at a blank screen**.
+
+**Acceptance Criteria:**
+
+**Given** I navigate to a guide
+**When** the JSON is being fetched
+**Then** I see a skeleton UI matching the guide structure:
+  - Skeleton header
+  - Skeleton section headers
+  - Subtle animation
+
+**Given** the fetch completes
+**When** data is ready
+**Then** content replaces skeletons smoothly (no flicker)
+
+**Given** the fetch fails
+**When** the error occurs
+**Then** I see "Couldn't load guide. Try refreshing."
+**And** a "Retry" button is available
+
+---
+
+### Story 4.11: Offline Handling
+
+As an **end user**,
+I want **graceful handling when I lose connectivity**,
+So that **I understand why the page won't load**.
+
+**Acceptance Criteria:**
+
+**Given** I'm offline and visit a guide
+**When** the fetch fails due to network
+**Then** I see "You appear to be offline. Check your connection."
+**And** a "Retry" button is available
+
+**Given** I regain connectivity
+**When** I click "Retry"
+**Then** the guide loads normally
+
+---
+
+### Story 4.12: Last Updated Formatting
+
+As an **end user**,
+I want **the last updated date in a friendly format**,
+So that **I can quickly gauge if the information is current**.
+
+**Acceptance Criteria:**
+
+**Given** the guide was updated today
+**When** I view the last updated date
+**Then** I see "Updated today"
+
+**Given** the guide was updated yesterday
+**When** I view the date
+**Then** I see "Updated yesterday"
+
+**Given** the guide was updated within the last week
+**When** I view the date
+**Then** I see "Updated 3 days ago"
+
+**Given** the guide was updated more than a week ago
+**When** I view the date
+**Then** I see the full date: "Updated 15 January 2026"
+
+---
+
+### Story 4.13: Mobile Quick Actions Bar
+
+As a **mobile user at the venue**,
+I want **quick access to exits and bathrooms**,
+So that **I can find essential facilities when stressed**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing a guide on mobile
+**When** I scroll down
+**Then** a floating quick actions bar appears at the bottom
+**And** it shows: "Exits" and "Bathrooms" (if venue has these)
+
+**Given** I tap "Exits"
+**When** the action fires
+**Then** the guide scrolls to and expands the section containing exit info
+**And** exit information is highlighted
+
+**Given** the venue has no bathroom info
+**When** the bar renders
+**Then** "Bathrooms" button is not shown
+
+---
+
+## Epic 5: Print & Feedback (Extended)
+
+### Story 5.5: Print Header/Footer
+
+As an **end user**,
+I want **useful headers and footers on printed pages**,
+So that **multi-page printouts stay organised**.
+
+**Acceptance Criteria:**
+
+**Given** I print a guide
+**When** the printed output renders
+**Then** each page has:
+  - Header: Venue name
+  - Footer: Page X of Y, URL of the guide
+
+**And** headers/footers use @page CSS rules
+**And** they're unobtrusive (small, muted colour)
+
+---
+
+### Story 5.6: Print Page Breaks
+
+As an **end user**,
+I want **sensible page breaks in printed guides**,
+So that **sections aren't awkwardly split**.
+
+**Acceptance Criteria:**
+
+**Given** I print a guide
+**When** sections are rendered
+**Then** `page-break-inside: avoid` is applied to:
+  - Section headers
+  - Individual sensory warnings
+  - Images with captions
+
+**And** page breaks occur between sections when possible
+**And** orphan/widow control prevents single lines at page boundaries
+
+---
+
+### Story 5.7: Feedback Prompt Timing
+
+As an **end user**,
+I want **the feedback prompt to appear at the right time**,
+So that **it doesn't interrupt my reading but I see it when ready**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing a guide
+**When** I scroll past 75% of the content
+**Then** the feedback prompt fades in at the bottom
+
+**Given** I haven't scrolled far
+**When** I look at the page
+**Then** the feedback prompt is not visible
+
+**Given** I've already given feedback (stored in localStorage)
+**When** I view the guide again
+**Then** the feedback prompt doesn't appear
+
+---
+
+### Story 5.8: Analytics Event Batching
+
+As a **developer**,
+I want **analytics events batched for performance**,
+So that **frequent events don't slow down the user experience**.
+
+**Acceptance Criteria:**
+
+**Given** a user rapidly expands/collapses sections
+**When** multiple events fire quickly
+**Then** events are debounced (300ms) before sending to GA
+
+**Given** the user navigates away
+**When** the page unloads
+**Then** any pending events are flushed via sendBeacon
+
+---
+
+### Story 5.9: Admin Analytics View
+
+As an **admin user**,
+I want **to see how my guides are performing**,
+So that **I know if users find them helpful**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing my venue in admin
+**When** I navigate to the "Analytics" tab
+**Then** I see (embedded GA):
+  - Total views (last 30 days)
+  - Thumbs up/down ratio
+  - Print button clicks
+  - Most expanded sections
+
+**And** this uses GA embed, not custom analytics backend
+
+---
+
+## Epic 6: Guide Management & Super Admin (Extended)
+
+### Story 6.5: Version Comparison View
+
+As an **admin user**,
+I want **to compare two versions of a guide side-by-side**,
+So that **I can see exactly what changed**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing version history
+**When** I select two versions
+**Then** I can click "Compare"
+**And** I see a side-by-side or diff view
+
+**Given** the comparison view is open
+**When** I view sections
+**Then** added content is highlighted green
+**And** removed content is highlighted red
+**And** unchanged content is normal
+
+---
+
+### Story 6.6: Bulk Venue Actions (Super Admin)
+
+As a **super admin**,
+I want **to perform actions on multiple venues at once**,
+So that **I can efficiently manage the platform**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing "All Venues" as super admin
+**When** I select multiple venues via checkboxes
+**Then** I see bulk action buttons: "Export List"
+
+**Given** I click "Export List"
+**When** the export generates
+**Then** I get a CSV with: venue name, slug, editors, status, last updated
+
+---
+
+### Story 6.7: Super Admin Impersonation
+
+As a **super admin**,
+I want **to view the admin portal as a specific user**,
+So that **I can debug issues they're experiencing**.
+
+**Acceptance Criteria:**
+
+**Given** I am a super admin
+**When** I search for a user email
+**Then** I can click "View as this user"
+**And** the admin portal shows only venues that user has access to
+
+**Given** I am impersonating a user
+**When** I view the header
+**Then** I see a banner: "Viewing as user@example.com"
+**And** I can click "Exit impersonation" to return to super admin view
+
+**And** impersonation is read-only (cannot make changes)
+**And** impersonation sessions are logged in audit trail
+
+---
+
+### Story 6.8: System Health Dashboard
+
+As a **super admin**,
+I want **to monitor system health at a glance**,
+So that **I can spot issues before users report them**.
+
+**Acceptance Criteria:**
+
+**Given** I am a super admin viewing the analytics dashboard
+**When** I look at system health
+**Then** I see:
+  - LLM API status (operational/degraded/down)
+  - Average transform time (last 24h)
+  - Transform error rate (last 24h)
+  - Storage usage
+
+**Given** any metric is in warning/critical state
+**When** I view the dashboard
+**Then** that metric is visually highlighted
+
+---
+
+### Story 6.9: Audit Log Search
+
+As a **super admin**,
+I want **to search the audit log for specific events**,
+So that **I can investigate issues reported by users**.
+
+**Acceptance Criteria:**
+
+**Given** I am on the super admin dashboard
+**When** I navigate to "Audit Log"
+**Then** I see a searchable list of events
+
+**Given** I want to find events for a specific user
+**When** I filter by email
+**Then** I see only events for that user
+
+**Given** I want to find events for a specific venue
+**When** I filter by venue ID or name
+**Then** I see only events for that venue
+
+**And** each log entry shows: timestamp, user, action, venue, details
+
+---
+
+## Epic 7: Polish & Quality (New Epic)
+
+### Story 7.1: Loading States Consistency
+
+As a **user**,
+I want **consistent loading states across the app**,
+So that **the experience feels polished and predictable**.
+
+**Acceptance Criteria:**
+
+**Given** any async operation is in progress
+**When** I'm waiting
+**Then** I see one of:
+  - Skeleton UI (for content loading)
+  - Spinner with label (for form submissions)
+  - Progress bar (for uploads)
+
+**And** loading states use consistent animations
+**And** all loading states respect reduced motion preference
+
+---
+
+### Story 7.2: Toast Notifications
+
+As a **user**,
+I want **non-blocking feedback for actions**,
+So that **I know my actions succeeded without modal interruptions**.
+
+**Acceptance Criteria:**
+
+**Given** I perform a successful action (copy URL, save, etc.)
+**When** the action completes
+**Then** a toast appears briefly: "[Action] successful"
+**And** toast auto-dismisses after 3 seconds
+**And** toast can be manually dismissed
+
+**Given** an action fails
+**When** the error occurs
+**Then** a toast appears with error message
+**And** error toasts are visually distinct (but not red-only)
+**And** error toasts persist until dismissed
+
+**And** toasts stack if multiple appear
+**And** toasts are announced to screen readers
+
+---
+
+### Story 7.3: Form Validation UX
+
+As an **admin user**,
+I want **clear, helpful form validation**,
+So that **I can quickly fix errors**.
+
+**Acceptance Criteria:**
+
+**Given** I submit a form with validation errors
+**When** the errors display
+**Then** each error appears below its field
+**And** the first error field is focused
+**And** error messages are specific (not just "Invalid input")
+
+**Given** I correct an error
+**When** I update the field
+**Then** the error clears immediately (no need to resubmit)
+
+**And** required fields are marked with * (and explained in legend)
+**And** form validation uses Zod schemas (React Hook Form + Zod)
+
+---
+
+### Story 7.4: Empty States
+
+As a **user**,
+I want **helpful empty states**,
+So that **I know what to do when there's no data**.
+
+**Acceptance Criteria:**
+
+**Given** I view a list with no items
+**When** the page loads
+**Then** I see an empty state with:
+  - Friendly message (not "No data")
+  - Relevant illustration or icon
+  - Call to action (if applicable)
+
+Examples:
+- No venues: "You don't have any venues yet. Create your first one!"
+- No version history: "No previous versions. Publish to create history."
+- No search results: "No venues match your search."
+
+---
+
+### Story 7.5: Responsive Tables
+
+As an **admin user on mobile**,
+I want **tables that work on small screens**,
+So that **I can manage venues from my phone**.
+
+**Acceptance Criteria:**
+
+**Given** I view a data table on mobile
+**When** the screen is narrow
+**Then** the table transforms to a card-based layout
+**Or** horizontal scroll is enabled with visible scroll indicator
+
+**And** critical columns remain visible
+**And** actions remain accessible
+
+---
+
+### Story 7.6: Focus Management
+
+As a **keyboard user**,
+I want **proper focus management**,
+So that **I always know where I am on the page**.
+
+**Acceptance Criteria:**
+
+**Given** I open a modal/dialog
+**When** it opens
+**Then** focus moves to the first focusable element in the modal
+**And** focus is trapped within the modal
+
+**Given** I close a modal
+**When** it closes
+**Then** focus returns to the element that triggered the modal
+
+**Given** I complete a form and navigate away
+**When** the new page loads
+**Then** focus moves to the main content area
+
+---
+
+### Story 7.7: Confirmation Dialogs
+
+As an **admin user**,
+I want **confirmation for destructive actions**,
+So that **I don't accidentally delete important data**.
+
+**Acceptance Criteria:**
+
+**Given** I click a destructive action (delete venue, remove editor)
+**When** the action is triggered
+**Then** a confirmation dialog appears with:
+  - Clear description of what will happen
+  - Cancel button (default focus)
+  - Confirm button (danger style)
+
+**Given** the action involves permanent data loss
+**When** the dialog appears
+**Then** I must type the venue name to confirm
+
+---
+
+### Story 7.8: Session Timeout Handling
+
+As an **admin user**,
+I want **graceful handling when my session expires**,
+So that **I don't lose work**.
+
+**Acceptance Criteria:**
+
+**Given** my Firebase auth session expires
+**When** I try to perform an action
+**Then** I see a modal: "Your session has expired. Please log in again."
+**And** I'm redirected to login after clicking OK
+**And** after logging in, I'm returned to where I was
+
+**Given** I have unsaved changes when session expires
+**When** the session check runs
+**Then** changes are preserved in localStorage
+**And** after re-login, I see "You have unsaved changes. Restore?"
+
+---
+
+## Epic 8: Testing & Documentation (New Epic)
+
+### Story 8.1: Unit Test Foundation
+
+As a **developer**,
+I want **unit testing infrastructure set up**,
+So that **I can write tests for components and utilities**.
+
+**Acceptance Criteria:**
+
+**Given** the project is configured
+**When** I run `npm test`
+**Then** Vitest runs all `*.test.ts` and `*.test.tsx` files
+
+**And** React Testing Library is configured for component tests
+**And** test coverage can be generated with `npm run test:coverage`
+**And** tests run in CI pipeline
+
+---
+
+### Story 8.2: E2E Test Foundation
+
+As a **developer**,
+I want **E2E testing infrastructure set up**,
+So that **I can write user journey tests**.
+
+**Acceptance Criteria:**
+
+**Given** the project is configured
+**When** I run `npm run test:e2e`
+**Then** Playwright runs tests in the `e2e/` directory
+
+**And** tests can run against local dev server
+**And** tests can run against deployed staging
+**And** E2E tests run in CI pipeline (on merge to main)
+
+---
+
+### Story 8.3: Critical Path E2E Tests
+
+As a **developer**,
+I want **E2E tests for critical user journeys**,
+So that **regressions are caught before deployment**.
+
+**Acceptance Criteria:**
+
+**Given** E2E test infrastructure exists
+**When** I write critical path tests
+**Then** the following journeys are covered:
+  - Admin: Login → Create venue → Upload PDF → Publish → View public guide
+  - Public: View guide → Expand sections → Print
+  - Admin: Add editor → Editor can access venue
+
+**And** tests run on PRs and fail builds on failure
+
+---
+
+### Story 8.4: Accessibility Automated Testing
+
+As a **developer**,
+I want **automated accessibility testing**,
+So that **a11y regressions are caught early**.
+
+**Acceptance Criteria:**
+
+**Given** the CI pipeline runs
+**When** Lighthouse a11y audit runs
+**Then** builds fail if score < 95
+
+**Given** I run tests locally
+**When** I use axe-core integration
+**Then** a11y violations are reported in test output
+
+**And** axe-core is integrated with Vitest/RTL for component tests
+**And** Lighthouse CI handles page-level a11y auditing
+
+---
+
+### Story 8.5: API Documentation
+
+As a **developer**,
+I want **documentation for Firebase Functions API**,
+So that **the backend contract is clear**.
+
+**Acceptance Criteria:**
+
+**Given** all Firebase Functions are implemented
+**When** I view `functions/README.md`
+**Then** I see documentation for each callable function:
+  - Function name
+  - Input parameters (with types)
+  - Return value (with types)
+  - Error codes possible
+  - Auth requirements
+
+**And** Zod schemas serve as source of truth for types
+
+---
+
+### Story 8.6: Component Storybook (Optional)
+
+As a **developer**,
+I want **a component gallery for UI components**,
+So that **I can develop and review components in isolation**.
+
+**Acceptance Criteria:**
+
+**Given** the project has UI components
+**When** I run `npm run storybook`
+**Then** Storybook launches with documented components
+
+**And** public design system components have stories
+**And** stories show component variants and states
+**And** accessibility checks run in Storybook
+
+---
+
+## Summary
+
+**Total Epics:** 8
+**Total Stories:** 52
+
+| Epic | Stories | Theme |
+|------|---------|-------|
+| Epic 1: Project Foundation | 8 | Infrastructure & setup |
+| Epic 2: Admin Auth & Venues | 10 | Authentication & sharing |
+| Epic 3: Guide Creation | 12 | PDF→Guide pipeline |
+| Epic 4: Public Guide | 13 | User-facing guide experience |
+| Epic 5: Print & Feedback | 9 | Print + analytics |
+| Epic 6: Management & Super Admin | 9 | Ongoing management |
+| Epic 7: Polish & Quality | 8 | UX refinement |
+| Epic 8: Testing & Docs | 6 | Quality assurance |
+

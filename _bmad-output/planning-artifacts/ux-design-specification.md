@@ -464,3 +464,53 @@ If we nail the accordion expand → read → feel prepared loop, everything else
 | Reduced motion | Respect `prefers-reduced-motion` | ✅ |
 | Min tap target | 44×44px | ✅ |
 
+## Design Decisions Log
+
+### Decision: No Icons in MVP
+
+**Status:** Decided
+**Date:** 2026-01-28
+
+**Context:** The original MVP concept included iconography for sensory categories (sound icon, light icon, etc.) and UI affordances.
+
+**Decision:** We decided against icons for MVP.
+
+**Rationale:**
+1. **Sourcing labour-intensive** - Finding/creating a consistent set of good-looking icons proved time-consuming
+2. **Consistency challenges** - Difficult to get a cohesive set that matched the warm institutional aesthetic
+3. **Clean look works better** - The minimalist Arts Centre Melbourne-inspired design actually benefits from NOT having icons; the category badges with simple colour dots and text are cleaner and more professional
+4. **Accessibility** - Text labels are inherently more accessible than icon-only affordances anyway
+
+**Outcome:** The final design uses text-based badges with small colour indicator dots instead of icons. This aligns with our "warm institutional" direction (Australian Museum, Arts Centre Melbourne references).
+
+### Future Consideration: Icons (Growth Phase)
+
+**Status:** Deferred
+**Target Phase:** Growth (post-MVP)
+
+If time permits in a later phase, we may revisit iconography for:
+- Category badges (could add subtle icons alongside text)
+- Mobile quick-access buttons (exits, bathrooms, help)
+- Print version visual scanning
+
+**Criteria for revisiting:**
+- Must have budget for custom icon set or find one that matches aesthetic
+- Must prove value over text-only approach through user feedback
+- Must not compromise the clean, minimal look we've achieved
+
+---
+
+## Final Design System Reference
+
+**Status:** APPROVED (2026-01-28)
+
+The visual design direction has been finalised as **v5**. All implementation must conform to:
+
+| Document | Purpose |
+|----------|---------|
+| `design-system-v5.md` | **Source of truth** - all tokens, components, a11y requirements |
+| `ux-design-direction-v5.html` | Reference implementation (interactive) |
+| `screenshots/v5-chosen.png` | Visual reference |
+
+This design system is also referenced in `project-context.md` to ensure AI agents always have visibility.
+
