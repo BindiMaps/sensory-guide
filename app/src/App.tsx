@@ -5,6 +5,7 @@ import { HomePage } from '@/features/public/home/HomePage'
 import { GuidePage } from '@/features/public/guide/GuidePage'
 import { AdminDashboard } from '@/features/admin/AdminDashboard'
 import { LoginPage } from '@/features/admin/LoginPage'
+import { VenueDetail } from '@/features/admin/VenueDetail'
 import { NotFound } from '@/features/public/NotFound'
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/admin/login" element={<LoginPage />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
+          <Route path="venues/:id" element={<VenueDetail />} />
         </Route>
 
         {/* 404 */}

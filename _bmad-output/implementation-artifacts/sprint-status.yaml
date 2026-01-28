@@ -51,7 +51,7 @@ development_status:
   # Epic 2: Admin Authentication & Venue Sharing
   epic-2: in-progress
   2-1-firebase-auth-integration: done
-  2-2-admin-dashboard-your-venues-list: backlog
+  2-2-admin-dashboard-your-venues-list: done
   2-3-create-new-venue: backlog
   2-4-venue-editor-management: backlog
   2-5-firestore-security-rules: backlog
