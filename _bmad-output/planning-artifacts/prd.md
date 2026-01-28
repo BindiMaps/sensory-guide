@@ -448,16 +448,34 @@ Admin needs to update published guide
 [View current published version]
     ↓
 Decision Point: Need to update?
-    ↓
-[Upload updated PDF → LLM transforms → review → publish]
-    ↓
-[Previous version saved to history]
+    ├── Upload new PDF path:
+    │       ↓
+    │   [Upload updated PDF → LLM transforms → review → publish]
+    │       ↓
+    │   [New version becomes live, previous saved to history]
+    │
+    └── Rollback to previous version path:
+            ↓
+        [Click "Version History"]
+            ↓
+        [See list of all versions with timestamps + preview links]
+            ↓
+        [Click "Preview" on any version → see how it looked]
+            ↓
+        [Click "Make Live" on desired version]
+            ↓
+        [Confirmation: "This will replace the current live guide"]
+            ↓
+        [Version becomes live, URL unchanged]
 ```
 
 **What Admin Needs:**
 
-- Version history visible
-- Previous versions accessible (rollback if needed)
+- Version history list showing all published versions
+- Preview link for each version (viewable before making live)
+- "Make Live" button on any version (one-click rollback)
+- Clear indicator of which version is currently live
+- Confirmation dialog before switching live version
 
 ### Journey Requirements Summary
 
@@ -643,7 +661,9 @@ sensoryGuideApp/
 - **FR17:** Admin can publish guide to make it publicly accessible
 - **FR18:** Admin can copy shareable URL after publishing
 - **FR19:** Admin can update existing guide by uploading new PDF
-- **FR20:** Admin can view version history of published guides
+- **FR20:** Admin can view version history of published guides with preview links
+- **FR20a:** Admin can set any previous version as the live version (one-click rollback)
+- **FR20b:** Publishing a new version automatically makes it live (latest = default)
 
 ### Content Suggestions (Admin)
 

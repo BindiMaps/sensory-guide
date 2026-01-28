@@ -46,7 +46,9 @@ This document provides the complete epic and story breakdown for Sensory Guide, 
 - FR17: Admin can publish guide to make it publicly accessible
 - FR18: Admin can copy shareable URL after publishing
 - FR19: Admin can update existing guide by uploading new PDF
-- FR20: Admin can view version history of published guides
+- FR20: Admin can view version history of published guides with preview links
+- FR20a: Admin can set any previous version as the live version (one-click rollback)
+- FR20b: Publishing a new version automatically makes it live (latest = default)
 
 **Content Suggestions (Admin):**
 - FR21: System generates content improvement suggestions after LLM transform
@@ -168,10 +170,11 @@ This document provides the complete epic and story breakdown for Sensory Guide, 
 | FR29-31 | Epic 2 | Authentication |
 | FR32-35 | Epic 5 | User Feedback & Analytics |
 | FR36-39 | Epic 4 | Accessibility Compliance |
+| FR20a-b | Epic 6 | Version Rollback (make any version live) |
 | FR40-41 | Epic 6 | Super Admin (Support Access) |
 | FR42 | Epic 4 | Index Page |
 
-**Coverage:** 42 FRs mapped ✅ (sequentially numbered, no gaps or duplicates)
+**Coverage:** 44 FRs mapped ✅ (FR20a-b added for versioned publishing)
 
 ---
 
@@ -668,12 +671,14 @@ So that **users can view the Sensory Guide for my venue**.
 
 **Given** the guide is published
 **When** a user visits `/venue/{slug}`
-**Then** they see the published guide content
+**Then** they see the version pointed to by `liveVersion`
 
 **Given** I upload a new PDF to a published venue
 **When** I preview and publish
-**Then** the previous version is saved to version history
-**And** the new guide replaces the live version
+**Then** a new version is created in `versions/{timestamp}.json`
+**And** `liveVersion` pointer is updated to the new timestamp
+**And** the new version immediately becomes live (latest = default)
+**And** previous versions remain accessible in version history
 
 ---
 
@@ -980,28 +985,48 @@ So that **the guide stays current as the venue changes**.
 
 ---
 
-### Story 6.2: Version History
+### Story 6.2: Version History & Rollback
 
 As an **admin user**,
-I want **to view and restore previous versions of a guide**,
-So that **I can recover from mistakes or compare changes**.
+I want **to view all published versions and make any version live with one click**,
+So that **I can quickly rollback to a known-good state or compare versions**.
+
+> **Design Principle:** "Anything publishable is rollbackable." Version history is a first-class feature of the publishing system, not an afterthought.
 
 **Acceptance Criteria:**
 
 **Given** I am on the venue edit page
 **When** I click "Version History"
-**Then** I see a list of previous versions with timestamps
-**And** each version shows who published it
+**Then** I see a list of ALL published versions (newest first)
+**And** each version shows:
+  - Timestamp (human-readable: "2 days ago" or "15 Jan 2026")
+  - Who published it (email)
+  - "LIVE" badge on the currently live version
+  - "Preview" button
+  - "Make Live" button (disabled on current live version)
 
-**Given** I select a previous version
-**When** I click "Preview"
-**Then** I see how that version looked
+**Given** I click "Preview" on any version
+**When** the preview loads
+**Then** I see that version rendered exactly as users would see it
+**And** I see a banner: "Previewing version from [date] - not currently live"
+**And** I can close preview to return to version list
 
-**Given** I want to restore an old version
-**When** I click "Restore this version"
-**Then** I see a confirmation dialog
-**And** after confirming, the old version becomes the new draft
-**And** I can preview and publish it
+**Given** I click "Make Live" on a non-live version
+**When** the confirmation dialog appears
+**Then** I see: "This will replace the current live guide. Users will immediately see this version."
+**And** I can Cancel or Confirm
+
+**Given** I confirm making a version live
+**When** the operation completes
+**Then** the `liveVersion` pointer updates to this version's timestamp
+**And** the version list refreshes showing new "LIVE" badge position
+**And** users visiting `/venue/{slug}` immediately see the new live version
+**And** a toast confirms: "Version from [date] is now live"
+
+**Given** I publish a new version (via PDF upload flow)
+**When** publish completes
+**Then** the new version is automatically set as live
+**And** it appears at the top of the version history list with "LIVE" badge
 
 ---
 

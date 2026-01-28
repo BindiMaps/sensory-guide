@@ -163,6 +163,7 @@ npx shadcn@latest add button card dialog form input
   editors: ["email1@example.com", "email2@example.com"]
   createdBy: "email1@example.com"
   createdAt, updatedAt
+  liveVersion: "2026-01-28T10:30:00Z"  # pointer to which version is live
 
 /venues/{venueId}/embeddings
   {"Section Title": "https://bindiweb.com/...", ...}
@@ -178,10 +179,16 @@ npx shadcn@latest add button card dialog form input
 ```
 /venues/{venueId}/
   uploads/{timestamp}_{logId}.pdf
-  guide.json
   images/
-  versions/{timestamp}.json
+  versions/{timestamp}.json    # all versions stored here (no separate guide.json)
 ```
+
+**Versioned Publishing Model:**
+- Every publish creates a new `versions/{timestamp}.json`
+- Firestore `liveVersion` field points to which timestamp is live
+- Public URL resolves `liveVersion` pointer → fetches that version's JSON
+- "Rollback" = update `liveVersion` pointer (no data copying)
+- "Publish new" = create new version + update `liveVersion` atomically
 
 **Public Guide Access:**
 - Published guides served as static JSON from Storage URLs
@@ -280,6 +287,46 @@ export const transformPdf = onCall(async (request) => {
 - Client uploads directly to Storage
 - Unique filename: `{timestamp}_{logId}.pdf`
 - Linked to Firestore log record
+
+**Version Management Functions:**
+```ts
+// Set any version as live (rollback or after new publish)
+export const setLiveVersion = onCall(async (request) => {
+  // Auth + editor check
+  const { venueId, versionTimestamp } = request.data;
+
+  // Verify version exists in Storage
+  const versionRef = storage.bucket().file(`venues/${venueId}/versions/${versionTimestamp}.json`);
+  const [exists] = await versionRef.exists();
+  if (!exists) throw new HttpsError('not-found', 'Version not found');
+
+  // Update pointer atomically
+  await firestore.doc(`venues/${venueId}`).update({
+    liveVersion: versionTimestamp,
+    updatedAt: FieldValue.serverTimestamp()
+  });
+
+  return { success: true, liveVersion: versionTimestamp };
+});
+
+// List all versions for a venue
+export const listVersions = onCall(async (request) => {
+  // Auth + editor check
+  const { venueId } = request.data;
+
+  // List all files in versions folder
+  const [files] = await storage.bucket().getFiles({
+    prefix: `venues/${venueId}/versions/`
+  });
+
+  return files.map(f => ({
+    timestamp: f.name.split('/').pop().replace('.json', ''),
+    previewUrl: f.publicUrl(),
+    size: f.metadata.size,
+    created: f.metadata.timeCreated
+  }));
+});
+```
 
 **PDF Processing: Synchronous with Progress Updates**
 - Function updates Firestore progress doc as it works

@@ -167,15 +167,34 @@ functions/
 
 ---
 
+## Versioned Publishing Pattern
+
+**Core principle:** "Anything publishable is rollbackable."
+
+- Every publish creates `versions/{timestamp}.json` in Storage
+- Firestore `venues/{id}.liveVersion` points to which timestamp is live
+- "Rollback" = update pointer only (no data copying)
+- "Publish new" = create new version + update pointer atomically
+
+**Functions:**
+- `setLiveVersion(venueId, timestamp)` - make any version live
+- `listVersions(venueId)` - get all versions with preview URLs
+
+---
+
 ## Quick Reference
 
-**Public guide URL:** `https://storage.googleapis.com/{bucket}/{orgSlug}/{venueSlug}/guide.json`
+**Public guide URL:** `https://storage.googleapis.com/{bucket}/venues/{venueId}/versions/{liveVersion}.json`
 
-**Rate limiting:** Firestore counter at `/organizations/{orgId}/usage/{period}`
+**Version storage:** `/venues/{venueId}/versions/{timestamp}.json`
 
-**LLM audit log:** `/organizations/{orgId}/llmLogs/{logId}`
+**Live version pointer:** Firestore `venues/{venueId}.liveVersion`
 
-**Progress updates:** `/organizations/{orgId}/venues/{venueId}/progress/{jobId}`
+**Rate limiting:** Firestore counter at `/usage/{userEmail}/{date}`
+
+**LLM audit log:** `/llmLogs/{logId}`
+
+**Progress updates:** `/venues/{venueId}/progress/{jobId}`
 
 ---
 
