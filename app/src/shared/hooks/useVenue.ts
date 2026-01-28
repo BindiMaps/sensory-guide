@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { doc, onSnapshot, updateDoc, deleteDoc, arrayUnion, arrayRemove, serverTimestamp } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import type { Venue } from '@/shared/types/venue'
@@ -12,6 +12,7 @@ export function useVenue(venueId: string | undefined) {
     if (!venueId) {
       setVenue(null)
       setLoading(false)
+      setError(null)
       return
     }
 
@@ -47,7 +48,7 @@ export function useVenue(venueId: string | undefined) {
     return () => unsubscribe()
   }, [venueId])
 
-  const addEditor = async (email: string) => {
+  const addEditor = useCallback(async (email: string) => {
     if (!venueId || !venue) throw new Error('No venue loaded')
     if (venue.editors.length >= 5) throw new Error('Maximum 5 editors per venue')
     if (venue.editors.includes(email)) throw new Error('This person is already an editor')
@@ -57,9 +58,9 @@ export function useVenue(venueId: string | undefined) {
       editors: arrayUnion(email),
       updatedAt: serverTimestamp(),
     })
-  }
+  }, [venueId, venue])
 
-  const removeEditor = async (email: string) => {
+  const removeEditor = useCallback(async (email: string) => {
     if (!venueId || !venue) throw new Error('No venue loaded')
     if (venue.editors.length <= 1) throw new Error('Cannot remove the last editor')
 
@@ -68,14 +69,14 @@ export function useVenue(venueId: string | undefined) {
       editors: arrayRemove(email),
       updatedAt: serverTimestamp(),
     })
-  }
+  }, [venueId, venue])
 
-  const deleteVenue = async () => {
+  const deleteVenue = useCallback(async () => {
     if (!venueId) throw new Error('No venue loaded')
 
     const venueRef = doc(db, 'venues', venueId)
     await deleteDoc(venueRef)
-  }
+  }, [venueId])
 
   return { venue, loading, error, addEditor, removeEditor, deleteVenue }
 }

@@ -16,10 +16,13 @@ export function useVenues() {
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuthStore()
 
+  const userEmail = user?.email
+
   useEffect(() => {
-    if (!user?.email) {
+    if (!userEmail) {
       setVenues([])
       setLoading(false)
+      setError(null)
       return
     }
 
@@ -29,7 +32,7 @@ export function useVenues() {
     const venuesRef = collection(db, 'venues')
     const q = query(
       venuesRef,
-      where('editors', 'array-contains', user.email),
+      where('editors', 'array-contains', userEmail),
       orderBy('updatedAt', 'desc')
     )
 
@@ -53,7 +56,7 @@ export function useVenues() {
     )
 
     return () => unsubscribe()
-  }, [user?.email])
+  }, [userEmail])
 
   return { venues, loading, error }
 }
