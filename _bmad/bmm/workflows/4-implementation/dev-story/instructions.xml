@@ -264,9 +264,44 @@
     <action>Run all existing tests to ensure no regressions</action>
     <action>Run the new tests to verify implementation correctness</action>
     <action>Run linting and code quality checks if configured in project</action>
+    <action>Run build to verify compilation succeeds</action>
     <action>Validate implementation meets ALL story acceptance criteria; enforce quantitative thresholds explicitly</action>
     <action if="regression tests fail">STOP and fix before continuing - identify breaking changes immediately</action>
     <action if="new tests fail">STOP and fix before continuing - ensure implementation correctness</action>
+    <action if="lint fails">STOP and fix lint errors before continuing</action>
+    <action if="build fails">STOP and fix build errors before continuing</action>
+
+    <!-- MANUAL TESTING PROMPT -->
+    <critical>After automated tests pass, ALWAYS prompt user for manual testing</critical>
+    <action>Identify what manual testing is required for this task based on:
+      - UI changes that need visual verification
+      - User flows that need end-to-end walkthrough
+      - Integration points that need real service testing
+      - Edge cases that automated tests don't cover
+    </action>
+
+    <output>🧪 **Manual Testing Required**
+
+      **Automated tests passed.** Please manually verify:
+      {{manual_test_checklist}}
+
+      **How to test:**
+      {{testing_instructions}}
+
+      Reply with test results or issues found.
+    </output>
+
+    <ask>Did manual testing pass? [y/n/issues]</ask>
+
+    <check if="user reports issues">
+      <action>Fix reported issues before continuing</action>
+      <action>Re-run automated tests after fixes</action>
+      <action>Re-prompt for manual testing verification</action>
+    </check>
+
+    <check if="manual testing passes">
+      <action>Continue to validation step</action>
+    </check>
   </step>
 
   <step n="8" goal="Validate and mark task complete ONLY when fully done">
