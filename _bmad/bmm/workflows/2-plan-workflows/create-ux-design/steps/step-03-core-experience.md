@@ -73,7 +73,7 @@ Determine where and how users will interact:
 - Will this be primarily touch-based or mouse/keyboard?
 - Any specific platform requirements or constraints?
 - Do we need to consider offline functionality?
-- Any device-specific capabilities we should leverage?"
+- Any device-specific capabilities we should take advantage of?"
 
 ### 3. Identify Effortless Interactions
 

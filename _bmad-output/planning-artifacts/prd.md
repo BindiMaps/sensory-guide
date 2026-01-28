@@ -228,7 +228,14 @@ See **Non-Functional Requirements** section for detailed targets. Key gates:
 
 ### Growth Features (Post-MVP)
 
-- **Sensitivity filters** - User selects their triggers (sound, crowds, light, etc.), guide highlights/filters to show only relevant sections. Stored in local storage (no account needed). Precompute per-category summaries at publish time for instant filtering. Defaults to showing everything.
+- **Sensitivity filters** - User selects their triggers (sound, crowds, light, etc.), stored in localStorage (no account needed). Defaults to showing everything.
+  - **Filter selection UI:** Inline toggleable badges at top of guide - tap a category badge to toggle it on/off. Only shows categories that exist in the current document (if venue has no smell warnings, don't show smell filter). Subtle "Tap to filter" hint on first visit. No modals, no separate settings page - the badges ARE the filter UI.
+  - **Filter display UX:**
+    - **Collapsed sections:** Badge filtering - only show category badges matching user's profile on collapsed area headers (helps scan which areas have relevant content)
+    - **Expanded sections:** Highlight, don't hide - user's triggers are visually prominent (bolder, coloured border, etc.) while other content remains visible but secondary
+    - Journey structure stays intact - filters emphasise within the place-based hierarchy, don't replace it
+  - **State management:** Zustand for filter state (persisted to localStorage)
+  - Rationale: Users might not know to filter for something until they see it; hiding content risks missing important warnings
 - **Smart PDF generation** - Print view respects filter selections, generating personalised PDF with only the user's relevant categories
 - **Prep checklist generator** - Auto-generate "what to bring" based on venue's sensory profile (e.g., "Sound issues → Consider noise-canceling headphones")
 - **Wallet card print** - Tiny printable (wallet/phone-sized) with just essentials: exits, bathrooms, quiet spots, emergency number. Content based on user filter selections.
@@ -284,12 +291,12 @@ Landing
     │
     └── Explore Further
             ↓
-        [Expand sections relevant to MY sensitivities]
+        [Expand sections by venue area - following the journey]
             ↓
-            ├── Sound → specific warnings, quiet zones, times
-            ├── Crowds → peak times, quiet routes
-            ├── Light → bright areas, dim alternatives
-            └── etc.
+            ├── Entry Hall → sound warnings, crowd levels, lighting notes
+            ├── Main Concourse → what to expect as you pass through
+            ├── Platforms → announcements, waiting areas
+            └── etc. (structured as user would walk through)
             ↓
         [View images of key areas (optional)]
             ↓
@@ -314,8 +321,9 @@ Landing
 
 - Venue name + address
 - Overview summary (1-2 sentences)
-- Category badges (quick scan of what's flagged)
-- Expandable sections per category
+- Category badges (quick scan of what sensory types are flagged across the venue)
+- Expandable sections per venue area/zone (journey-based: Entry → Main Area → etc.)
+- Within each area: sensory category labels + details
 - Images linked to relevant warnings
 - Print button (prominent)
 - Last updated date
@@ -612,11 +620,13 @@ sensoryGuideApp/
 
 ### Guide Content Display
 
-- **FR5:** User can expand/collapse content sections by sensory category
+- **FR5:** User can expand/collapse content sections by venue area/zone (journey-based structure: Entry → Main Area → Platforms, etc.)
 - **FR6:** User can view all sections expanded simultaneously
 - **FR7:** User can view images associated with specific sensory warnings
 - **FR8:** User can navigate to external venue resources (maps, websites)
 - **FR9:** User can locate key facilities (exits, bathrooms, quiet zones) quickly
+
+> **Note:** Content structure follows the user's journey through the venue (Place → Subject → Detail), matching how ASPECT audits are structured. Sensory categories (sound, crowds, light) appear as labels/badges within each place section, not as the top-level hierarchy.
 
 ### Print & Export
 
@@ -637,46 +647,46 @@ sensoryGuideApp/
 
 ### Content Suggestions (Admin)
 
-- **FR24:** System generates content improvement suggestions after LLM transform
-- **FR25:** Admin can view suggestions as bullet list via "Show Suggestions" button
-- **FR26:** Admin can re-upload updated PDF to incorporate suggestions
+- **FR21:** System generates content improvement suggestions after LLM transform
+- **FR22:** Admin can view suggestions as bullet list via "Show Suggestions" button
+- **FR23:** Admin can re-upload updated PDF to incorporate suggestions
 
 ### Venue Sharing (Doc-Style Model)
 
-- **FR21:** Admin can view list of all venues they have edit access to
-- **FR22:** Admin can create new venues (creator becomes an editor)
-- **FR23:** Admin can add other users as editors to a venue (by email, max 5 editors)
-- **FR24:** Admin can remove editors from a venue (except last editor)
-- **FR25:** Last remaining editor can delete the venue
+- **FR24:** Admin can view list of all venues they have edit access to
+- **FR25:** Admin can create new venues (creator becomes an editor)
+- **FR26:** Admin can add other users as editors to a venue (by email, max 5 editors)
+- **FR27:** Admin can remove editors from a venue (except last editor)
+- **FR28:** Last remaining editor can delete the venue
 
 ### Super Admin (Support Access)
 
-- **FR43:** Super Admin can view all venues across all users (support access)
-- **FR44:** Super Admin can view global analytics and system health
+- **FR40:** Super Admin can view all venues across all users (support access)
+- **FR41:** Super Admin can view global analytics and system health
 
 ### Authentication
 
-- **FR32:** Admin can authenticate to access admin portal
-- **FR33:** System restricts admin features to authenticated users
-- **FR34:** Public guides are accessible without authentication
+- **FR29:** Admin can authenticate to access admin portal
+- **FR30:** System restricts admin features to authenticated users
+- **FR31:** Public guides are accessible without authentication
 
 ### User Feedback & Analytics
 
-- **FR35:** User can submit thumbs up/down feedback on guide (captured via GA events, no Firebase writes)
-- **FR36:** System records page views per venue (via GA)
-- **FR37:** System records section expansion events (via GA)
-- **FR38:** System records print button usage (via GA)
+- **FR32:** User can submit thumbs up/down feedback on guide (captured via GA events, no Firebase writes)
+- **FR33:** System records page views per venue (via GA)
+- **FR34:** System records section expansion events (via GA)
+- **FR35:** System records print button usage (via GA)
 
 ### Accessibility Compliance
 
-- **FR39:** User can navigate entire guide using keyboard only
-- **FR40:** User can consume guide content via screen reader
-- **FR41:** System respects prefers-reduced-motion setting
-- **FR42:** System uses icons + text alongside colour indicators
+- **FR36:** User can navigate entire guide using keyboard only
+- **FR37:** User can consume guide content via screen reader
+- **FR38:** System respects prefers-reduced-motion setting
+- **FR39:** System uses icons + text alongside colour indicators
 
 ### Index Page
 
-- **FR45:** User can view BindiMaps information on landing page
+- **FR42:** User can view BindiMaps information on landing page
 
 ## Non-Functional Requirements
 

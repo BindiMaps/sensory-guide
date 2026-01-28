@@ -27,5 +27,5 @@ test,Iterate and Refine,Use test insights to improve prototype through rapid cyc
 implement,Pilot Programs,Launch small-scale real-world implementation to learn before full rollout,Start small|Real users|Real context|What breaks?|What works?|Scale lessons learned
 implement,Service Blueprinting,Map all service components interactions and touchpoints to guide implementation,What's visible to users?|What happens backstage?|What systems are needed?|Where are handoffs?
 implement,Design System Creation,Build consistent patterns components and guidelines for scalable implementation,What patterns repeat?|Create reusable components|Document standards|Enable consistency
-implement,Stakeholder Alignment,Bring team and stakeholders along journey to build shared understanding and commitment,Show the research|Walk through prototypes|Share user stories|Build empathy|Get buy-in
+implement,Team Buy-In,Bring team and stakeholders along the journey to build shared understanding and commitment,Show the research|Walk through prototypes|Share user stories|Build empathy|Get buy-in
 implement,Measurement Framework,Define success metrics and feedback loops to track impact and inform future iterations,How will we measure success?|What are key metrics?|How do we gather feedback?|When do we revisit?

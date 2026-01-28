@@ -103,7 +103,7 @@ Emphasize the unique value of this random combination:
 
 "**Why This Random Combination is Perfect:**
 
-**Unexpected Synergy:**
+**The Unlikely Combo:**
 These three techniques might seem unrelated, but that's exactly where the magic happens! [Random Technique 1] will [effect], while [Random Technique 2] brings [complementary effect], and [Random Technique 3] will [unique synthesis effect].
 
 **Breakthrough Potential:**
@@ -168,7 +168,7 @@ stepsCompleted: [1, 2]
 **Randomly Selected Techniques:**
 
 - **[Technique 1]:** [Why this random selection is exciting]
-- **[Technique 2]:** [How this creates unexpected creative synergy]
+- **[Technique 2]:** [How this creates unexpected creative sparks]
 - **[Technique 3]:** [How this completes the serendipitous journey]
 
 **Random Discovery Story:** [Content about the selection process and creative potential]

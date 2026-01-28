@@ -634,7 +634,7 @@ Bob (Scrum Master): "No shame, Charlie. Now we know, and we can improve. {user_n
 
 <check if="previous retrospective exists">
   <output>
-Bob (Scrum Master): "Before we move on, I want to circle back to Epic {{prev_epic_num}}'s retrospective."
+Bob (Scrum Master): "Before we move on, let's revisit Epic {{prev_epic_num}}'s retrospective."
 
 Bob (Scrum Master): "We made some commitments in that retro. Let's see how we did."
 

@@ -42,7 +42,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - Input documents from step-01 are available (product briefs, research, brainstorming)
 - No additional data files needed for this step
 - Focus on measurable, specific success criteria
-- LEVERAGE existing input documents to inform success criteria
+- USE existing input documents to inform success criteria
 
 ## YOUR TASK:
 

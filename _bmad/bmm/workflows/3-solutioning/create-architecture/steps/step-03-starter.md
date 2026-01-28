@@ -46,7 +46,7 @@ This step will generate content and present choices:
 
 ## YOUR TASK:
 
-Discover technical preferences and evaluate starter template options, leveraging existing technical preferences and establishing solid architectural foundations.
+Discover technical preferences and evaluate starter template options, building on existing technical preferences and establishing solid architectural foundations.
 
 ## STARTER EVALUATION SEQUENCE:
 

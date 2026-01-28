@@ -62,7 +62,7 @@ Help identify patterns that emerge from these boundaries.
 </step>
 
 <step n="3" goal="Conduct root cause analysis">
-Drill down to true root causes rather than treating symptoms. Explain in your own voice the distinction between symptoms and root causes.
+Dig into true root causes rather than treating symptoms. Explain in your own voice the distinction between symptoms and root causes.
 
 Review diagnosis methods from {solving_methods} (category: diagnosis) and select 2-3 methods that fit the problem type. Offer these to the user with brief descriptions of when each works best.
 

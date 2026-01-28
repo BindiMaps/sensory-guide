@@ -147,7 +147,7 @@
 
 - [ ] Documentation provides enough context for AI to understand existing system
 - [ ] Integration points are clear for planning new features
-- [ ] Reusable components are identified for leveraging in new work
+- [ ] Reusable components are identified for use in new work
 - [ ] Data models are documented for schema extension planning
 - [ ] API contracts are documented for endpoint expansion
 - [ ] Code conventions and patterns are captured for consistency

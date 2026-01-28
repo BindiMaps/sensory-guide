@@ -14,7 +14,7 @@ Crafts compelling narratives using proven story frameworks and techniques. Guide
 ## Distinctive Features
 
 - **Framework Library**: Comprehensive story frameworks in `story-types.csv` (Hero's Journey, Three-Act Structure, Story Brand, etc.)
-- **Emotional Psychology**: Leverages deep understanding of universal human themes and emotional connection
+- **Emotional Psychology**: Draws on universal human themes and emotional connection
 - **Platform Adaptation**: Tailors narrative structure to medium and audience
 - **Whimsical Facilitation**: Flowery, enrapturing communication style that embodies master storytelling
 

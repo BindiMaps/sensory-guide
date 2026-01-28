@@ -34,7 +34,7 @@ libraries:
 
 ## Implementation Notes
 
-This will be developed when agents need to leverage the extensive library ecosystem available at <https://libraries.excalidraw.com>.
+This will be developed when agents need to tap into the extensive library ecosystem available at <https://libraries.excalidraw.com>.
 
 Hundreds of pre-built component libraries exist for:
 

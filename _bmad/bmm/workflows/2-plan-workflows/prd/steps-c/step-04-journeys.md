@@ -44,11 +44,11 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 ## YOUR TASK:
 
-Create compelling narrative user journeys that leverage existing personas from product briefs and identify additional user types needed for comprehensive coverage.
+Create compelling narrative user journeys that build on existing personas from product briefs and identify additional user types needed for comprehensive coverage.
 
 ## JOURNEY MAPPING SEQUENCE:
 
-### 1. Leverage Existing Users & Identify Additional Types
+### 1. Build on Existing Users & Identify Additional Types
 
 **Check Input Documents for Existing Personas:**
 Analyze product brief, research, and brainstorming documents for user personas already defined.
@@ -57,7 +57,7 @@ Analyze product brief, research, and brainstorming documents for user personas a
 Guide user to build on existing personas:
 - Acknowledge personas found in their product brief
 - Extract key persona details and backstories
-- Leverage existing insights about their needs
+- Use existing insights about their needs
 - Prompt to identify additional user types beyond those documented
 - Suggest additional user types based on product context (admins, moderators, support, API consumers, internal ops)
 - Ask what additional user types should be considered
@@ -171,7 +171,7 @@ When user selects 'C', append the content directly to the document using the str
 
 ## SUCCESS METRICS:
 
-✅ Existing personas from product briefs leveraged when available
+✅ Existing personas from product briefs used when available
 ✅ All user types identified (not just primary users)
 ✅ Rich narrative storytelling for each persona and journey
 ✅ Complete story-based journey mapping with emotional arc

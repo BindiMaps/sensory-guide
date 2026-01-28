@@ -27,7 +27,7 @@ This document provides the complete epic and story breakdown for Sensory Guide, 
 - FR4: User can view accuracy disclaimer with last-updated date
 
 **Guide Content Display:**
-- FR5: User can expand/collapse content sections by sensory category
+- FR5: User can expand/collapse content sections by venue area/zone (journey-based: Entry → Main Area → etc.)
 - FR6: User can view all sections expanded simultaneously
 - FR7: User can view images associated with specific sensory warnings
 - FR8: User can navigate to external venue resources (maps, websites)
@@ -49,40 +49,40 @@ This document provides the complete epic and story breakdown for Sensory Guide, 
 - FR20: Admin can view version history of published guides
 
 **Content Suggestions (Admin):**
-- FR24: System generates content improvement suggestions after LLM transform
-- FR25: Admin can view suggestions as bullet list via "Show Suggestions" button
-- FR26: Admin can re-upload updated PDF to incorporate suggestions
+- FR21: System generates content improvement suggestions after LLM transform
+- FR22: Admin can view suggestions as bullet list via "Show Suggestions" button
+- FR23: Admin can re-upload updated PDF to incorporate suggestions
 
 **Venue Sharing (Doc-Style Model):**
-- FR21: Admin can view list of all venues they have edit access to
-- FR22: Admin can create new venues (creator becomes an editor)
-- FR23: Admin can add other users as editors to a venue (by email, max 5 editors)
-- FR24: Admin can remove editors from a venue (except last editor)
-- FR25: Last remaining editor can delete the venue
+- FR24: Admin can view list of all venues they have edit access to
+- FR25: Admin can create new venues (creator becomes an editor)
+- FR26: Admin can add other users as editors to a venue (by email, max 5 editors)
+- FR27: Admin can remove editors from a venue (except last editor)
+- FR28: Last remaining editor can delete the venue
 
 **Authentication:**
-- FR32: Admin can authenticate to access admin portal
-- FR33: System restricts admin features to authenticated users
-- FR34: Public guides are accessible without authentication
+- FR29: Admin can authenticate to access admin portal
+- FR30: System restricts admin features to authenticated users
+- FR31: Public guides are accessible without authentication
 
 **User Feedback & Analytics:**
-- FR35: User can submit thumbs up/down feedback on guide (via GA events)
-- FR36: System records page views per venue (via GA)
-- FR37: System records section expansion events (via GA)
-- FR38: System records print button usage (via GA)
+- FR32: User can submit thumbs up/down feedback on guide (via GA events)
+- FR33: System records page views per venue (via GA)
+- FR34: System records section expansion events (via GA)
+- FR35: System records print button usage (via GA)
 
 **Accessibility Compliance:**
-- FR39: User can navigate entire guide using keyboard only
-- FR40: User can consume guide content via screen reader
-- FR41: System respects prefers-reduced-motion setting
-- FR42: System uses icons + text alongside colour indicators
+- FR36: User can navigate entire guide using keyboard only
+- FR37: User can consume guide content via screen reader
+- FR38: System respects prefers-reduced-motion setting
+- FR39: System uses icons + text alongside colour indicators
 
 **Super Admin (Support Access):**
-- FR43: Super Admin can view all venues across all users (support access)
-- FR44: Super Admin can view global analytics and system health
+- FR40: Super Admin can view all venues across all users (support access)
+- FR41: Super Admin can view global analytics and system health
 
 **Index Page:**
-- FR45: User can view BindiMaps information on landing page
+- FR42: User can view BindiMaps information on landing page
 
 ### NonFunctional Requirements
 
@@ -160,19 +160,18 @@ This document provides the complete epic and story breakdown for Sensory Guide, 
 | FR | Epic | Description |
 |----|------|-------------|
 | FR1-4 | Epic 4 | Venue Discovery & Access |
-| FR5-9 | Epic 4 | Guide Content Display |
+| FR5-9 | Epic 4 | Guide Content Display (journey-based progressive disclosure) |
 | FR10-12 | Epic 5 | Print & Export |
 | FR13-20 | Epic 3 | Content Management (Create/Publish) |
-| FR21-23 | Epic 6 | Content Management (Update/Versioning) |
-| FR24-26 | Epic 3 | Content Suggestions |
-| FR27-31 | Epic 2 | Venue Sharing (Doc-Style Model) |
-| FR32-34 | Epic 2 | Authentication |
-| FR35-38 | Epic 5 | User Feedback & Analytics |
-| FR39-42 | Epic 4 | Accessibility Compliance |
-| FR43-44 | Epic 6 | Super Admin (Support Access) |
-| FR45 | Epic 4 | Index Page |
+| FR21-23 | Epic 3 | Content Suggestions |
+| FR24-28 | Epic 2 | Venue Sharing (Doc-Style Model) |
+| FR29-31 | Epic 2 | Authentication |
+| FR32-35 | Epic 5 | User Feedback & Analytics |
+| FR36-39 | Epic 4 | Accessibility Compliance |
+| FR40-41 | Epic 6 | Super Admin (Support Access) |
+| FR42 | Epic 4 | Index Page |
 
-**Coverage:** 45 FRs mapped ✅ (reduced from 47 - simplified sharing model)
+**Coverage:** 42 FRs mapped ✅ (sequentially numbered, no gaps or duplicates)
 
 ---
 
@@ -194,12 +193,14 @@ This enables continuous deployment and reduces integration risk.
 
 ## Epic List
 
-### Epic 1: Project Foundation
+### Epic 1: Project Foundation (Sprint 0)
 **Goal:** Deployable app shell with CI/CD quality gates in place
 
 **User Outcome:** Development team has a working, deployable foundation with automated quality enforcement.
 
 **FRs covered:** None directly (infrastructure enabling all future work)
+
+> ⚠️ **Sprint 0 Exception:** This epic is technical infrastructure with no direct user value. This is accepted for greenfield projects where foundation work is unavoidable. Stories are developer-focused and must complete before user-facing work begins.
 
 **Key Deliverables:**
 - Vite + React + TypeScript project initialised
@@ -216,7 +217,7 @@ This enables continuous deployment and reduces integration risk.
 
 **User Outcome:** Admin users can authenticate, see their venues, and share edit access with others.
 
-**FRs covered:** FR27-34 (Venue Sharing + Authentication)
+**FRs covered:** FR24-31 (Venue Sharing + Authentication)
 
 **Key Deliverables:**
 - Firebase Auth integration
@@ -235,7 +236,7 @@ This enables continuous deployment and reduces integration risk.
 
 **User Outcome:** Admins can create and publish Sensory Guides from PDF audits.
 
-**FRs covered:** FR13-20 (Content Management)
+**FRs covered:** FR13-23 (Content Management + Content Suggestions)
 
 **Key Deliverables:**
 - PDF upload to Cloud Storage (signed URLs)
@@ -254,7 +255,7 @@ This enables continuous deployment and reduces integration risk.
 
 **User Outcome:** People with sensory sensitivities can access and use guides to plan venue visits.
 
-**FRs covered:** FR1-9, FR38-42 (Venue Discovery + Display + Accessibility + Index)
+**FRs covered:** FR1-9, FR36-39, FR42 (Venue Discovery + Display + Accessibility + Index)
 
 **Key Deliverables:**
 - Public guide view at `/venue/:slug`
@@ -274,7 +275,7 @@ This enables continuous deployment and reduces integration risk.
 
 **User Outcome:** Users get high-quality printed guides and can signal what's helpful.
 
-**FRs covered:** FR10-12, FR34-37 (Print + Analytics)
+**FRs covered:** FR10-12, FR32-35 (Print + Analytics)
 
 **Key Deliverables:**
 - Print-optimised CSS
@@ -292,7 +293,7 @@ This enables continuous deployment and reduces integration risk.
 
 **User Outcome:** Guides stay current; support team can help users.
 
-**FRs covered:** FR19-20, FR43-44 (Guide Updates + Super Admin)
+**FRs covered:** FR19-20, FR40-41 (Guide Updates + Super Admin)
 
 **Key Deliverables:**
 - Guide update via new PDF upload
@@ -730,24 +731,25 @@ So that **I can plan my visit and know what to expect**.
 ### Story 4.2: Progressive Disclosure Sections
 
 As an **end user**,
-I want **to expand only the sections relevant to me**,
+I want **to expand only the venue areas relevant to my journey**,
 So that **I'm not overwhelmed with information**.
 
 **Acceptance Criteria:**
 
 **Given** I am viewing a guide
 **When** the page loads
-**Then** all sensory sections are collapsed by default
-**And** I can see section headings with category icons
+**Then** all venue area sections are collapsed by default (Entry, Main Concourse, Platforms, etc.)
+**And** I can see section headings representing each area of the venue
+**And** each section shows category badges indicating what sensory types are flagged in that area
 
-**Given** I want to read a section
-**When** I click on a section heading
-**Then** the section expands to show full content
+**Given** I want to read about a specific area
+**When** I click on an area section heading
+**Then** the section expands to show sensory details for that area (organised by subject: sound, crowds, light, etc.)
 **And** clicking again collapses it
 
 **Given** I want to see everything
 **When** I click "Expand all"
-**Then** all sections expand simultaneously
+**Then** all area sections expand simultaneously
 **And** the button changes to "Collapse all"
 
 **Given** I have reduced-motion enabled in my OS
@@ -755,6 +757,8 @@ So that **I'm not overwhelmed with information**.
 **Then** transitions are instant (no animation)
 
 **And** expanded/collapsed state is visually clear (chevron icon or similar)
+
+> **Note:** Content structure is journey-based (Place → Subject → Detail), matching ASPECT audit format. User walks through the guide as they would walk through the venue.
 
 ---
 

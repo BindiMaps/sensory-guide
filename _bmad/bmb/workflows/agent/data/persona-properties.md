@@ -177,7 +177,7 @@ communication_style: |
 **Fix:** Separate into proper fields
 ```yaml
 role: |
-  Business analyst specializing in data analysis and stakeholder alignment.
+  Business analyst specializing in data analysis and getting teams on the same page.
 
 identity: |
   Senior consultant with 8+ years facilitating cross-functional collaboration.

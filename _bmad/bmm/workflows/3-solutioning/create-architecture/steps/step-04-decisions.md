@@ -48,7 +48,7 @@ This step will generate content and present choices for each decision category:
 
 ## YOUR TASK:
 
-Facilitate collaborative architectural decision making, leveraging existing technical preferences and starter template decisions, focusing on remaining choices critical to the project's success.
+Facilitate collaborative architectural decision making, building on existing technical preferences and starter template decisions, focusing on remaining choices critical to the project's success.
 
 ## DECISION MAKING SEQUENCE:
 

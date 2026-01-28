@@ -117,8 +117,12 @@ Like a good MVP, we should prioritise features in order of unavoidable, core, th
 
 - Starts VERY simple - cater for all cognitive levels, worst thing we can do is overwhelm
 - Information opens up progressively as needed (progressive disclosure)
+- **Journey-based structure**: Content follows the user's path through the venue (Entry → Main Area → Platforms, etc.) because that's how ASPECT audits are structured and how users will actually experience the space
+  - Primary hierarchy: **Place** (where you are) → **Subject** (what to watch for) → **Detail**
+  - Sensory categories (sound, crowds, light) are labels/badges within each place section, not the top-level structure
+  - This is temporal/linear - "here's what to expect as you move through"
 - Includes maps (optional)
-- Sensory categories clearly labelled and color coded
+- Sensory categories clearly labelled and colour coded within each place section
   - [Icons available here](../assets/icons/)
 - Simple but professional design, this could be used by airports, government, entertainment etc on a public scale
 - very usable for mobile and desktop (responsive)
@@ -126,7 +130,6 @@ Like a good MVP, we should prioritise features in order of unavoidable, core, th
   - for example, an easy way to call help quickly in case of a panic attack
 - printable
 - pdf-able
-- MORE TODO
 
 ### Backend Requirements
 
