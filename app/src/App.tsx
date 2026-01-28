@@ -4,6 +4,7 @@ import { AdminLayout } from '@/features/admin/AdminLayout'
 import { HomePage } from '@/features/public/home/HomePage'
 import { GuidePage } from '@/features/public/guide/GuidePage'
 import { AdminDashboard } from '@/features/admin/AdminDashboard'
+import { LoginPage } from '@/features/admin/LoginPage'
 import { NotFound } from '@/features/public/NotFound'
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         </Route>
 
         {/* Admin routes */}
+        <Route path="/admin/login" element={<LoginPage />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
         </Route>
