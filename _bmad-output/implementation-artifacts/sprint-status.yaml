@@ -53,7 +53,7 @@ development_status:
   2-1-firebase-auth-integration: done
   2-2-admin-dashboard-your-venues-list: done
   2-3-create-new-venue: done
-  2-4-venue-editor-management: backlog
+  2-4-venue-editor-management: done
   2-5-firestore-security-rules: backlog
   epic-2-retrospective: optional
 
