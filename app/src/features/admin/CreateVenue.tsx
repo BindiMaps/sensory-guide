@@ -38,6 +38,7 @@ export function CreateVenue() {
   }
 
   const checkSlugExists = async (slugToCheck: string): Promise<boolean> => {
+    if (!db) return false
     const venuesRef = collection(db, 'venues')
     const q = query(venuesRef, where('slug', '==', slugToCheck))
     const snapshot = await getDocs(q)
@@ -60,6 +61,11 @@ export function CreateVenue() {
 
     if (!user?.email) {
       setError('You must be logged in')
+      return
+    }
+
+    if (!db) {
+      setError('Database not configured')
       return
     }
 

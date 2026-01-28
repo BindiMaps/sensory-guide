@@ -9,7 +9,7 @@ export function useVenue(venueId: string | undefined) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!venueId) {
+    if (!venueId || !db) {
       setVenue(null)
       setLoading(false)
       setError(null)
@@ -49,7 +49,7 @@ export function useVenue(venueId: string | undefined) {
   }, [venueId])
 
   const addEditor = useCallback(async (email: string) => {
-    if (!venueId || !venue) throw new Error('No venue loaded')
+    if (!venueId || !venue || !db) throw new Error('No venue loaded')
     if (venue.editors.length >= 5) throw new Error('Maximum 5 editors per venue')
     if (venue.editors.includes(email)) throw new Error('This person is already an editor')
 
@@ -61,7 +61,7 @@ export function useVenue(venueId: string | undefined) {
   }, [venueId, venue])
 
   const removeEditor = useCallback(async (email: string) => {
-    if (!venueId || !venue) throw new Error('No venue loaded')
+    if (!venueId || !venue || !db) throw new Error('No venue loaded')
     if (venue.editors.length <= 1) throw new Error('Cannot remove the last editor')
 
     const venueRef = doc(db, 'venues', venueId)
@@ -72,7 +72,7 @@ export function useVenue(venueId: string | undefined) {
   }, [venueId, venue])
 
   const deleteVenue = useCallback(async () => {
-    if (!venueId) throw new Error('No venue loaded')
+    if (!venueId || !db) throw new Error('No venue loaded')
 
     const venueRef = doc(db, 'venues', venueId)
     await deleteDoc(venueRef)

@@ -19,7 +19,7 @@ export function useVenues() {
   const userEmail = user?.email
 
   useEffect(() => {
-    if (!userEmail) {
+    if (!userEmail || !db) {
       setVenues([])
       setLoading(false)
       setError(null)
