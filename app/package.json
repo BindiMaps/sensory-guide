@@ -7,7 +7,13 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "echo 'No tests yet' && exit 0",
+    "emulators": "firebase emulators:start",
+    "emulators:export": "firebase emulators:export ./emulator-data",
+    "emulators:import": "firebase emulators:start --import=./emulator-data",
+    "deploy": "yarn build && firebase deploy --only hosting",
+    "deploy:preview": "yarn build && firebase hosting:channel:deploy preview"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.20",

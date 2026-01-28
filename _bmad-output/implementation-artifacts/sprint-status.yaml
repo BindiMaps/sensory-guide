@@ -43,8 +43,8 @@ development_status:
   # Epic 1: Project Foundation (Sprint 0)
   epic-1: in-progress
   1-1-initialise-react-project-with-vite-and-typescript: done
-  1-2-firebase-project-setup-and-local-development: backlog
-  1-3-ci-cd-pipeline-with-quality-gates: backlog
+  1-2-firebase-project-setup-and-local-development: done
+  1-3-ci-cd-pipeline-with-quality-gates: done
   1-4-basic-routing-and-app-shell: done
   epic-1-retrospective: optional
 

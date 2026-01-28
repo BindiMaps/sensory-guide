@@ -1,0 +1,10 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Placeholder rules - will be expanded in Story 3.1
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
