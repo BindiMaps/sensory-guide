@@ -164,6 +164,10 @@ ONLY WHEN [completion confirmation is provided and workflow status updated], wil
 
 ---
 
+## AUTO-UPDATE WORKFLOW STATUS
+
+<invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml" mode="update" action="complete_workflow" workflow_id="product-brief" default_output_file="{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md" />
+
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
 ### ✅ SUCCESS:

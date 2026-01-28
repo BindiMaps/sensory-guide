@@ -111,6 +111,10 @@ Report generated: {outputFile}
 
 The assessment found [number] issues requiring attention. Review the detailed report for specific findings and recommendations."
 
+## AUTO-UPDATE WORKFLOW STATUS
+
+<invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml" mode="update" action="complete_workflow" workflow_id="implementation-readiness" default_output_file="{planning_artifacts}/implementation-readiness-report-{{date}}.md" />
+
 ## WORKFLOW COMPLETE
 
 The implementation readiness workflow is now complete. The report contains all findings and recommendations for the user to consider.

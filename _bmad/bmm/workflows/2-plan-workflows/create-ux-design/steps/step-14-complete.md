@@ -147,6 +147,10 @@ Confirm completion with user:
 
 [UX Design Workflow Complete]"
 
+## AUTO-UPDATE WORKFLOW STATUS
+
+<invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml" mode="update" action="complete_workflow" workflow_id="create-ux-design" default_output_file="{planning_artifacts}/ux-design-specification.md" />
+
 ## SUCCESS METRICS:
 
 ✅ UX design specification contains all required sections

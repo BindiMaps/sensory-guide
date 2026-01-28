@@ -322,6 +322,10 @@ The workflow will collaborate with you to create an optimized `project-context.m
 If user responds 'N' or 'no':
 "Understood! Your architecture is complete and ready for implementation. You can always create a project context file later using the Generate Project Context workflow if needed."
 
+## AUTO-UPDATE WORKFLOW STATUS
+
+<invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml" mode="update" action="complete_workflow" workflow_id="create-architecture" default_output_file="{planning_artifacts}/architecture.md" />
+
 ## SUCCESS METRICS:
 
 ✅ Complete architecture document delivered with all sections

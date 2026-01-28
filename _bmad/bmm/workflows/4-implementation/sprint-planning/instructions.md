@@ -216,6 +216,10 @@ optional ↔ done
 - **optional**: Ready to be conducted but not required
 - **done**: Finished
 
+## AUTO-UPDATE WORKFLOW STATUS
+
+<invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml" mode="update" action="complete_workflow" workflow_id="sprint-planning" default_output_file="{implementation_artifacts}/sprint-status.yaml" />
+
 ### Guidelines
 
 1. **Epic Activation**: Mark epic as `in-progress` when starting work on its first story

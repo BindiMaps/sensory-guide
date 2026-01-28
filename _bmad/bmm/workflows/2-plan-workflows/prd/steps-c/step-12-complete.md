@@ -127,6 +127,10 @@ Provide guidance on logical next workflows - strongly suggesting any of these ch
 - Document now contains: Executive Summary, Success Criteria, User Journeys, Domain Requirements (if applicable), Innovation Analysis (if applicable), Project-Type Requirements, Functional Requirements (capability contract), Non-Functional Requirements, and has been polished for flow and coherence
 - Ask if they'd like to run validation workflow or proceed to next workflows
 
+## AUTO-UPDATE WORKFLOW STATUS
+
+<invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml" mode="update" action="complete_workflow" workflow_id="prd" default_output_file="{planning_artifacts}/prd.md" />
+
 ## SUCCESS METRICS:
 
 ✅ PRD document contains all required sections and has been polished

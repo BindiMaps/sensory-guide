@@ -143,3 +143,7 @@ If all validations pass:
 **All validations complete!** [C] Complete Workflow
 
 When C is selected, the workflow is complete and the epics.md is ready for development.
+
+## AUTO-UPDATE WORKFLOW STATUS
+
+<invoke-workflow path="{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml" mode="update" action="complete_workflow" workflow_id="create-epics-and-stories" default_output_file="{planning_artifacts}/epics.md" />
