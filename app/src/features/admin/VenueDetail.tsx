@@ -19,6 +19,8 @@ export function VenueDetail() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteConfirmName, setDeleteConfirmName] = useState('')
   const [deleting, setDeleting] = useState(false)
+  const [showSelfRemoveConfirm, setShowSelfRemoveConfirm] = useState(false)
+  const [removingEditor, setRemovingEditor] = useState(false)
 
   useEffect(() => {
     document.title = venue ? `${venue.name} - Sensory Guide Admin` : 'Venue - Sensory Guide Admin'
@@ -58,10 +60,24 @@ export function VenueDetail() {
   }
 
   const handleRemoveEditor = async (email: string) => {
+    const isSelf = email.toLowerCase() === user?.email?.toLowerCase()
+
+    if (isSelf && !showSelfRemoveConfirm) {
+      setShowSelfRemoveConfirm(true)
+      return
+    }
+
+    setRemovingEditor(true)
     try {
       await removeEditor(email)
+      if (isSelf) {
+        navigate('/admin', { replace: true })
+      }
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to remove editor')
+    } finally {
+      setRemovingEditor(false)
+      setShowSelfRemoveConfirm(false)
     }
   }
 
@@ -141,12 +157,16 @@ export function VenueDetail() {
                 {email === venue.createdBy && (
                   <span className="text-xs text-muted-foreground ml-2">(owner)</span>
                 )}
+                {email.toLowerCase() === user?.email?.toLowerCase() && (
+                  <span className="text-xs text-muted-foreground ml-2">(you)</span>
+                )}
               </span>
               {!isLastEditor && currentUserIsEditor && (
                 <button
                   onClick={() => handleRemoveEditor(email)}
                   className="text-sm text-red-600 hover:text-red-800"
                   title="Remove editor"
+                  disabled={removingEditor}
                 >
                   ✕
                 </button>
@@ -154,6 +174,30 @@ export function VenueDetail() {
             </li>
           ))}
         </ul>
+
+        {showSelfRemoveConfirm && (
+          <div className="mb-4 p-3 border border-amber-300 bg-amber-50 rounded-md">
+            <p className="text-sm text-amber-800 mb-3">
+              You're about to remove yourself from this venue. You will lose access and won't be able to edit it anymore.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowSelfRemoveConfirm(false)}
+                className="px-3 py-1.5 border rounded-md hover:bg-white text-sm"
+                disabled={removingEditor}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleRemoveEditor(user?.email || '')}
+                disabled={removingEditor}
+                className="px-3 py-1.5 bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50 text-sm"
+              >
+                {removingEditor ? 'Removing...' : 'Remove myself'}
+              </button>
+            </div>
+          </div>
+        )}
 
         {venue.editors.length < 5 && (
           <form onSubmit={handleAddEditor} className="flex gap-2">
