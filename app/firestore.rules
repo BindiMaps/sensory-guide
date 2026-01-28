@@ -2,7 +2,48 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Placeholder rules - will be expanded in Story 2.5
+
+    // Super admin emails - can read any venue for support
+    function isSuperAdmin() {
+      return request.auth != null &&
+             request.auth.token.email in ['keith@bindimaps.com'];
+    }
+
+    // Check if user is an editor of the venue
+    function isEditor(venueData) {
+      return request.auth != null &&
+             request.auth.token.email in venueData.editors;
+    }
+
+    // Check if the update would leave at least one editor
+    function hasAtLeastOneEditor() {
+      return request.resource.data.editors.size() >= 1;
+    }
+
+    // Venues collection
+    match /venues/{venueId} {
+      // Read: Must be editor OR super admin
+      allow read: if isEditor(resource.data) || isSuperAdmin();
+
+      // Create: Must be authenticated, creator must be in editors array
+      allow create: if request.auth != null &&
+                       request.auth.token.email in request.resource.data.editors &&
+                       request.resource.data.createdBy == request.auth.token.email;
+
+      // Update: Must be editor AND can't remove all editors
+      allow update: if isEditor(resource.data) && hasAtLeastOneEditor();
+
+      // Delete: Must be editor AND must be the last editor
+      allow delete: if isEditor(resource.data) && resource.data.editors.size() == 1;
+    }
+
+    // Config collection for super admin list (read-only)
+    match /config/{docId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Default deny all other access
     match /{document=**} {
       allow read, write: if false;
     }

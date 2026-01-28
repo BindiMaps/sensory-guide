@@ -49,12 +49,12 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: Admin Authentication & Venue Sharing
-  epic-2: in-progress
+  epic-2: done
   2-1-firebase-auth-integration: done
   2-2-admin-dashboard-your-venues-list: done
   2-3-create-new-venue: done
   2-4-venue-editor-management: done
-  2-5-firestore-security-rules: backlog
+  2-5-firestore-security-rules: done
   epic-2-retrospective: optional
 
   # Epic 3: Guide Creation & Publishing

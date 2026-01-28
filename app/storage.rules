@@ -2,7 +2,28 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Placeholder rules - will be expanded in Story 3.1
+    // Venues folder - for PDF uploads and guide assets
+    match /venues/{venueId}/{allPaths=**} {
+      // Read: Allow authenticated users who are editors
+      // Note: Storage rules can't check Firestore data directly,
+      // so we rely on Cloud Functions for write operations
+      allow read: if request.auth != null;
+
+      // Write: Only via Cloud Functions (signed URLs)
+      // Direct writes are denied - uploads go through callable functions
+      allow write: if false;
+    }
+
+    // Public guide assets (published guides)
+    match /public/guides/{slug}/{allPaths=**} {
+      // Anyone can read published guide content
+      allow read: if true;
+
+      // Write only via Cloud Functions
+      allow write: if false;
+    }
+
+    // Default deny
     match /{allPaths=**} {
       allow read, write: if false;
     }
