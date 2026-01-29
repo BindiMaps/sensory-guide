@@ -122,8 +122,7 @@ Like a good MVP, we should prioritise features in order of unavoidable, core, th
   - Sensory categories (sound, crowds, light) are labels/badges within each place section, not the top-level structure
   - This is temporal/linear - "here's what to expect as you move through"
 - Includes maps (optional)
-- Sensory categories clearly labelled and colour coded within each place section
-  - [Icons available here](../assets/icons/)
+- Sensory categories clearly labelled with text badges and colour coding within each place section (no icons - see UX Design Specification)
 - Simple but professional design, this could be used by airports, government, entertainment etc on a public scale
 - very usable for mobile and desktop (responsive)
 - mobile version we could assume they are most likely in the venue
@@ -181,21 +180,14 @@ Test with testers before public release - no point spending time and tokens unle
 
 ## Sensitivity Categories
 
-| Key | Label | Color | Icon |
-|-----|-------|-------|------|
-| `brightLight` | Bright Light | `#FFF5B1` | `overlay-light` |
-| `sound` | Sound | `#CDE7FF` | `overlay-sound2` |
-| `crowds` | Crowds | `#FFD6A5` | `overlay-crowd` |
-| `smells` | Smells | `#D9EACB` | `overlay-smell` |
-| `highSensory` | High Sensory | `#F3D6FF` | `overlay-sensory` |
-| `textures` | Textures | `#FFE3D9` | `overlay-texture` |
-| `alert` | Alert | `#FF6B6B` | `overlay-alert` |
-| `hazard` | Hazard | `#E63946` | `overlay-hazard` |
-| `staffOnly` | Staff Only | `#A0AEC0` | `overlay-staffOnly` |
-| `construction` | Construction | `#FFD700` | `overlay-construction` |
-| `maintenance` | Maintenance | `#4169E1` | `overlay-maintenance` |
+Categories are **flexible** - the LLM identifies relevant sensory categories from uploaded audit content rather than constraining to a fixed list. This allows:
+- New categories to emerge naturally from venue audits (e.g., "Vibration" for train stations, "Air Quality" for underground areas)
+- No maintenance burden for icon/colour mapping when new categories appear
+- Each venue can have sensory considerations unique to its context
 
-Icons located at: [../assets/icons/](../assets/icons/)
+**Common examples:** Sound, Light, Crowds, Smell, Touch, Movement, Temperature
+
+**UI approach:** Text-based badges with colour indicator dots. Known categories use predefined colours; unknown categories use a neutral default. No icons (see UX Design Specification "Decision: No Icons in MVP" for rationale).
 
 ## Existing Examples
 

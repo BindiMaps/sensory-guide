@@ -179,23 +179,18 @@ Starting point: Phase 2 MVP `data.json` structure:
 
 ---
 
-## Sensitivity Categories (Locked)
+## Sensitivity Categories (Flexible)
 
-From EXPLAINER.md - these are validated and should not change:
+Categories are **not predefined** - the LLM identifies relevant sensory categories from uploaded content. This allows:
+- New categories to emerge naturally from venue audits
+- No maintenance burden of icon/colour mapping for new categories
+- Venues can have unique sensory considerations
 
-| Key | Label | Color | Icon |
-|-----|-------|-------|------|
-| `brightLight` | Bright Light | `#FFF5B1` | `overlay-light` |
-| `sound` | Sound | `#CDE7FF` | `overlay-sound2` |
-| `crowds` | Crowds | `#FFD6A5` | `overlay-crowd` |
-| `smells` | Smells | `#D9EACB` | `overlay-smell` |
-| `highSensory` | High Sensory | `#F3D6FF` | `overlay-sensory` |
-| `textures` | Textures | `#FFE3D9` | `overlay-texture` |
-| `alert` | Alert | `#FF6B6B` | `overlay-alert` |
-| `hazard` | Hazard | `#E63946` | `overlay-hazard` |
-| `staffOnly` | Staff Only | `#A0AEC0` | `overlay-staffOnly` |
-| `construction` | Construction | `#FFD700` | `overlay-construction` |
-| `maintenance` | Maintenance | `#4169E1` | `overlay-maintenance` |
+**Common examples:** Sound, Light, Crowds, Smell, Touch, Movement, Temperature, Vibration, Air Quality
+
+**UI approach:** Text-based badges with colour indicator dots (no icons). Unknown categories use a default neutral colour.
+
+See UX Design Specification "Decision: No Icons in MVP" for full rationale.
 
 ---
 

@@ -480,6 +480,8 @@ If we nail the accordion expand → read → feel prepared loop, everything else
 2. **Consistency challenges** - Difficult to get a cohesive set that matched the warm institutional aesthetic
 3. **Clean look works better** - The minimalist Arts Centre Melbourne-inspired design actually benefits from NOT having icons; the category badges with simple colour dots and text are cleaner and more professional
 4. **Accessibility** - Text labels are inherently more accessible than icon-only affordances anyway
+5. **AI flexibility** - Without icons, the LLM can freely identify and create new sensory categories from uploaded content without requiring pre-defined mappings; we don't have to find/design an icon for every possible category the AI might detect
+6. **No predefined category list needed** - Categories can be dynamically determined per venue rather than constrained to a fixed taxonomy
 
 **Outcome:** The final design uses text-based badges with small colour indicator dots instead of icons. This aligns with our "warm institutional" direction (Australian Museum, Arts Centre Melbourne references).
 

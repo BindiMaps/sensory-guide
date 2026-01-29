@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PublicLayout } from '@/features/public/PublicLayout'
 import { AdminLayout } from '@/features/admin/AdminLayout'
 import { HomePage } from '@/features/public/home/HomePage'
@@ -9,10 +10,20 @@ import { VenueDetail } from '@/features/admin/VenueDetail'
 import { CreateVenue } from '@/features/admin/CreateVenue'
 import { NotFound } from '@/features/public/NotFound'
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 2,
+    },
+  },
+})
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
         {/* Public routes */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
@@ -31,6 +42,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
+    </QueryClientProvider>
   )
 }
 

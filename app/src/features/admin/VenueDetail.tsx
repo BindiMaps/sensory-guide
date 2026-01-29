@@ -1,10 +1,87 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
+import { httpsCallable } from 'firebase/functions'
+import { Loader2 } from 'lucide-react'
 import { useVenue } from '@/shared/hooks/useVenue'
 import { useAuthStore } from '@/stores/authStore'
+import { functions } from '@/lib/firebase'
+import { PdfUpload } from '@/features/admin/guides/PdfUpload'
+import { TransformProgress } from '@/features/admin/guides/TransformProgress'
+import { RateLimitDisplay, RateLimitBlocker } from '@/features/admin/guides/RateLimitDisplay'
+import { GuidePreview } from '@/features/admin/guides/GuidePreview'
+import { useGuideData } from '@/features/admin/guides/useGuideData'
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+/**
+ * Wrapper component for guide preview that handles data fetching
+ */
+function GuidePreviewWrapper({
+  outputPath,
+  onReupload,
+}: {
+  outputPath: string
+  onReupload: () => void
+}) {
+  const { data: guide, isLoading, error, refetch } = useGuideData(outputPath)
+  const [isPublishing, setIsPublishing] = useState(false)
+
+  const handlePublish = () => {
+    setIsPublishing(true)
+    // Stub for Story 3.4
+    console.log('Publish intent:', outputPath)
+    alert('Publish functionality coming in next story (3.4)')
+    setIsPublishing(false)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <span className="ml-3 text-muted-foreground">Loading guide preview...</span>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <div className="bg-red-50 border border-red-200 rounded-md p-4">
+          <h3 className="font-medium text-red-800 mb-2">Failed to load preview</h3>
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={() => refetch()}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Retry
+          </button>
+          <button
+            onClick={onReupload}
+            className="px-4 py-2 border rounded-md hover:bg-accent"
+          >
+            Re-upload PDF
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!guide) {
+    return null
+  }
+
+  return (
+    <GuidePreview
+      guide={guide}
+      onPublish={handlePublish}
+      onReupload={onReupload}
+      isPublishing={isPublishing}
+    />
+  )
 }
 
 export function VenueDetail() {
@@ -22,9 +99,84 @@ export function VenueDetail() {
   const [showSelfRemoveConfirm, setShowSelfRemoveConfirm] = useState(false)
   const [removingEditor, setRemovingEditor] = useState(false)
 
+  // Transform state
+  const [transformState, setTransformState] = useState<'idle' | 'transforming' | 'complete' | 'error'>('idle')
+  const [currentLogId, setCurrentLogId] = useState<string | null>(null)
+  const [transformError, setTransformError] = useState<string | null>(null)
+  const [outputPath, setOutputPath] = useState<string | null>(null)
+  const [usageInfo, setUsageInfo] = useState<{ today: number; limit: number } | null>(null)
+
   useEffect(() => {
     document.title = venue ? `${venue.name} - Sensory Guide Admin` : 'Venue - Sensory Guide Admin'
   }, [venue])
+
+  // Handle upload complete - trigger transform
+  const handleUploadComplete = async (logId: string, uploadPath: string) => {
+    setCurrentLogId(logId)
+    setTransformState('transforming')
+    setTransformError(null)
+
+    if (!functions) {
+      setTransformError('Firebase not configured')
+      setTransformState('error')
+      return
+    }
+
+    try {
+      const transformPdf = httpsCallable<
+        { venueId: string; uploadPath: string; logId: string },
+        { success: boolean; outputPath: string; suggestions: string[]; usageToday: number; usageLimit: number }
+      >(functions, 'transformPdf', { timeout: 540000 }) // 9 min timeout for LLM processing
+
+      const result = await transformPdf({ venueId: id!, uploadPath, logId })
+
+      setOutputPath(result.data.outputPath)
+      setUsageInfo({ today: result.data.usageToday, limit: result.data.usageLimit })
+      setTransformState('complete')
+    } catch (err) {
+      const error = err as { code?: string; message?: string; details?: { usageToday?: number; usageLimit?: number } }
+
+      // Human-friendly error messages
+      let friendlyMessage = 'Something went wrong. Please try again.'
+      if (error.code === 'deadline-exceeded' || error.message?.includes('deadline')) {
+        friendlyMessage = 'The transformation is taking longer than expected. Please try again with a smaller PDF.'
+      } else if (error.code === 'resource-exhausted' || error.message?.includes('limit')) {
+        friendlyMessage = 'Daily limit reached. Come back tomorrow to create more guides.'
+      } else if (error.message?.includes('not-found')) {
+        friendlyMessage = 'Could not find the uploaded PDF. Please try uploading again.'
+      } else if (error.message?.includes('permission')) {
+        friendlyMessage = 'You don\'t have permission to transform guides for this venue.'
+      } else if (error.message) {
+        friendlyMessage = error.message
+      }
+
+      setTransformError(friendlyMessage)
+
+      // Extract usage info from error if rate limit exceeded
+      if (error.details?.usageToday !== undefined) {
+        setUsageInfo({ today: error.details.usageToday, limit: error.details.usageLimit || 50 })
+      }
+
+      setTransformState('error')
+    }
+  }
+
+  // Handle transform complete (from progress component)
+  const handleTransformComplete = (path: string) => {
+    setOutputPath(path)
+    setTransformState('complete')
+  }
+
+  // Handle retry
+  const handleRetry = () => {
+    setTransformState('idle')
+    setCurrentLogId(null)
+    setTransformError(null)
+    setOutputPath(null)
+  }
+
+  // Check if rate limit is exhausted
+  const isRateLimitExhausted = usageInfo && usageInfo.today >= usageInfo.limit
 
   const handleAddEditor = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -228,12 +380,66 @@ export function VenueDetail() {
         )}
       </section>
 
-      {/* Guide Upload Placeholder */}
+      {/* Guide Upload & Transform */}
       <section className="border rounded-lg p-4 mb-6">
-        <h2 className="text-lg font-semibold mb-2">Guide Content</h2>
-        <p className="text-muted-foreground text-sm">
-          PDF upload and guide generation will be available in Epic 3.
-        </p>
+        <h2 className="text-lg font-semibold mb-4">Guide Content</h2>
+
+        {/* Rate limit display */}
+        {usageInfo && !isRateLimitExhausted && (
+          <RateLimitDisplay
+            usageToday={usageInfo.today}
+            usageLimit={usageInfo.limit}
+            className="mb-4"
+          />
+        )}
+
+        {/* Rate limit blocker */}
+        {isRateLimitExhausted ? (
+          <RateLimitBlocker usageToday={usageInfo!.today} usageLimit={usageInfo!.limit} />
+        ) : transformState === 'idle' ? (
+          /* Upload component - shown when idle */
+          <PdfUpload
+            venueId={id!}
+            onUploadComplete={handleUploadComplete}
+            onUploadError={(error) => {
+              setTransformError(error)
+              setTransformState('error')
+            }}
+          />
+        ) : transformState === 'transforming' && currentLogId ? (
+          /* Transform progress - shown while transforming */
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Transforming your PDF into a Sensory Guide...
+            </p>
+            <TransformProgress
+              venueId={id!}
+              logId={currentLogId}
+              onComplete={handleTransformComplete}
+              onRetry={handleRetry}
+            />
+          </div>
+        ) : transformState === 'complete' && outputPath ? (
+          /* Preview state - show full guide preview */
+          <GuidePreviewWrapper
+            outputPath={outputPath}
+            onReupload={handleRetry}
+          />
+        ) : transformState === 'error' ? (
+          /* Error state */
+          <div className="space-y-4">
+            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+              <h3 className="font-medium text-red-800 mb-2">Transform failed</h3>
+              <p className="text-sm text-red-700">{transformError || 'An unexpected error occurred'}</p>
+            </div>
+            <button
+              onClick={handleRetry}
+              className="px-4 py-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : null}
       </section>
 
       {/* Delete Venue (only for last editor) */}

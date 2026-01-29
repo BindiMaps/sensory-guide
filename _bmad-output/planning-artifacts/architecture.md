@@ -664,11 +664,7 @@ sensoryGuideApp/
 │       └── view-guide.spec.ts
 │
 └── public/
-    ├── favicon.ico
-    └── icons/                        # Sensory category icons
-        ├── overlay-light.svg
-        ├── overlay-sound.svg
-        └── ...
+    └── favicon.ico
 ```
 
 ### Architectural Boundaries

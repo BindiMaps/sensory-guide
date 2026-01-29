@@ -1,0 +1,381 @@
+{
+  "schemaVersion": "1.0",
+  "venue": {
+    "name": "Public Transport Hub",
+    "summary": "This venue, likely a large public transport hub or train station, presents significant sensory challenges across multiple areas. Key issues include high contrast and flickering lighting, excessive noise from multiple sources and reverberation, and strong odours in certain facilities. While some areas offer respite, many primary circulation paths and platforms are identified as potentially overwhelming due to a combination of light, sound, and movement stimuli.",
+    "lastUpdated": "2024-07-30T12:00:00Z"
+  },
+  "categories": [
+    "Light",
+    "Temperature",
+    "Sound",
+    "Movement",
+    "Crowds",
+    "Smell",
+    "Touch"
+  ],
+  "areas": [
+    {
+      "id": "entry-exit-festival-drive",
+      "name": "Entry/Exit Festival Drive",
+      "order": 1,
+      "badges": [
+        "Light",
+        "Temperature",
+        "Sound",
+        "Movement"
+      ],
+      "details": [
+        {
+          "category": "Light",
+          "level": "high",
+          "description": "Around 25m from the entrance, the sun was very bright, reflecting strongly from light-coloured paving and mirrored glass from nearby buildings. There was a significant difference between the light inside and outside, creating a high contrast shadow line on the floor. This type of lighting may affect those with low vision, dementia, or balance conditions."
+        },
+        {
+          "category": "Temperature",
+          "level": "medium",
+          "description": "There was a strong breeze coming from the direction of the river."
+        },
+        {
+          "category": "Sound",
+          "level": "low",
+          "description": "There were no strong noises before entering."
+        }
+      ]
+    },
+    {
+      "id": "walkway-newer-entrance-main-concourse",
+      "name": "Walkway from newer entrance to main concourse",
+      "order": 2,
+      "badges": [
+        "Light"
+      ],
+      "details": [
+        {
+          "category": "Light",
+          "level": "low",
+          "description": "The ceiling cove lighting was ~3000k and solid with no perceivable flicker. It felt comfortable and gave a sense of direction and flow."
+        },
+        {
+          "category": "Light",
+          "level": "high",
+          "description": "The uplighting on the ground near the pillar was uncovered at ~6500K. It felt uncomfortable and unavoidable to look at. Fortunately, the large space available meant visitors were able to walk closer to the centre, reducing the light's negative impact."
+        }
+      ]
+    },
+    {
+      "id": "north-entrance",
+      "name": "North Entrance",
+      "order": 3,
+      "badges": [
+        "Light"
+      ],
+      "details": [
+        {
+          "category": "Light",
+          "level": "high",
+          "description": "The pillar uplighting used in the entrance to the main building is the same as previously discussed. Unlike the tunnel leading here, the entrance is much narrower which made the uplighting unavoidable. It felt very uncomfortable to have the light shine straight into the eyes."
+        }
+      ]
+    },
+    {
+      "id": "northside-concourse",
+      "name": "Northside concourse",
+      "order": 4,
+      "badges": [
+        "Crowds",
+        "Temperature",
+        "Sound",
+        "Light"
+      ],
+      "details": [
+        {
+          "category": "Crowds",
+          "level": "low",
+          "description": "The space here was large and uncrowded. Seating was available that did not force users to sit closely."
+        },
+        {
+          "category": "Temperature",
+          "level": "medium",
+          "description": "There is a breeze still in this section of the building and it is cooler than the rest of the building."
+        },
+        {
+          "category": "Sound",
+          "level": "high",
+          "description": "Sound sources and volume begin and then continue to increase after entering. The material and large space of the environment allows the sound to reverberate. With the number of sound sources increasing, this became very uncomfortable over time. Speakers here seem good quality, but when an announcement (with announcement chime) occurred, the voice quickly became indistinguishable. It added to the overall level of sound in the space. The reverb of the building had a buildup of high frequencies that became extremely uncomfortable, forcing ear blocking."
+        },
+        {
+          "category": "Light",
+          "level": "low",
+          "description": "On the western wall, there was a collection of local artwork. The lighting was comfortable and made it easy to view the work, offering an opportunity for a positive visual sensory experience."
+        }
+      ]
+    },
+    {
+      "id": "info-centre",
+      "name": "Info centre",
+      "order": 5,
+      "badges": [
+        "Sound",
+        "Temperature",
+        "Light"
+      ],
+      "details": [
+        {
+          "category": "Sound",
+          "level": "low",
+          "description": "Walls and doors reduce the level of sound coming from outside significantly. There are fewer sound sources which were also quieter."
+        },
+        {
+          "category": "Temperature",
+          "level": "low",
+          "description": "The air conditioning made the space noticeably cooler than the concourse."
+        },
+        {
+          "category": "Light",
+          "level": "medium",
+          "description": "The lighting pointed down directly from the ceiling with not much diffusion. The light was bright and ~6000k."
+        }
+      ]
+    },
+    {
+      "id": "the-guardsman",
+      "name": "The Guardsman",
+      "order": 6,
+      "badges": [
+        "Smell",
+        "Sound"
+      ],
+      "details": [
+        {
+          "category": "Smell",
+          "level": "low",
+          "description": "The doors to ‘The Guardsman’ were closed, and no food smells were perceivable from there."
+        },
+        {
+          "category": "Sound",
+          "level": "medium",
+          "description": "There was music playing direct to outside the venue. The sound was not very loud but added to the number of sources in the space."
+        }
+      ]
+    },
+    {
+      "id": "main-concourse",
+      "name": "Main concourse",
+      "order": 7,
+      "badges": [
+        "Sound",
+        "Light",
+        "Touch",
+        "Smell"
+      ],
+      "details": [
+        {
+          "category": "Sound",
+          "level": "high",
+          "description": "There are multiple sound sources coming from almost every direction, including outside on North Terrace. At one time, an emergency vehicle drove past, and the sound travelled in and around the large concourse, which became unbearable. The combination of hard tiles and the large space meant that certain types of shoes created loud footstep sounds that could be heard from very far away from the source. Central Station Espresso would likely add smells and sounds from coffee grinding when operating in the mornings."
+        },
+        {
+          "category": "Light",
+          "level": "high",
+          "description": "The uplighting above the ball lighting in the archway was comfortable to see as it did not project the light to eyelevel. The ball lights high along each side of the concourse were warm ~3000k but were very bright; it was uncomfortable accidentally seeing them directly. The tiled floor was a highly reflective surface which increases the effect of lighting and reflected the surfaces around it. Large windows high on the western side allowed natural light, which felt comfortable. If standing in particular places on the eastern side of the concourse, the light coming from outside was very bright when in eyeline."
+        },
+        {
+          "category": "Touch",
+          "level": "medium",
+          "description": "The tiled floor gave a feeling of the direction of movement expected."
+        },
+        {
+          "category": "Smell",
+          "level": "medium",
+          "description": "Central Station Espresso would likely add smells from coffee when operating in the mornings."
+        }
+      ]
+    },
+    {
+      "id": "toilet-area",
+      "name": "Toilet area",
+      "order": 8,
+      "badges": [
+        "Smell",
+        "Light",
+        "Sound",
+        "Touch",
+        "Movement"
+      ],
+      "details": [
+        {
+          "category": "Smell",
+          "level": "high",
+          "description": "Outside the Male and Female toilets, there was a very strong smell of ammonia. Inside it was unbearable, forcing a quick exit."
+        },
+        {
+          "category": "Light",
+          "level": "high",
+          "description": "The ceiling downlights were not diffused, very bright, and had a noticeable flicker."
+        },
+        {
+          "category": "Sound",
+          "level": "high",
+          "description": "From outside, hand dryers could be heard loudly."
+        },
+        {
+          "category": "Touch",
+          "level": "medium",
+          "description": "The toilets were made of stainless steel and did not have seats on them."
+        },
+        {
+          "category": "Movement",
+          "level": "medium",
+          "description": "Outside the accessible toilet, an air conditioning vent in the ceiling created a narrow concentrated stream of moving air. It was an unexpected feeling while walking through toward the toilet."
+        }
+      ]
+    },
+    {
+      "id": "turnstiles",
+      "name": "Turnstiles",
+      "order": 9,
+      "badges": [
+        "Sound",
+        "Movement",
+        "Touch"
+      ],
+      "details": [
+        {
+          "category": "Sound",
+          "level": "medium",
+          "description": "The turnstile makes a confirmation ‘ding’ sound when a ticket works. The sound for a ticket failure is a buzzing sound that is not very loud."
+        },
+        {
+          "category": "Movement",
+          "level": "medium",
+          "description": "The turnstile is a tight space to go through. To use the turnstile, users have to push their legs against metal bars that have some resistance. They turn, and at a certain point in the rotation, the resistance stops, and the bars move quicker."
+        },
+        {
+          "category": "Touch",
+          "level": "medium",
+          "description": "Users have to push their legs against metal bars that have some resistance."
+        }
+      ]
+    },
+    {
+      "id": "paid-main-concourse",
+      "name": "Paid Main concourse",
+      "order": 10,
+      "badges": [
+        "Light",
+        "Crowds",
+        "Sound",
+        "Movement"
+      ],
+      "details": [
+        {
+          "category": "Light",
+          "level": "high",
+          "description": "There are multiple back-lit, rolling, and moving advertising displays in almost every direction when facing toward the platforms. The clear glass windows to the information desk add to the load of visual information. The JCDecaux panel rotated slowly through its advertising cycle, and its backlight had noticeable flickering. The ceiling is made from a highly reflective material which reflects the bright signs and screens strongly. The ceiling downlights are bright ~2700k, providing a constant light with no perceivable flicker."
+        },
+        {
+          "category": "Crowds",
+          "level": "medium",
+          "description": "There were many people walking, sometimes running toward the platforms. No ‘bottle necks’ were observed when people were arriving or leaving from trains. During peak hour, the area became busy but never felt crowded."
+        },
+        {
+          "category": "Sound",
+          "level": "high",
+          "description": "There are many sources of sound, e.g., beeping turnstiles, metal sound from turnstiles, footsteps, train, and advertisement sounds. The volume of footsteps was reduced when the ceiling height became lower and the material changed."
+        },
+        {
+          "category": "Movement",
+          "level": "medium",
+          "description": "The space did not offer a strong sense of direction due to a lack of designed flow and competing sensory information."
+        }
+      ]
+    },
+    {
+      "id": "platforms",
+      "name": "Platforms",
+      "order": 11,
+      "badges": [
+        "Light",
+        "Sound",
+        "Temperature",
+        "Crowds"
+      ],
+      "details": [
+        {
+          "category": "Light",
+          "level": "high",
+          "description": "Every odd platform of the 9 had a large LED screen playing video. These ‘rotated’ and played a mix of public service/regulatory announcements and advertising. All these screens play identical and simultaneously. The red L.E.D type clocks on each platform had a noticeable flicker."
+        },
+        {
+          "category": "Sound",
+          "level": "high",
+          "description": "During the advertising videos (but not the others), audio is also played. The audio is unexpected, not very loud, but adds to the overall number of sound sources in the area. Train doors make a repeated beep when a button is pressed to be opened, then when closing. The beeping from the train doors lasts longer than expected. Each door makes its own sounds, which creates the same sound in multiple places at varying times simultaneously. This created a ‘delay’ effect of sounds that increased the tension and stress of the environment. Two types of trains on the day made different sets of engine noises, varying in volume, pitch, and length, all unexpectedly occurring simultaneously. Vending machines make sound that is not very loud but adds to the number of sound sources."
+        },
+        {
+          "category": "Temperature",
+          "level": "medium",
+          "description": "From the beginning to about halfway along the platform, the temperature increased significantly."
+        },
+        {
+          "category": "Crowds",
+          "level": "medium",
+          "description": "Along the platforms (except 1), seating was available."
+        }
+      ]
+    },
+    {
+      "id": "south-side-entrance-from-arcade",
+      "name": "South side entrance (from arcade)",
+      "order": 12,
+      "badges": [
+        "Light",
+        "Sound",
+        "Movement",
+        "Touch"
+      ],
+      "details": [
+        {
+          "category": "Light",
+          "level": "high",
+          "description": "The lighting and design gave a feeling of flow and direction. At both ends of the tunnel, the ceiling becomes angled. This makes the downlights point toward eyelevel. The light is bright and uncomfortable when this happens."
+        },
+        {
+          "category": "Sound",
+          "level": "high",
+          "description": "While in the tunnel, the sound of trains travelling overhead creates a deep rumble that reverberates strongly. The sound level is loud and also creates a feeling of unbalance. There is a loud metal clunk sound at the start of the escalator that rises up to ground level."
+        },
+        {
+          "category": "Movement",
+          "level": "low",
+          "description": "The escalator moves at an anticipated speed and does not feel too tight a space to stand."
+        },
+        {
+          "category": "Touch",
+          "level": "medium",
+          "description": "The deep rumble from trains overhead creates a feeling of unbalance."
+        }
+      ]
+    }
+  ],
+  "facilities": {
+    "bathrooms": [
+      {
+        "description": "Outside the Male and Female toilets, there was a very strong smell of ammonia. Inside it was unbearable, forcing a quick exit. The ceiling downlights were not diffused, very bright, and had a noticeable flicker. From outside, hand dryers could be heard loudly. The toilets were made of stainless steel and did not have seats on them. Outside the accessible toilet, an air conditioning vent in the ceiling created a narrow concentrated stream of moving air, an unexpected feeling while walking through toward the toilet."
+      }
+    ],
+    "quietZones": [
+      {
+        "description": "The Info Centre, with its reduced external sound and cooler temperature, could be promoted as a reset space, especially if an area with reduced lighting was implemented."
+      }
+    ]
+  },
+  "suggestions": [
+    "Implement glare reduction measures, such as anti-reflective coatings or diffusers, especially for uplighting and highly reflective surfaces to mitigate visual discomfort.",
+    "Review and adjust public announcement systems to improve clarity and reduce reverberation, potentially using directional speakers or acoustic panelling in concourse areas.",
+    "Designate and clearly signpost quiet zones or 'reset spaces' with reduced sensory input, such as the Info Centre, and consider implementing reduced lighting in these areas.",
+    "Address the strong ammonia smell in toilet areas through improved ventilation and cleaning protocols to enhance comfort and accessibility.",
+    "Provide clear wayfinding and directional cues to reduce visual clutter and improve a sense of flow, especially in areas with competing sensory information like the Paid Main Concourse."
+  ],
+  "generatedAt": "2024-07-30T12:00:00Z"
+}
