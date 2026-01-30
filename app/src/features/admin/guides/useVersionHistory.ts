@@ -52,12 +52,8 @@ export function useVersionHistory(
       )
 
       const result = await listVersions({ venueId })
-      const versions = result.data.versions
-
-      // Sort by timestamp descending (newest first)
-      versions.sort((a, b) => b.timestamp.localeCompare(a.timestamp))
-
-      return versions
+      // Already sorted descending by listVersions function
+      return result.data.versions
     },
     enabled: Boolean(venueId),
     staleTime: 30 * 1000, // 30 seconds

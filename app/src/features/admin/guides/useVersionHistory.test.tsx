@@ -70,12 +70,13 @@ describe('useVersionHistory', () => {
   })
 
   it('marks the live version correctly', async () => {
+    // API returns pre-sorted (descending)
     mockHttpsCallable.mockReturnValue(() =>
       Promise.resolve({
         data: {
           versions: [
-            { timestamp: '2026-01-28T10:00:00Z', previewUrl: 'url-2', size: 2048, created: '2026-01-28T10:00:00.000Z' },
             { timestamp: '2026-01-29T12:00:00Z', previewUrl: 'url-1', size: 1024, created: '2026-01-29T12:00:00.000Z' },
+            { timestamp: '2026-01-28T10:00:00Z', previewUrl: 'url-2', size: 2048, created: '2026-01-28T10:00:00.000Z' },
           ],
         },
       })
@@ -89,7 +90,7 @@ describe('useVersionHistory', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false))
 
     expect(result.current.versions).toHaveLength(2)
-    // Sorted descending, so newer one first
+    // Newer one first (pre-sorted by API)
     expect(result.current.versions[0].timestamp).toBe('2026-01-29T12:00:00Z')
     expect(result.current.versions[0].isLive).toBe(false)
     expect(result.current.versions[1].timestamp).toBe('2026-01-28T10:00:00Z')
@@ -130,14 +131,15 @@ describe('useVersionHistory', () => {
     expect(result.current.versions[1].isLive).toBe(false)
   })
 
-  it('maintains descending timestamp order', async () => {
+  it('preserves server-side descending order', async () => {
+    // API returns pre-sorted data (descending by timestamp)
     mockHttpsCallable.mockReturnValue(() =>
       Promise.resolve({
         data: {
           versions: [
             { timestamp: '2026-01-30T12:00:00Z', previewUrl: 'url-1', size: 100, created: '2026-01-30T12:00:00.000Z' },
-            { timestamp: '2026-01-28T08:00:00Z', previewUrl: 'url-2', size: 200, created: '2026-01-28T08:00:00.000Z' },
-            { timestamp: '2026-01-29T10:00:00Z', previewUrl: 'url-3', size: 150, created: '2026-01-29T10:00:00.000Z' },
+            { timestamp: '2026-01-29T10:00:00Z', previewUrl: 'url-2', size: 150, created: '2026-01-29T10:00:00.000Z' },
+            { timestamp: '2026-01-28T08:00:00Z', previewUrl: 'url-3', size: 200, created: '2026-01-28T08:00:00.000Z' },
           ],
         },
       })

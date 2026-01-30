@@ -723,7 +723,6 @@ export function VenueDetail() {
                 </div>
               )}
               <VersionHistory
-                venueId={id!}
                 versions={versions}
                 isLoading={versionsLoading}
                 error={versionsError}

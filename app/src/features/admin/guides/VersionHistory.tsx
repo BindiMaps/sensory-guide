@@ -11,7 +11,6 @@ import {
 } from '@/shared/components/ui/dialog'
 
 interface VersionHistoryProps {
-  venueId: string
   versions: Version[]
   isLoading: boolean
   error: string | null

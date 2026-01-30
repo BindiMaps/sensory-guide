@@ -1,6 +1,6 @@
 # Story 2.13: Venue Lifecycle Dashboard
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -48,11 +48,11 @@ This was originally Story 6.0 but moved to Epic 2 as 2-13 due to priority.
 **Design System Reference**: `_bmad-output/planning-artifacts/design-system-v5.md`
 
 **Design Checklist** (for UI stories):
-- [ ] All colours match design system tokens exactly
-- [ ] Typography (font, size, weight) matches design system
-- [ ] Component patterns (badges, toggles, cards) match existing admin patterns
-- [ ] Spacing and layout match design system specifications
-- [ ] Accessibility requirements (contrast, touch targets) verified
+- [x] All colours match design system tokens exactly (accent #B8510D, hover #9A4409)
+- [x] Typography (font, size, weight) matches design system (Inter, text-sm/text-xs)
+- [x] Component patterns (badges, toggles, cards) match existing admin patterns
+- [x] Spacing and layout match design system specifications
+- [x] Accessibility requirements (contrast, touch targets) verified
 
 ## Tasks / Subtasks
 
@@ -237,10 +237,35 @@ State = 'published' if:
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.5 (code-review)
 
 ### Debug Log References
 
+N/A
+
 ### Completion Notes List
 
+- Implemented `listVersions` and `setLiveVersion` Firebase Functions with auth/editor access middleware
+- Created `useVenueState` hook for lifecycle state detection (empty/draft/published)
+- Created `useVersionHistory` hook for fetching and managing version list
+- Built `VersionHistory` component with Make Live confirmation dialog
+- Refactored `VenueDetail.tsx` for state-aware rendering based on Firestore venue doc
+- Updated `transformPdf.ts` to set `draftVersion` field on transform complete
+- Added `liveVersion` and `draftVersion` fields to Venue type
+- Code review: removed unused `venueId` prop from VersionHistory, removed duplicate sort
+
 ### File List
+
+- app/functions/src/admin/listVersions.ts (NEW)
+- app/functions/src/admin/setLiveVersion.ts (NEW)
+- app/functions/src/index.ts (MODIFIED - exports)
+- app/functions/src/transforms/transformPdf.ts (MODIFIED - draftVersion)
+- app/src/features/admin/guides/useVenueState.ts (NEW)
+- app/src/features/admin/guides/useVenueState.test.ts (NEW)
+- app/src/features/admin/guides/useVersionHistory.ts (NEW)
+- app/src/features/admin/guides/useVersionHistory.test.tsx (NEW)
+- app/src/features/admin/guides/VersionHistory.tsx (NEW)
+- app/src/features/admin/guides/VersionHistory.test.tsx (NEW)
+- app/src/features/admin/VenueDetail.tsx (MODIFIED)
+- app/src/features/admin/VenueDetail.test.tsx (MODIFIED)
+- app/src/shared/types/venue.ts (MODIFIED)

@@ -41,7 +41,6 @@ const mockVersions: Version[] = [
 
 describe('VersionHistory', () => {
   const defaultProps = {
-    venueId: 'venue-123',
     versions: mockVersions,
     isLoading: false,
     error: null,
