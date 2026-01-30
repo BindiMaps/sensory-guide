@@ -10,12 +10,17 @@ interface AreaSectionProps {
   venueSlug?: string
 }
 
+// Initialize from media query synchronously to avoid animation flash on mount
+const getInitialReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
 /**
  * Collapsible section for a venue area - Design System v5
  * Shows preview summary when collapsed for guide-like experience
  */
 export function AreaSection({ area, venueSlug }: AreaSectionProps) {
   // Use Zustand for persistence if venueSlug provided, otherwise local state
+  // Note: venueSlug should not change during component lifecycle
   const store = useGuideStore()
   const [localExpanded, setLocalExpanded] = useState(false)
 
@@ -31,12 +36,11 @@ export function AreaSection({ area, venueSlug }: AreaSectionProps) {
     }
   }
 
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(getInitialReducedMotion)
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
-
+    // Only subscribe to changes, initial value already set synchronously
     const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
     mediaQuery.addEventListener('change', handler)
     return () => mediaQuery.removeEventListener('change', handler)

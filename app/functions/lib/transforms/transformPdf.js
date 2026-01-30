@@ -6,6 +6,7 @@ const storage_1 = require("firebase-admin/storage");
 const firestore_1 = require("firebase-admin/firestore");
 const auth_1 = require("../middleware/auth");
 const rateLimiter_1 = require("../utils/rateLimiter");
+const accessControl_1 = require("../utils/accessControl");
 const gemini_1 = require("../utils/gemini");
 // pdf-parse v2 uses class-based API
 const pdf_parse_1 = require("pdf-parse");
@@ -67,10 +68,12 @@ async function extractPdfText(uploadPath) {
 }
 /**
  * Store guide JSON in Cloud Storage
+ * Returns both the storage path and the timestamp for draftVersion tracking
  */
 async function storeGuideJson(venueId, guide) {
     const bucket = (0, storage_1.getStorage)().bucket();
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    // Use ISO format timestamp (this becomes the version identifier)
+    const timestamp = new Date().toISOString();
     const outputPath = `venues/${venueId}/versions/${timestamp}.json`;
     const file = bucket.file(outputPath);
     await file.save(JSON.stringify(guide, null, 2), {
@@ -79,15 +82,17 @@ async function storeGuideJson(venueId, guide) {
             cacheControl: 'public, max-age=31536000', // 1 year (immutable versions)
         },
     });
-    return outputPath;
+    return { outputPath, timestamp };
 }
 /**
  * Update venue status to draft after successful transform
+ * Also sets draftVersion to point to the new version
  */
-async function updateVenueStatus(venueId) {
+async function updateVenueStatus(venueId, draftVersion) {
     const db = (0, firestore_1.getFirestore)();
     await db.collection('venues').doc(venueId).update({
         status: 'draft',
+        draftVersion,
         updatedAt: firestore_1.FieldValue.serverTimestamp(),
     });
 }
@@ -125,8 +130,10 @@ exports.transformPdf = (0, https_1.onCall)({
     }
     // 2. Check editor access
     await (0, auth_1.requireEditorAccess)(userEmail, venueId);
-    // 3. Check rate limit (don't proceed if exceeded)
-    const usageToday = await (0, rateLimiter_1.checkRateLimit)(userEmail);
+    // 3. Check superadmin status
+    const isAdmin = await (0, accessControl_1.isSuperAdmin)(userEmail);
+    // 4. Check rate limit (superadmins bypass)
+    const usageToday = await (0, rateLimiter_1.checkRateLimit)(userEmail, isAdmin);
     // Mark LLM log as processing
     await updateLlmLog(logId, 'processing');
     // Initialize progress tracking
@@ -159,9 +166,9 @@ exports.transformPdf = (0, https_1.onCall)({
         }
         await updateProgress(venueId, logId, 'generating', 70);
         // 7. Store guide JSON
-        const outputPath = await storeGuideJson(venueId, result.guide);
-        // 8. Update venue status to draft
-        await updateVenueStatus(venueId);
+        const { outputPath, timestamp } = await storeGuideJson(venueId, result.guide);
+        // 8. Update venue status to draft with draftVersion pointer
+        await updateVenueStatus(venueId, timestamp);
         // 9. Mark complete
         await updateProgress(venueId, logId, 'ready', 100, { outputPath });
         await updateLlmLog(logId, 'complete', {
@@ -182,7 +189,8 @@ exports.transformPdf = (0, https_1.onCall)({
             tokensUsed: result.tokensUsed,
             suggestions,
             usageToday: usageToday + 1,
-            usageLimit: 50,
+            usageLimit: rateLimiter_1.DAILY_TRANSFORM_LIMIT,
+            isUnlimited: isAdmin,
         };
     }
     catch (err) {

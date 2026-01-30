@@ -5,18 +5,21 @@ interface SuggestionsPanelProps {
   defaultExpanded?: boolean
 }
 
+// Initialize from media query synchronously to avoid animation flash on mount
+const getInitialReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
 /**
  * Collapsible panel showing content improvement suggestions
  * Admin-only UI with amber styling to distinguish from guide content
  */
 export function SuggestionsPanel({ suggestions, defaultExpanded = false }: SuggestionsPanelProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(getInitialReducedMotion)
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
-
+    // Only subscribe to changes, initial value already set synchronously
     const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
     mediaQuery.addEventListener('change', handler)
     return () => mediaQuery.removeEventListener('change', handler)

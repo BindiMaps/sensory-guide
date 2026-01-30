@@ -115,7 +115,7 @@ describe('AreaSection', () => {
     it('shows first detail as preview when collapsed (legacy fallback)', () => {
       render(<AreaSection area={mockArea} />)
       // Preview paragraph should exist with the first detail text
-      const previewParagraph = screen.getByRole('button').querySelector('p.line-clamp-2')
+      const previewParagraph = screen.getByRole('button').querySelector('p.text-sm')
       expect(previewParagraph).toBeInTheDocument()
       expect(previewParagraph).toHaveTextContent(/Quiet entrance area/i)
     })

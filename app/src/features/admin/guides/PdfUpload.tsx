@@ -11,23 +11,26 @@ interface PdfUploadProps {
   onUploadError?: (error: string) => void
 }
 
-type UploadState = 'idle' | 'validating' | 'getting-url' | 'uploading' | 'complete' | 'error'
+/**
+ * Upload state machine - single source of truth.
+ * Each state carries only the data relevant to that state.
+ */
+type UploadState =
+  | { mode: 'idle' }
+  | { mode: 'validating'; file: File }
+  | { mode: 'getting-url'; file: File }
+  | { mode: 'uploading'; file: File; progress: number }
+  | { mode: 'complete'; file: File; usageInfo: { today: number; limit: number } }
+  | { mode: 'error'; error: string; file?: File }
 
 export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploadProps) {
-  const [uploadState, setUploadState] = useState<UploadState>('idle')
-  const [progress, setProgress] = useState(0)
-  const [error, setError] = useState<string | null>(null)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [usageInfo, setUsageInfo] = useState<{ today: number; limit: number } | null>(null)
+  const [state, setState] = useState<UploadState>({ mode: 'idle' })
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
 
   const resetState = () => {
-    setUploadState('idle')
-    setProgress(0)
-    setError(null)
-    setSelectedFile(null)
+    setState({ mode: 'idle' })
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -37,32 +40,29 @@ export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploa
     const file = event.target.files?.[0]
     if (!file) return
 
-    setError(null)
-    setUploadState('validating')
+    setState({ mode: 'validating', file })
 
     // Validate file
     const validation = validatePdfFile(file)
     if (!validation.valid) {
-      setError(validation.error ?? 'Invalid file')
-      setUploadState('error')
-      onUploadError?.(validation.error ?? 'Invalid file')
+      const error = validation.error ?? 'Invalid file'
+      setState({ mode: 'error', error, file })
+      onUploadError?.(error)
       return
     }
 
-    setSelectedFile(file)
     await uploadFile(file)
   }
 
   const uploadFile = async (file: File) => {
     if (!functions) {
-      setError('Firebase not configured')
-      setUploadState('error')
+      setState({ mode: 'error', error: 'Firebase not configured', file })
       return
     }
 
     try {
       // Get signed URL
-      setUploadState('getting-url')
+      setState({ mode: 'getting-url', file })
       const getSignedUrl = httpsCallable<{ venueId: string }, SignedUploadUrlResponse>(
         functions,
         'getSignedUploadUrl'
@@ -71,21 +71,17 @@ export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploa
       const result = await getSignedUrl({ venueId })
       const { uploadUrl, destinationPath, logId, usageToday, usageLimit } = result.data
 
-      setUsageInfo({ today: usageToday, limit: usageLimit })
-
       // Upload file with progress tracking
-      setUploadState('uploading')
+      setState({ mode: 'uploading', file, progress: 0 })
       abortControllerRef.current = new AbortController()
 
       await uploadWithProgress(file, uploadUrl, abortControllerRef.current.signal)
 
-      setUploadState('complete')
-      setProgress(100)
+      setState({ mode: 'complete', file, usageInfo: { today: usageToday, limit: usageLimit } })
       onUploadComplete?.(logId, destinationPath)
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Upload failed'
-      setError(errorMessage)
-      setUploadState('error')
+      setState({ mode: 'error', error: errorMessage, file })
       onUploadError?.(errorMessage)
     }
   }
@@ -101,7 +97,9 @@ export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploa
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
           const percentComplete = Math.round((event.loaded / event.total) * 100)
-          setProgress(percentComplete)
+          setState((prev) =>
+            prev.mode === 'uploading' ? { ...prev, progress: percentComplete } : prev
+          )
         }
       })
 
@@ -140,7 +138,10 @@ export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploa
     fileInputRef.current?.click()
   }
 
-  const isUploading = uploadState === 'getting-url' || uploadState === 'uploading'
+  // Derived helpers
+  const isUploading = state.mode === 'getting-url' || state.mode === 'uploading'
+  const selectedFile = state.mode !== 'idle' ? (state as { file?: File }).file : null
+  const progress = state.mode === 'uploading' ? state.progress : 0
 
   return (
     <div className="space-y-4">
@@ -155,7 +156,7 @@ export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploa
       />
 
       {/* Upload area */}
-      {uploadState === 'idle' && (
+      {state.mode === 'idle' && (
         <button
           type="button"
           onClick={handleUploadClick}
@@ -170,7 +171,7 @@ export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploa
       )}
 
       {/* Progress display */}
-      {(isUploading || uploadState === 'validating') && (
+      {(isUploading || state.mode === 'validating') && (
         <div className="border rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -192,16 +193,16 @@ export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploa
           <div className="space-y-1">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>
-                {uploadState === 'validating' && 'Validating...'}
-                {uploadState === 'getting-url' && 'Preparing upload...'}
-                {uploadState === 'uploading' && `Uploading... ${progress}%`}
+                {state.mode === 'validating' && 'Validating...'}
+                {state.mode === 'getting-url' && 'Preparing upload...'}
+                {state.mode === 'uploading' && `Uploading... ${progress}%`}
               </span>
-              {uploadState === 'uploading' && <span>{progress}%</span>}
+              {state.mode === 'uploading' && <span>{progress}%</span>}
             </div>
             <div className="h-2 bg-muted rounded-full overflow-hidden">
               <div
                 className="h-full bg-primary transition-all duration-300"
-                style={{ width: `${uploadState === 'uploading' ? progress : 0}%` }}
+                style={{ width: `${state.mode === 'uploading' ? progress : 0}%` }}
                 role="progressbar"
                 aria-valuenow={progress}
                 aria-valuemin={0}
@@ -213,7 +214,7 @@ export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploa
       )}
 
       {/* Success state */}
-      {uploadState === 'complete' && (
+      {state.mode === 'complete' && (
         <div className="border border-green-200 bg-green-50 rounded-lg p-4">
           <div className="flex items-center gap-2 text-green-800">
             <CheckCircle className="h-5 w-5" aria-hidden="true" />
@@ -222,11 +223,9 @@ export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploa
           <p className="text-sm text-green-700 mt-1">
             Your PDF has been uploaded and is ready for processing.
           </p>
-          {usageInfo && (
-            <p className="text-xs text-green-600 mt-2">
-              Usage: {usageInfo.today} of {usageInfo.limit} transforms today
-            </p>
-          )}
+          <p className="text-xs text-green-600 mt-2">
+            Usage: {state.usageInfo.today} of {state.usageInfo.limit} transforms today
+          </p>
           <button
             type="button"
             onClick={resetState}
@@ -238,13 +237,13 @@ export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploa
       )}
 
       {/* Error state */}
-      {uploadState === 'error' && error && (
+      {state.mode === 'error' && (
         <div className="border border-red-200 bg-red-50 rounded-lg p-4">
           <div className="flex items-center gap-2 text-red-800">
             <AlertCircle className="h-5 w-5" aria-hidden="true" />
             <span className="font-medium">Upload failed</span>
           </div>
-          <p className="text-sm text-red-700 mt-1">{error}</p>
+          <p className="text-sm text-red-700 mt-1">{state.error}</p>
           <button
             type="button"
             onClick={resetState}

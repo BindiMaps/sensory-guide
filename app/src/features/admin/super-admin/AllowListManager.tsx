@@ -7,13 +7,25 @@ interface AllowListManagerProps {
   onClose?: () => void
 }
 
+/**
+ * Action state - tracks what operation is in progress.
+ * Prevents race conditions from concurrent add/remove operations.
+ */
+type ActionState =
+  | { type: 'idle' }
+  | { type: 'adding' }
+  | { type: 'removing'; email: string }
+
 export function AllowListManager({ onClose }: AllowListManagerProps) {
   const [emails, setEmails] = useState<string[]>([])
   const [newEmail, setNewEmail] = useState('')
   const [loading, setLoading] = useState(true)
-  const [adding, setAdding] = useState(false)
-  const [removing, setRemoving] = useState<string | null>(null)
+  const [action, setAction] = useState<ActionState>({ type: 'idle' })
   const [error, setError] = useState<string | null>(null)
+
+  // Derived helpers
+  const adding = action.type === 'adding'
+  const removing = action.type === 'removing' ? action.email : null
 
   // Load the current allow-list
   useEffect(() => {
@@ -70,7 +82,7 @@ export function AllowListManager({ onClose }: AllowListManagerProps) {
       return
     }
 
-    setAdding(true)
+    setAction({ type: 'adding' })
 
     try {
       const addToAllowListFn = httpsCallable<
@@ -84,17 +96,17 @@ export function AllowListManager({ onClose }: AllowListManagerProps) {
       console.error('Failed to add email:', err)
       setError('Failed to add email')
     } finally {
-      setAdding(false)
+      setAction({ type: 'idle' })
     }
   }
 
-  const handleRemoveEmail = async (email: string) => {
+  const handleRemoveEmail = async (emailToRemove: string) => {
     if (!functions) {
       setError('Functions not configured')
       return
     }
 
-    setRemoving(email)
+    setAction({ type: 'removing', email: emailToRemove })
     setError(null)
 
     try {
@@ -102,13 +114,13 @@ export function AllowListManager({ onClose }: AllowListManagerProps) {
         { email: string },
         { success: boolean; emails: string[] }
       >(functions, 'removeFromAllowList')
-      const result = await removeFromAllowListFn({ email })
+      const result = await removeFromAllowListFn({ email: emailToRemove })
       setEmails(result.data.emails)
     } catch (err) {
       console.error('Failed to remove email:', err)
       setError('Failed to remove email')
     } finally {
-      setRemoving(null)
+      setAction({ type: 'idle' })
     }
   }
 

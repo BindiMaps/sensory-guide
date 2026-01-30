@@ -5,15 +5,17 @@ const https_1 = require("firebase-functions/v2/https");
 const storage_1 = require("firebase-admin/storage");
 const firestore_1 = require("firebase-admin/firestore");
 const auth_1 = require("../middleware/auth");
+const accessControl_1 = require("../utils/accessControl");
 const SIGNED_URL_EXPIRY_MINUTES = 15;
-const DAILY_TRANSFORM_LIMIT = 50;
-async function checkRateLimit(userEmail) {
+const DAILY_TRANSFORM_LIMIT = 20;
+async function checkRateLimit(userEmail, isAdmin = false) {
     const db = (0, firestore_1.getFirestore)();
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     const usageRef = db.collection('usage').doc(userEmail).collection('daily').doc(today);
     const usageDoc = await usageRef.get();
     const currentCount = usageDoc.exists ? usageDoc.data()?.count || 0 : 0;
-    if (currentCount >= DAILY_TRANSFORM_LIMIT) {
+    // Superadmins bypass rate limit
+    if (!isAdmin && currentCount >= DAILY_TRANSFORM_LIMIT) {
         throw new https_1.HttpsError('resource-exhausted', `Daily limit reached. You have used ${currentCount} of ${DAILY_TRANSFORM_LIMIT} transforms today. Try again tomorrow.`, { usageToday: currentCount, usageLimit: DAILY_TRANSFORM_LIMIT });
     }
     return currentCount;
@@ -49,8 +51,10 @@ exports.getSignedUploadUrl = (0, https_1.onCall)({ cors: true }, async (request)
     }
     // Check editor access
     await (0, auth_1.requireEditorAccess)(userEmail, venueId);
-    // Check rate limit
-    const usageToday = await checkRateLimit(userEmail);
+    // Check superadmin status
+    const isAdmin = await (0, accessControl_1.isSuperAdmin)(userEmail);
+    // Check rate limit (superadmins bypass)
+    const usageToday = await checkRateLimit(userEmail, isAdmin);
     // Generate unique file path
     const timestamp = Date.now();
     const destinationPath = `venues/${venueId}/uploads/${timestamp}.pdf`;
@@ -84,6 +88,7 @@ exports.getSignedUploadUrl = (0, https_1.onCall)({ cors: true }, async (request)
         logId,
         usageToday: usageToday + 1,
         usageLimit: DAILY_TRANSFORM_LIMIT,
+        isUnlimited: isAdmin,
     };
 });
 //# sourceMappingURL=getSignedUploadUrl.js.map

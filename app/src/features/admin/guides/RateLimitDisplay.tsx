@@ -1,16 +1,30 @@
-import { AlertCircle, Clock, Zap } from 'lucide-react'
+import { AlertCircle, Clock, Zap, Shield } from 'lucide-react'
 
 interface RateLimitDisplayProps {
   usageToday: number
   usageLimit: number
+  isUnlimited?: boolean
   className?: string
 }
 
 export function RateLimitDisplay({
   usageToday,
   usageLimit,
+  isUnlimited = false,
   className = '',
 }: RateLimitDisplayProps) {
+  // Superadmins get unlimited
+  if (isUnlimited) {
+    return (
+      <div
+        className={`flex items-center gap-2 text-sm text-muted-foreground ${className}`}
+      >
+        <Shield className="h-4 w-4 flex-shrink-0" />
+        <span>Unlimited admin amount</span>
+      </div>
+    )
+  }
+
   const remaining = usageLimit - usageToday
   const isLow = remaining === 1
   const isExhausted = remaining <= 0
@@ -57,12 +71,19 @@ export function RateLimitDisplay({
 interface RateLimitBlockerProps {
   usageToday: number
   usageLimit: number
+  isUnlimited?: boolean
 }
 
 /**
  * Full-width blocker shown when rate limit is exhausted
+ * Never shown to superadmins (isUnlimited=true)
  */
-export function RateLimitBlocker({ usageToday, usageLimit }: RateLimitBlockerProps) {
+export function RateLimitBlocker({ usageToday, usageLimit, isUnlimited = false }: RateLimitBlockerProps) {
+  // Never block superadmins
+  if (isUnlimited) {
+    return null
+  }
+
   return (
     <div className="border border-red-200 bg-red-50 rounded-lg p-6 text-center space-y-3">
       <AlertCircle className="h-10 w-10 text-red-500 mx-auto" />

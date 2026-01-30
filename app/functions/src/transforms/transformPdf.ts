@@ -2,7 +2,8 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https'
 import { getStorage } from 'firebase-admin/storage'
 import { getFirestore, FieldValue } from 'firebase-admin/firestore'
 import { requireAuth, requireEditorAccess } from '../middleware/auth'
-import { checkRateLimit, incrementUsage } from '../utils/rateLimiter'
+import { checkRateLimit, incrementUsage, DAILY_TRANSFORM_LIMIT } from '../utils/rateLimiter'
+import { isSuperAdmin } from '../utils/accessControl'
 import { transformPdfToGuide, isRetryableError, getModelInfo } from '../utils/gemini'
 import type { TransformProgressStatus } from '../schemas/guideSchema'
 
@@ -22,6 +23,7 @@ interface TransformPdfResponse {
   suggestions: string[]
   usageToday: number
   usageLimit: number
+  isUnlimited: boolean
 }
 
 interface ProgressData {
@@ -110,13 +112,15 @@ async function extractPdfText(uploadPath: string): Promise<string> {
 
 /**
  * Store guide JSON in Cloud Storage
+ * Returns both the storage path and the timestamp for draftVersion tracking
  */
 async function storeGuideJson(
   venueId: string,
   guide: object
-): Promise<string> {
+): Promise<{ outputPath: string; timestamp: string }> {
   const bucket = getStorage().bucket()
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+  // Use ISO format timestamp (this becomes the version identifier)
+  const timestamp = new Date().toISOString()
   const outputPath = `venues/${venueId}/versions/${timestamp}.json`
 
   const file = bucket.file(outputPath)
@@ -127,16 +131,18 @@ async function storeGuideJson(
     },
   })
 
-  return outputPath
+  return { outputPath, timestamp }
 }
 
 /**
  * Update venue status to draft after successful transform
+ * Also sets draftVersion to point to the new version
  */
-async function updateVenueStatus(venueId: string): Promise<void> {
+async function updateVenueStatus(venueId: string, draftVersion: string): Promise<void> {
   const db = getFirestore()
   await db.collection('venues').doc(venueId).update({
     status: 'draft',
+    draftVersion,
     updatedAt: FieldValue.serverTimestamp(),
   })
 }
@@ -180,8 +186,11 @@ export const transformPdf = onCall<TransformPdfRequest>(
     // 2. Check editor access
     await requireEditorAccess(userEmail, venueId)
 
-    // 3. Check rate limit (don't proceed if exceeded)
-    const usageToday = await checkRateLimit(userEmail)
+    // 3. Check superadmin status
+    const isAdmin = await isSuperAdmin(userEmail)
+
+    // 4. Check rate limit (superadmins bypass)
+    const usageToday = await checkRateLimit(userEmail, isAdmin)
 
     // Mark LLM log as processing
     await updateLlmLog(logId, 'processing')
@@ -226,10 +235,10 @@ export const transformPdf = onCall<TransformPdfRequest>(
       await updateProgress(venueId, logId, 'generating', 70)
 
       // 7. Store guide JSON
-      const outputPath = await storeGuideJson(venueId, result.guide)
+      const { outputPath, timestamp } = await storeGuideJson(venueId, result.guide)
 
-      // 8. Update venue status to draft
-      await updateVenueStatus(venueId)
+      // 8. Update venue status to draft with draftVersion pointer
+      await updateVenueStatus(venueId, timestamp)
 
       // 9. Mark complete
       await updateProgress(venueId, logId, 'ready', 100, { outputPath })
@@ -257,7 +266,8 @@ export const transformPdf = onCall<TransformPdfRequest>(
         tokensUsed: result.tokensUsed,
         suggestions,
         usageToday: usageToday + 1,
-        usageLimit: 50,
+        usageLimit: DAILY_TRANSFORM_LIMIT,
+        isUnlimited: isAdmin,
       }
     } catch (err) {
       const error = err as Error

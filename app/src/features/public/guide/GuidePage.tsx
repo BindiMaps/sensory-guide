@@ -31,6 +31,15 @@ async function fetchGuide(slug: string): Promise<Guide | null> {
 }
 
 /**
+ * Page state machine - single source of truth for loading/error/success.
+ */
+type PageState =
+  | { status: 'loading' }
+  | { status: 'error'; error: string }
+  | { status: 'notfound' }
+  | { status: 'ready'; guide: Guide }
+
+/**
  * Public guide page - Design System v5
  * Displays the sensory guide for a published venue.
  *
@@ -41,36 +50,45 @@ async function fetchGuide(slug: string): Promise<Guide | null> {
  */
 export function GuidePage() {
   const { slug } = useParams<{ slug: string }>()
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [guide, setGuide] = useState<Guide | null>(null)
+  const [state, setState] = useState<PageState>({ status: 'loading' })
 
   useEffect(() => {
     if (!slug) {
-      setError('No venue specified')
-      setLoading(false)
+      setState({ status: 'error', error: 'No venue specified' })
       return
     }
 
+    // Track if this effect is still current (handles race conditions)
+    let cancelled = false
+
     async function loadGuide() {
-      setLoading(true)
-      setError(null)
+      setState({ status: 'loading' })
 
       const guideData = await fetchGuide(slug)
 
+      // Don't update state if slug changed or component unmounted
+      if (cancelled) return
+
       if (!guideData) {
-        setError('notfound')
-        setLoading(false)
+        setState({ status: 'notfound' })
         return
       }
 
-      setGuide(guideData)
       document.title = `${guideData.venue.name} - Sensory Guide`
-      setLoading(false)
+      setState({ status: 'ready', guide: guideData })
     }
 
     loadGuide()
+
+    return () => {
+      cancelled = true
+    }
   }, [slug])
+
+  // Derive values for render
+  const loading = state.status === 'loading'
+  const error = state.status === 'error' ? state.error : state.status === 'notfound' ? 'notfound' : null
+  const guide = state.status === 'ready' ? state.guide : null
 
   if (loading) {
     return (

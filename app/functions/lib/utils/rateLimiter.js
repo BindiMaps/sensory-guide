@@ -6,19 +6,20 @@ exports.getCurrentUsage = getCurrentUsage;
 exports.incrementUsage = incrementUsage;
 const firestore_1 = require("firebase-admin/firestore");
 const https_1 = require("firebase-functions/v2/https");
-exports.DAILY_TRANSFORM_LIMIT = 50;
+exports.DAILY_TRANSFORM_LIMIT = 20;
 /**
  * Check if user has reached their daily transform limit
  * @returns Current usage count
- * @throws HttpsError if limit exceeded
+ * @throws HttpsError if limit exceeded (unless superadmin)
  */
-async function checkRateLimit(userEmail) {
+async function checkRateLimit(userEmail, isSuperAdmin = false) {
     const db = (0, firestore_1.getFirestore)();
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     const usageRef = db.collection('usage').doc(userEmail).collection('daily').doc(today);
     const usageDoc = await usageRef.get();
     const currentCount = usageDoc.exists ? usageDoc.data()?.count || 0 : 0;
-    if (currentCount >= exports.DAILY_TRANSFORM_LIMIT) {
+    // Superadmins bypass rate limit
+    if (!isSuperAdmin && currentCount >= exports.DAILY_TRANSFORM_LIMIT) {
         throw new https_1.HttpsError('resource-exhausted', `Daily limit reached. You have used ${currentCount} of ${exports.DAILY_TRANSFORM_LIMIT} transforms today. Try again tomorrow.`, { usageToday: currentCount, usageLimit: exports.DAILY_TRANSFORM_LIMIT });
     }
     return currentCount;
@@ -26,7 +27,7 @@ async function checkRateLimit(userEmail) {
 /**
  * Get current usage without throwing
  */
-async function getCurrentUsage(userEmail) {
+async function getCurrentUsage(userEmail, isSuperAdmin = false) {
     const db = (0, firestore_1.getFirestore)();
     const today = new Date().toISOString().split('T')[0];
     const usageRef = db.collection('usage').doc(userEmail).collection('daily').doc(today);
@@ -35,7 +36,8 @@ async function getCurrentUsage(userEmail) {
     return {
         usageToday,
         usageLimit: exports.DAILY_TRANSFORM_LIMIT,
-        remaining: Math.max(0, exports.DAILY_TRANSFORM_LIMIT - usageToday),
+        remaining: isSuperAdmin ? Infinity : Math.max(0, exports.DAILY_TRANSFORM_LIMIT - usageToday),
+        isUnlimited: isSuperAdmin,
     };
 }
 /**

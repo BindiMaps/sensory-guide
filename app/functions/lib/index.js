@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.seedAccessConfig = exports.removeFromAllowList = exports.addToAllowList = exports.getAllowList = exports.checkApproval = exports.createVenue = exports.publishGuide = exports.transformPdf = exports.getSignedUploadUrl = void 0;
+exports.setLiveVersion = exports.listVersions = exports.seedAccessConfig = exports.removeFromAllowList = exports.addToAllowList = exports.getAllowList = exports.checkApproval = exports.createVenue = exports.publishGuide = exports.transformPdf = exports.getSignedUploadUrl = void 0;
 const app_1 = require("firebase-admin/app");
 // Initialize Firebase Admin SDK
 (0, app_1.initializeApp)();
@@ -21,4 +21,8 @@ Object.defineProperty(exports, "addToAllowList", { enumerable: true, get: functi
 Object.defineProperty(exports, "removeFromAllowList", { enumerable: true, get: function () { return manageAllowList_1.removeFromAllowList; } });
 var seedAccessConfig_1 = require("./admin/seedAccessConfig");
 Object.defineProperty(exports, "seedAccessConfig", { enumerable: true, get: function () { return seedAccessConfig_1.seedAccessConfig; } });
+var listVersions_1 = require("./admin/listVersions");
+Object.defineProperty(exports, "listVersions", { enumerable: true, get: function () { return listVersions_1.listVersions; } });
+var setLiveVersion_1 = require("./admin/setLiveVersion");
+Object.defineProperty(exports, "setLiveVersion", { enumerable: true, get: function () { return setLiveVersion_1.setLiveVersion; } });
 //# sourceMappingURL=index.js.map

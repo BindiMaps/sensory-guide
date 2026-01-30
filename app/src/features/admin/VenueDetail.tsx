@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { httpsCallable } from 'firebase/functions'
-import { Loader2 } from 'lucide-react'
+import { Loader2, ChevronDown, ChevronUp } from 'lucide-react'
 import { useVenue } from '@/shared/hooks/useVenue'
 import { useAuthStore } from '@/stores/authStore'
 import { functions } from '@/lib/firebase'
@@ -13,6 +13,17 @@ import { useGuideData } from '@/features/admin/guides/useGuideData'
 import { PublishDialog } from '@/features/admin/guides/PublishDialog'
 import { PublishedSuccess } from '@/features/admin/guides/PublishedSuccess'
 import { usePublishGuide } from '@/features/admin/guides/usePublishGuide'
+import { useVenueState } from '@/features/admin/guides/useVenueState'
+import { useVersionHistory } from '@/features/admin/guides/useVersionHistory'
+import { VersionHistory } from '@/features/admin/guides/VersionHistory'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shared/components/ui/dialog'
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -24,6 +35,18 @@ interface PublishResult {
   publicUrl: string
   slug: string
 }
+
+/**
+ * Guide content state machine - single source of truth for UI state.
+ * Replaces scattered useState calls with explicit states.
+ */
+type GuideContentState =
+  | { mode: 'upload' }
+  | { mode: 'transforming'; logId: string }
+  | { mode: 'preview'; outputPath: string }
+  | { mode: 'draft'; draftPath: string }
+  | { mode: 'published' }
+  | { mode: 'error'; message: string }
 
 /**
  * Wrapper component for guide preview that handles data fetching and publishing
@@ -161,6 +184,17 @@ export function VenueDetail() {
   const { venue, loading, error, addEditor, removeEditor, deleteVenue } = useVenue(id)
   const { user } = useAuthStore()
 
+  // Venue lifecycle state (persisted in Firestore)
+  const venueState = useVenueState(venue)
+
+  // Version history
+  const {
+    versions,
+    isLoading: versionsLoading,
+    error: versionsError,
+    refetch: refetchVersions,
+  } = useVersionHistory(id, venue?.liveVersion)
+
   const [newEditorEmail, setNewEditorEmail] = useState('')
   const [editorError, setEditorError] = useState('')
   const [addingEditor, setAddingEditor] = useState(false)
@@ -169,41 +203,61 @@ export function VenueDetail() {
   const [deleting, setDeleting] = useState(false)
   const [showSelfRemoveConfirm, setShowSelfRemoveConfirm] = useState(false)
   const [removingEditor, setRemovingEditor] = useState(false)
+  const [editorToRemove, setEditorToRemove] = useState<string | null>(null)
 
-  // Transform state
-  const [transformState, setTransformState] = useState<'idle' | 'transforming' | 'complete' | 'error'>('idle')
-  const [currentLogId, setCurrentLogId] = useState<string | null>(null)
-  const [transformError, setTransformError] = useState<string | null>(null)
-  const [outputPath, setOutputPath] = useState<string | null>(null)
-  const [usageInfo, setUsageInfo] = useState<{ today: number; limit: number } | null>(null)
+  // Guide content state machine - derives initial state from venueState
+  const [guideState, setGuideState] = useState<GuideContentState | null>(null)
+  const [usageInfo, setUsageInfo] = useState<{ today: number; limit: number; isUnlimited: boolean } | null>(null)
+
+  // Version history expansion
+  const [showVersionHistory, setShowVersionHistory] = useState(false)
+  const [makingLiveError, setMakingLiveError] = useState<string | null>(null)
+
+  // Derive initial guide state from Firestore venueState (only when not actively uploading/transforming)
+  useEffect(() => {
+    if (venueState.isLoading) return
+    // Only set initial state if we haven't started a local workflow
+    if (guideState === null) {
+      if (venueState.state === 'published') {
+        setGuideState({ mode: 'published' })
+      } else if (venueState.state === 'draft' && venueState.draftPath) {
+        setGuideState({ mode: 'draft', draftPath: venueState.draftPath })
+      } else {
+        setGuideState({ mode: 'upload' })
+      }
+    }
+  }, [venueState, guideState])
 
   useEffect(() => {
     document.title = venue ? `${venue.name} - Sensory Guide Admin` : 'Venue - Sensory Guide Admin'
   }, [venue])
 
+  // State transitions
+  const startTransform = (logId: string) => setGuideState({ mode: 'transforming', logId })
+  const completeTransform = (outputPath: string) => setGuideState({ mode: 'preview', outputPath })
+  const failTransform = (message: string) => setGuideState({ mode: 'error', message })
+  const startNewUpload = () => setGuideState({ mode: 'upload' })
+
   // Handle upload complete - trigger transform
   const handleUploadComplete = async (logId: string, uploadPath: string) => {
-    setCurrentLogId(logId)
-    setTransformState('transforming')
-    setTransformError(null)
+    startTransform(logId)
 
     if (!functions) {
-      setTransformError('Firebase not configured')
-      setTransformState('error')
+      failTransform('Firebase not configured')
       return
     }
 
     try {
       const transformPdf = httpsCallable<
         { venueId: string; uploadPath: string; logId: string },
-        { success: boolean; outputPath: string; suggestions: string[]; usageToday: number; usageLimit: number }
+        { success: boolean; outputPath: string; suggestions: string[]; usageToday: number; usageLimit: number; isUnlimited: boolean }
       >(functions, 'transformPdf', { timeout: 540000 }) // 9 min timeout for LLM processing
 
       const result = await transformPdf({ venueId: id!, uploadPath, logId })
 
-      setOutputPath(result.data.outputPath)
-      setUsageInfo({ today: result.data.usageToday, limit: result.data.usageLimit })
-      setTransformState('complete')
+      setUsageInfo({ today: result.data.usageToday, limit: result.data.usageLimit, isUnlimited: result.data.isUnlimited })
+      completeTransform(result.data.outputPath)
+      refetchVersions()
     } catch (err) {
       const error = err as { code?: string; message?: string; details?: { usageToday?: number; usageLimit?: number } }
 
@@ -221,33 +275,50 @@ export function VenueDetail() {
         friendlyMessage = error.message
       }
 
-      setTransformError(friendlyMessage)
-
       // Extract usage info from error if rate limit exceeded
       if (error.details?.usageToday !== undefined) {
-        setUsageInfo({ today: error.details.usageToday, limit: error.details.usageLimit || 50 })
+        setUsageInfo({ today: error.details.usageToday, limit: error.details.usageLimit || 20, isUnlimited: false })
       }
 
-      setTransformState('error')
+      failTransform(friendlyMessage)
     }
   }
 
   // Handle transform complete (from progress component)
   const handleTransformComplete = (path: string) => {
-    setOutputPath(path)
-    setTransformState('complete')
+    completeTransform(path)
+    refetchVersions()
   }
 
-  // Handle retry
-  const handleRetry = () => {
-    setTransformState('idle')
-    setCurrentLogId(null)
-    setTransformError(null)
-    setOutputPath(null)
+  // Check if rate limit is exhausted (never for superadmins)
+  const isRateLimitExhausted = usageInfo && !usageInfo.isUnlimited && usageInfo.today >= usageInfo.limit
+
+  // Handle making a version live (from version history)
+  const handleMakeLive = async (timestamp: string) => {
+    if (!functions || !id) return
+
+    setMakingLiveError(null)
+    try {
+      const setLiveVersion = httpsCallable<
+        { venueId: string; timestamp: string },
+        { success: boolean; publicUrl: string; liveVersion: string; slug: string }
+      >(functions, 'setLiveVersion')
+
+      await setLiveVersion({ venueId: id, timestamp })
+
+      // Refetch versions to update UI
+      refetchVersions()
+    } catch (err) {
+      const error = err as Error
+      setMakingLiveError(error.message || 'Failed to make version live')
+    }
   }
 
-  // Check if rate limit is exhausted
-  const isRateLimitExhausted = usageInfo && usageInfo.today >= usageInfo.limit
+  // Handle preview from version history
+  const handleVersionPreview = (version: { previewUrl: string }) => {
+    // Open preview in new tab
+    window.open(version.previewUrl, '_blank')
+  }
 
   const handleAddEditor = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -342,6 +413,57 @@ export function VenueDetail() {
 
   const isLastEditor = venue.editors.length === 1
   const currentUserIsEditor = user?.email && venue.editors.map(e => e.toLowerCase()).includes(user.email.toLowerCase())
+  const currentUserIsOwner = user?.email?.toLowerCase() === venue.createdBy?.toLowerCase()
+
+  /**
+   * Determines if the current user can remove a specific editor.
+   * - Can't remove the owner unless you ARE the owner
+   * - Can't remove if you're the last editor
+   * - Must be an editor yourself to remove anyone
+   */
+  const canRemoveEditor = (targetEmail: string): boolean => {
+    const isTargetOwner = targetEmail.toLowerCase() === venue.createdBy?.toLowerCase()
+
+    // Can't remove owner unless current user IS the owner
+    if (isTargetOwner && !currentUserIsOwner) return false
+
+    // Can't remove if last editor
+    if (isLastEditor) return false
+
+    // Must be an editor to remove anyone
+    return !!currentUserIsEditor
+  }
+
+  /**
+   * Handles click on remove button.
+   * - Self-removal: uses existing inline confirmation flow
+   * - Other editor removal: shows dialog confirmation
+   */
+  const handleRemoveClick = (email: string) => {
+    const isSelf = email.toLowerCase() === user?.email?.toLowerCase()
+
+    if (isSelf) {
+      // Use existing self-removal flow
+      setShowSelfRemoveConfirm(true)
+    } else {
+      // Show confirmation dialog for removing others
+      setEditorToRemove(email)
+    }
+  }
+
+  const handleConfirmRemoveEditor = async () => {
+    if (!editorToRemove) return
+
+    setRemovingEditor(true)
+    try {
+      await removeEditor(editorToRemove)
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to remove editor')
+    } finally {
+      setRemovingEditor(false)
+      setEditorToRemove(null)
+    }
+  }
 
   return (
     <div className="max-w-2xl">
@@ -384,9 +506,9 @@ export function VenueDetail() {
                   <span className="text-xs text-muted-foreground ml-2">(you)</span>
                 )}
               </span>
-              {!isLastEditor && currentUserIsEditor && (
+              {canRemoveEditor(email) && (
                 <button
-                  onClick={() => handleRemoveEditor(email)}
+                  onClick={() => handleRemoveClick(email)}
                   className="text-sm text-red-600 hover:text-red-800"
                   title="Remove editor"
                   disabled={removingEditor}
@@ -421,6 +543,36 @@ export function VenueDetail() {
             </div>
           </div>
         )}
+
+        {/* Confirmation dialog for removing other editors */}
+        <Dialog open={!!editorToRemove} onOpenChange={(open) => !open && setEditorToRemove(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Remove Editor</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to remove <span className="font-medium text-foreground">{editorToRemove}</span> from this venue? They will lose access immediately.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="gap-2 sm:gap-0">
+              <button
+                type="button"
+                onClick={() => setEditorToRemove(null)}
+                disabled={removingEditor}
+                className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmRemoveEditor}
+                disabled={removingEditor}
+                className="inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {removingEditor ? 'Removing...' : 'Remove'}
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {venue.editors.length < 5 && (
           <form onSubmit={handleAddEditor} className="flex gap-2">
@@ -460,65 +612,112 @@ export function VenueDetail() {
           <RateLimitDisplay
             usageToday={usageInfo.today}
             usageLimit={usageInfo.limit}
+            isUnlimited={usageInfo.isUnlimited}
             className="mb-4"
           />
         )}
 
-        {/* Rate limit blocker */}
+        {/* Rate limit blocker takes precedence */}
         {isRateLimitExhausted ? (
-          <RateLimitBlocker usageToday={usageInfo!.today} usageLimit={usageInfo!.limit} />
-        ) : transformState === 'idle' ? (
-          /* Upload component - shown when idle */
-          <PdfUpload
-            venueId={id!}
-            onUploadComplete={handleUploadComplete}
-            onUploadError={(error) => {
-              setTransformError(error)
-              setTransformState('error')
-            }}
-          />
-        ) : transformState === 'transforming' && currentLogId ? (
-          /* Transform progress - shown while transforming */
+          <RateLimitBlocker usageToday={usageInfo!.today} usageLimit={usageInfo!.limit} isUnlimited={usageInfo!.isUnlimited} />
+        ) : !guideState ? (
+          /* Loading initial state */
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : guideState.mode === 'transforming' ? (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
               Transforming your PDF into a Sensory Guide...
             </p>
             <TransformProgress
               venueId={id!}
-              logId={currentLogId}
+              logId={guideState.logId}
               onComplete={handleTransformComplete}
-              onRetry={handleRetry}
+              onRetry={startNewUpload}
             />
           </div>
-        ) : transformState === 'complete' && outputPath ? (
-          /* Preview state - show full guide preview */
+        ) : guideState.mode === 'preview' ? (
           <GuidePreviewWrapper
-            outputPath={outputPath}
+            outputPath={guideState.outputPath}
             venueId={id!}
             venueSlug={venue.slug}
             isAlreadyPublished={venue.status === 'published'}
-            onReupload={handleRetry}
-            onPublishSuccess={() => {
-              // Refetch venue to update status badge
-              // The useVenue hook will automatically update
-            }}
+            onReupload={startNewUpload}
+            onPublishSuccess={refetchVersions}
           />
-        ) : transformState === 'error' ? (
-          /* Error state */
+        ) : guideState.mode === 'error' ? (
           <div className="space-y-4">
             <div className="bg-red-50 border border-red-200 rounded-md p-4">
               <h3 className="font-medium text-red-800 mb-2">Transform failed</h3>
-              <p className="text-sm text-red-700">{transformError || 'An unexpected error occurred'}</p>
+              <p className="text-sm text-red-700">{guideState.message}</p>
             </div>
             <button
-              onClick={handleRetry}
+              onClick={startNewUpload}
               className="px-4 py-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200"
             >
               Try Again
             </button>
           </div>
-        ) : null}
+        ) : guideState.mode === 'published' ? (
+          <PublishedSuccess
+            slug={venue.slug}
+            publicUrl={`${window.location.origin}/venue/${venue.slug}`}
+            onUploadNew={startNewUpload}
+          />
+        ) : guideState.mode === 'draft' ? (
+          <GuidePreviewWrapper
+            outputPath={guideState.draftPath}
+            venueId={id!}
+            venueSlug={venue.slug}
+            isAlreadyPublished={venue.status === 'published'}
+            onReupload={startNewUpload}
+            onPublishSuccess={refetchVersions}
+          />
+        ) : (
+          <PdfUpload
+            venueId={id!}
+            onUploadComplete={handleUploadComplete}
+            onUploadError={(error) => failTransform(error)}
+          />
+        )}
       </section>
+
+      {/* Version History */}
+      {versions.length > 0 && (
+        <section className="border rounded-lg p-4 mb-6">
+          <button
+            type="button"
+            onClick={() => setShowVersionHistory(!showVersionHistory)}
+            className="flex items-center justify-between w-full text-left"
+          >
+            <h2 className="text-lg font-semibold">Version History</h2>
+            {showVersionHistory ? (
+              <ChevronUp className="h-5 w-5 text-muted-foreground" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-muted-foreground" />
+            )}
+          </button>
+
+          {showVersionHistory && (
+            <div className="mt-4">
+              {makingLiveError && (
+                <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800 mb-4">
+                  {makingLiveError}
+                </div>
+              )}
+              <VersionHistory
+                venueId={id!}
+                versions={versions}
+                isLoading={versionsLoading}
+                error={versionsError}
+                onMakeLive={handleMakeLive}
+                onPreview={handleVersionPreview}
+              />
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Delete Venue (only for last editor) */}
       {isLastEditor && currentUserIsEditor && (

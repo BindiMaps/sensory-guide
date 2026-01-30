@@ -2,9 +2,10 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https'
 import { getStorage } from 'firebase-admin/storage'
 import { getFirestore, FieldValue } from 'firebase-admin/firestore'
 import { requireAuth, requireEditorAccess } from '../middleware/auth'
+import { isSuperAdmin } from '../utils/accessControl'
 
 const SIGNED_URL_EXPIRY_MINUTES = 15
-const DAILY_TRANSFORM_LIMIT = 50
+const DAILY_TRANSFORM_LIMIT = 20
 
 interface GetSignedUploadUrlRequest {
   venueId: string
@@ -16,9 +17,10 @@ interface GetSignedUploadUrlResponse {
   logId: string
   usageToday: number
   usageLimit: number
+  isUnlimited: boolean
 }
 
-async function checkRateLimit(userEmail: string): Promise<number> {
+async function checkRateLimit(userEmail: string, isAdmin = false): Promise<number> {
   const db = getFirestore()
   const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD
 
@@ -27,7 +29,8 @@ async function checkRateLimit(userEmail: string): Promise<number> {
 
   const currentCount = usageDoc.exists ? (usageDoc.data()?.count as number) || 0 : 0
 
-  if (currentCount >= DAILY_TRANSFORM_LIMIT) {
+  // Superadmins bypass rate limit
+  if (!isAdmin && currentCount >= DAILY_TRANSFORM_LIMIT) {
     throw new HttpsError(
       'resource-exhausted',
       `Daily limit reached. You have used ${currentCount} of ${DAILY_TRANSFORM_LIMIT} transforms today. Try again tomorrow.`,
@@ -87,8 +90,11 @@ export const getSignedUploadUrl = onCall<GetSignedUploadUrlRequest>(
     // Check editor access
     await requireEditorAccess(userEmail, venueId)
 
-    // Check rate limit
-    const usageToday = await checkRateLimit(userEmail)
+    // Check superadmin status
+    const isAdmin = await isSuperAdmin(userEmail)
+
+    // Check rate limit (superadmins bypass)
+    const usageToday = await checkRateLimit(userEmail, isAdmin)
 
     // Generate unique file path
     const timestamp = Date.now()
@@ -130,6 +136,7 @@ export const getSignedUploadUrl = onCall<GetSignedUploadUrlRequest>(
       logId,
       usageToday: usageToday + 1,
       usageLimit: DAILY_TRANSFORM_LIMIT,
+      isUnlimited: isAdmin,
     }
   }
 )

@@ -1,14 +1,14 @@
 import { getFirestore, FieldValue } from 'firebase-admin/firestore'
 import { HttpsError } from 'firebase-functions/v2/https'
 
-export const DAILY_TRANSFORM_LIMIT = 50
+export const DAILY_TRANSFORM_LIMIT = 20
 
 /**
  * Check if user has reached their daily transform limit
  * @returns Current usage count
- * @throws HttpsError if limit exceeded
+ * @throws HttpsError if limit exceeded (unless superadmin)
  */
-export async function checkRateLimit(userEmail: string): Promise<number> {
+export async function checkRateLimit(userEmail: string, isSuperAdmin = false): Promise<number> {
   const db = getFirestore()
   const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD
 
@@ -17,7 +17,8 @@ export async function checkRateLimit(userEmail: string): Promise<number> {
 
   const currentCount = usageDoc.exists ? (usageDoc.data()?.count as number) || 0 : 0
 
-  if (currentCount >= DAILY_TRANSFORM_LIMIT) {
+  // Superadmins bypass rate limit
+  if (!isSuperAdmin && currentCount >= DAILY_TRANSFORM_LIMIT) {
     throw new HttpsError(
       'resource-exhausted',
       `Daily limit reached. You have used ${currentCount} of ${DAILY_TRANSFORM_LIMIT} transforms today. Try again tomorrow.`,
@@ -31,10 +32,11 @@ export async function checkRateLimit(userEmail: string): Promise<number> {
 /**
  * Get current usage without throwing
  */
-export async function getCurrentUsage(userEmail: string): Promise<{
+export async function getCurrentUsage(userEmail: string, isSuperAdmin = false): Promise<{
   usageToday: number
   usageLimit: number
   remaining: number
+  isUnlimited: boolean
 }> {
   const db = getFirestore()
   const today = new Date().toISOString().split('T')[0]
@@ -47,7 +49,8 @@ export async function getCurrentUsage(userEmail: string): Promise<{
   return {
     usageToday,
     usageLimit: DAILY_TRANSFORM_LIMIT,
-    remaining: Math.max(0, DAILY_TRANSFORM_LIMIT - usageToday),
+    remaining: isSuperAdmin ? Infinity : Math.max(0, DAILY_TRANSFORM_LIMIT - usageToday),
+    isUnlimited: isSuperAdmin,
   }
 }
 
