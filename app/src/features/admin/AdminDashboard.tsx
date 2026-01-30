@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useVenues } from '@/shared/hooks/useVenues'
-import { useApproval } from './ApprovalContext'
+import { useApproval } from './useApproval'
 import { AccessSetup } from './AccessSetup'
 
 export function AdminDashboard() {

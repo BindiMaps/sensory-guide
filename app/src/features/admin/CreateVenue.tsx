@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { httpsCallable } from 'firebase/functions'
 import { functions } from '@/lib/firebase'
 import { useAuthStore } from '@/stores/authStore'
-import { useApproval } from './ApprovalContext'
+import { useApproval } from './useApproval'
 
 function slugify(text: string): string {
   return text

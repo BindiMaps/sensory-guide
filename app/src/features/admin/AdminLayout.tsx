@@ -2,7 +2,8 @@ import { useEffect } from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { logout } from '@/lib/auth'
-import { ApprovalProvider, useApproval } from './ApprovalContext'
+import { ApprovalProvider } from './ApprovalContext'
+import { useApproval } from './useApproval'
 
 function AdminLayoutInner() {
   const { user, loading, initialised } = useAuthStore()
