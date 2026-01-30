@@ -315,9 +315,25 @@ export function VenueDetail() {
   }
 
   // Handle preview from version history
-  const handleVersionPreview = (version: { previewUrl: string }) => {
-    // Open preview in new tab
-    window.open(version.previewUrl, '_blank')
+  const handleVersionPreview = (version: { previewUrl: string; timestamp: string }) => {
+    // Format timestamp for display
+    const date = new Date(version.timestamp).toLocaleString('en-AU', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+
+    // Build preview URL with query params
+    const params = new URLSearchParams({
+      url: version.previewUrl,
+      date,
+      venueId: id!,
+    })
+
+    // Open in new tab with proper preview UI
+    window.open(`/admin/preview?${params.toString()}`, '_blank')
   }
 
   const handleAddEditor = async (e: React.FormEvent) => {

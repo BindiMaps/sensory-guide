@@ -9,6 +9,7 @@ import { LoginPage } from '@/features/admin/LoginPage'
 import { VenueDetail } from '@/features/admin/VenueDetail'
 import { CreateVenue } from '@/features/admin/CreateVenue'
 import { SuperAdminDashboard } from '@/features/admin/super-admin/SuperAdminDashboard'
+import { VersionPreviewPage } from '@/features/admin/guides/VersionPreviewPage'
 import { NotFound } from '@/features/public/NotFound'
 
 const queryClient = new QueryClient({
@@ -38,6 +39,7 @@ function App() {
           <Route path="venues/new" element={<CreateVenue />} />
           <Route path="venues/:id" element={<VenueDetail />} />
           <Route path="super-admin" element={<SuperAdminDashboard />} />
+          <Route path="preview" element={<VersionPreviewPage />} />
         </Route>
 
         {/* 404 */}
