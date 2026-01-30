@@ -6,17 +6,10 @@ exports.getGuideJsonSchemaString = getGuideJsonSchemaString;
 const zod_1 = require("zod");
 // Sensory level enum - matches design system colours
 exports.sensoryLevelSchema = zod_1.z.enum(['low', 'medium', 'high']);
-// Standard sensory categories
-exports.sensoryCategorySchema = zod_1.z.enum([
-    'Sound',
-    'Light',
-    'Crowds',
-    'Smell',
-    'Touch',
-    'Movement',
-    'Temperature',
-    'Other',
-]);
+// Sensory categories - flexible to allow AI to identify any relevant category
+// Common examples: Sound, Light, Crowds, Smell, Touch, Movement, Temperature
+// But not constrained - LLM can use whatever categories make sense for the venue
+exports.sensoryCategorySchema = zod_1.z.string().min(1, 'Category name is required');
 // Sensory detail within an area
 exports.sensoryDetailSchema = zod_1.z.object({
     category: exports.sensoryCategorySchema,
@@ -29,6 +22,8 @@ exports.areaSchema = zod_1.z.object({
     id: zod_1.z.string().min(1),
     name: zod_1.z.string().min(1, 'Area name is required'),
     order: zod_1.z.number().int().min(0),
+    // LLM-generated preview summary (1-2 sentences, optimised for collapsed view)
+    summary: zod_1.z.string().optional(),
     badges: zod_1.z.array(exports.sensoryCategorySchema).default([]),
     details: zod_1.z.array(exports.sensoryDetailSchema).default([]),
 });
@@ -53,7 +48,8 @@ exports.venueOverviewSchema = zod_1.z.object({
     address: zod_1.z.string().min(1, 'Address is required'),
     contact: zod_1.z.string().optional(),
     summary: zod_1.z.string().min(1, 'Summary is required'),
-    lastUpdated: zod_1.z.string().min(1, 'Last updated date is required'), // LLMs return various date formats
+    // LLMs return various date formats - be lenient on client
+    lastUpdated: zod_1.z.string().min(1, 'Last updated date is required'),
 });
 // Complete Guide schema - the main output from LLM transformation
 exports.guideSchema = zod_1.z.object({
@@ -67,7 +63,8 @@ exports.guideSchema = zod_1.z.object({
         quietZones: [],
     }),
     suggestions: zod_1.z.array(zod_1.z.string()).default([]),
-    generatedAt: zod_1.z.string().datetime({ message: 'Must be ISO date string' }),
+    // LLMs return various date formats - be lenient on client
+    generatedAt: zod_1.z.string().min(1, 'Generated date is required'),
 });
 // Progress status for transformation
 exports.transformProgressStatusSchema = zod_1.z.enum([
@@ -78,10 +75,12 @@ exports.transformProgressStatusSchema = zod_1.z.enum([
     'ready',
     'failed',
 ]);
-// Progress document structure (Firestore timestamps handled separately)
+// Progress document structure
 exports.transformProgressSchema = zod_1.z.object({
     status: exports.transformProgressStatusSchema,
     progress: zod_1.z.number().min(0).max(100),
+    startedAt: zod_1.z.date(),
+    updatedAt: zod_1.z.date(),
     error: zod_1.z.string().optional(),
     outputPath: zod_1.z.string().optional(),
     retryCount: zod_1.z.number().int().min(0).default(0),
@@ -106,16 +105,17 @@ function getGuideJsonSchemaString() {
     "summary": "string (1-2 sentence overview)",
     "lastUpdated": "string (ISO date, e.g., 2026-01-29)"
   },
-  "categories": ["Sound", "Light", "Crowds", "Smell", "Touch", "Movement", "Temperature", "Other"],
+  "categories": ["string (sensory categories present in this venue - use whatever makes sense, e.g., Sound, Light, Crowds, Smell, Touch, Movement, Temperature, Vibration, Air Quality, etc.)"],
   "areas": [
     {
       "id": "string (unique identifier, e.g., 'entry', 'main-hall')",
       "name": "string (human-readable area name)",
       "order": number (0-based, journey order),
-      "badges": ["Sound", "Light", ...] (categories with warnings in this area),
+      "summary": "string (one short sentence, max 15 words, key sensory highlight, e.g., 'Echoing announcements and bright skylights around midday.')",
+      "badges": ["string (categories with warnings in this area)"],
       "details": [
         {
-          "category": "Sound" | "Light" | "Crowds" | "Smell" | "Touch" | "Movement" | "Temperature" | "Other",
+          "category": "string (sensory category, e.g., Sound, Light, Crowds)",
           "level": "low" | "medium" | "high",
           "description": "string (specific sensory information)"
         }

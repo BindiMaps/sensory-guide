@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v5 Font Variations - Sensory Guide</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #FAFAFA;
+      color: #1A1A1A;
+      min-height: 100vh;
+      padding: 3rem 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 0.75rem;
+      font-size: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #B8510D;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 2rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: #FFFFFF;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      border: 1px solid #E8E8E5;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      border-color: #B8510D;
+    }
+
+    .card-preview {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #F8F8F6;
+      border-bottom: 1px solid #E8E8E5;
+      position: relative;
+    }
+
+    .font-sample {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #3D3D3D;
+    }
+
+    .card-body {
+      padding: 1rem 1.25rem;
+    }
+
+    .card-number {
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: #B8510D;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.125rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .card-desc {
+      font-size: 0.8125rem;
+      color: #666;
+      line-height: 1.4;
+      margin-bottom: 0.5rem;
+    }
+
+    .tags { display: flex; gap: 0.375rem; flex-wrap: wrap; }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.625rem;
+      padding: 0.2rem 0.5rem;
+      background: #F0F0F0;
+      border-radius: 3px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tag.recommended {
+      background: #FEF7F2;
+      color: #B8510D;
+    }
+
+    .tag.accessible {
+      background: #E6F4E9;
+      color: #2A6339;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      color: #B8510D;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid #E8E8E5;
+      color: #888;
+      font-size: 0.8125rem;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 1.5rem 1rem; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@600&family=Plus+Jakarta+Sans:wght@600&family=Outfit:wght@600&family=Atkinson+Hyperlegible:wght@700&family=Lexend:wght@600&family=DM+Sans:wght@600&family=Manrope:wght@700&family=Work+Sans:wght@600&family=Figtree:wght@600&family=Nunito+Sans:wght@600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <a href="../index.html" class="back-link">← Back to all mockups</a>
+    <h1>v5 Design System — Font Variations</h1>
+    <p class="subtitle">10 font alternatives keeping v5 colours, layout, and accessibility</p>
+    <span class="badge">Based on Design System v5</span>
+
+    <div class="grid">
+      <a href="01-source-sans.html" class="card">
+        <div class="card-preview">
+          <span class="font-sample" style="font-family: 'Source Sans 3', sans-serif;">Adelaide Railway</span>
+        </div>
+        <div class="card-body">
+          <div class="card-number">01</div>
+          <div class="card-title">Source Sans 3</div>
+          <div class="card-desc">Adobe's open-source workhorse. Clean, professional, wide language support.</div>
+          <div class="tags">
+            <span class="tag">Open Source</span>
+            <span class="tag">Neutral</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="02-plus-jakarta.html" class="card">
+        <div class="card-preview">
+          <span class="font-sample" style="font-family: 'Plus Jakarta Sans', sans-serif;">Adelaide Railway</span>
+        </div>
+        <div class="card-body">
+          <div class="card-number">02</div>
+          <div class="card-title">Plus Jakarta Sans</div>
+          <div class="card-desc">Contemporary geometric with slightly rounded terminals. Modern feel.</div>
+          <div class="tags">
+            <span class="tag recommended">Recommended</span>
+            <span class="tag">Modern</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="03-outfit.html" class="card">
+        <div class="card-preview">
+          <span class="font-sample" style="font-family: 'Outfit', sans-serif;">Adelaide Railway</span>
+        </div>
+        <div class="card-body">
+          <div class="card-number">03</div>
+          <div class="card-title">Outfit</div>
+          <div class="card-desc">Geometric sans with friendly character. Good for approachable tone.</div>
+          <div class="tags">
+            <span class="tag">Friendly</span>
+            <span class="tag">Rounded</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="04-atkinson.html" class="card">
+        <div class="card-preview">
+          <span class="font-sample" style="font-family: 'Atkinson Hyperlegible', sans-serif;">Adelaide Railway</span>
+        </div>
+        <div class="card-body">
+          <div class="card-number">04</div>
+          <div class="card-title">Atkinson Hyperlegible</div>
+          <div class="card-desc">Designed by Braille Institute for low-vision readers. Maximum character distinction.</div>
+          <div class="tags">
+            <span class="tag accessible">Accessibility</span>
+            <span class="tag recommended">Recommended</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="05-lexend.html" class="card">
+        <div class="card-preview">
+          <span class="font-sample" style="font-family: 'Lexend', sans-serif;">Adelaide Railway</span>
+        </div>
+        <div class="card-body">
+          <div class="card-number">05</div>
+          <div class="card-title">Lexend</div>
+          <div class="card-desc">Research-backed for reading fluency. Reduces visual stress. Great for dyslexia.</div>
+          <div class="tags">
+            <span class="tag accessible">Accessibility</span>
+            <span class="tag">Readability</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="06-dm-sans.html" class="card">
+        <div class="card-preview">
+          <span class="font-sample" style="font-family: 'DM Sans', sans-serif;">Adelaide Railway</span>
+        </div>
+        <div class="card-body">
+          <div class="card-number">06</div>
+          <div class="card-title">DM Sans</div>
+          <div class="card-desc">Low-contrast geometric. Clean and modern, similar feel to Inter.</div>
+          <div class="tags">
+            <span class="tag">Geometric</span>
+            <span class="tag">Clean</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="07-manrope.html" class="card">
+        <div class="card-preview">
+          <span class="font-sample" style="font-family: 'Manrope', sans-serif;">Adelaide Railway</span>
+        </div>
+        <div class="card-body">
+          <div class="card-number">07</div>
+          <div class="card-title">Manrope</div>
+          <div class="card-desc">Variable font with semi-rounded shapes. Strong personality, modern.</div>
+          <div class="tags">
+            <span class="tag recommended">Recommended</span>
+            <span class="tag">Variable</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="08-work-sans.html" class="card">
+        <div class="card-preview">
+          <span class="font-sample" style="font-family: 'Work Sans', sans-serif;">Adelaide Railway</span>
+        </div>
+        <div class="card-body">
+          <div class="card-number">08</div>
+          <div class="card-title">Work Sans</div>
+          <div class="card-desc">Optimised for screen use. Neutral grotesque with minimal decoration.</div>
+          <div class="tags">
+            <span class="tag">Professional</span>
+            <span class="tag">Neutral</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="09-figtree.html" class="card">
+        <div class="card-preview">
+          <span class="font-sample" style="font-family: 'Figtree', sans-serif;">Adelaide Railway</span>
+        </div>
+        <div class="card-body">
+          <div class="card-number">09</div>
+          <div class="card-title">Figtree</div>
+          <div class="card-desc">Open geometric with slightly wider proportions. Warm and contemporary.</div>
+          <div class="tags">
+            <span class="tag recommended">Recommended</span>
+            <span class="tag">Warm</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="10-nunito-sans.html" class="card">
+        <div class="card-preview">
+          <span class="font-sample" style="font-family: 'Nunito Sans', sans-serif;">Adelaide Railway</span>
+        </div>
+        <div class="card-body">
+          <div class="card-number">10</div>
+          <div class="card-title">Nunito Sans</div>
+          <div class="card-desc">Balanced between geometric and humanist. Friendly but professional.</div>
+          <div class="tags">
+            <span class="tag">Friendly</span>
+            <span class="tag">Balanced</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <footer>
+      All variations maintain v5 colours, terracotta accent (#B8510D), sensory level semantics, and WCAG AA accessibility.
+    </footer>
+  </div>
+</body>
+</html>

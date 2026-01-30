@@ -1,0 +1,6 @@
+export { AreaSection } from './AreaSection'
+export { CategoryBadge, LevelBadge } from './CategoryBadge'
+export { FacilitiesSection } from './FacilitiesSection'
+export { GuideContent } from './GuideContent'
+export { SensoryDetail } from './SensoryDetail'
+export { SensoryKey } from './SensoryKey'

@@ -1,7 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { PreviewSection } from './PreviewSection'
+import { AreaSection } from './AreaSection'
 import type { Area } from '@/lib/schemas/guideSchema'
 
 const mockArea: Area = {
@@ -23,7 +23,12 @@ const mockArea: Area = {
   ],
 }
 
-describe('PreviewSection', () => {
+const mockAreaWithSummary: Area = {
+  ...mockArea,
+  summary: 'A calm entry point with soft lighting and quiet ambience.',
+}
+
+describe('AreaSection', () => {
   beforeEach(() => {
     // Mock matchMedia for reduced motion
     Object.defineProperty(window, 'matchMedia', {
@@ -39,35 +44,30 @@ describe('PreviewSection', () => {
         dispatchEvent: vi.fn(),
       })),
     })
+    // Clear localStorage for clean state
+    localStorage.clear()
   })
 
   it('renders area name', () => {
-    render(<PreviewSection area={mockArea} />)
+    render(<AreaSection area={mockArea} />)
     expect(screen.getByText('Entry Hall')).toBeInTheDocument()
   })
 
-  it('renders category badges on header', () => {
-    render(<PreviewSection area={mockArea} />)
-    // Multiple Sound badges may exist (header + detail), so use getAllBy
+  it('renders category badges', () => {
+    render(<AreaSection area={mockArea} />)
     expect(screen.getAllByText('Sound').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Light').length).toBeGreaterThan(0)
   })
 
   it('starts collapsed by default', () => {
-    render(<PreviewSection area={mockArea} />)
+    render(<AreaSection area={mockArea} />)
     const button = screen.getByRole('button')
     expect(button).toHaveAttribute('aria-expanded', 'false')
-  })
-
-  it('starts expanded when defaultExpanded is true', () => {
-    render(<PreviewSection area={mockArea} defaultExpanded />)
-    const button = screen.getByRole('button')
-    expect(button).toHaveAttribute('aria-expanded', 'true')
   })
 
   it('toggles on click', async () => {
     const user = userEvent.setup()
-    render(<PreviewSection area={mockArea} />)
+    render(<AreaSection area={mockArea} />)
 
     const button = screen.getByRole('button')
     expect(button).toHaveAttribute('aria-expanded', 'false')
@@ -77,37 +77,17 @@ describe('PreviewSection', () => {
 
     await user.click(button)
     expect(button).toHaveAttribute('aria-expanded', 'false')
-  })
-
-  it('toggles on Enter key', () => {
-    render(<PreviewSection area={mockArea} />)
-    const button = screen.getByRole('button')
-
-    fireEvent.keyDown(button, { key: 'Enter', code: 'Enter' })
-    fireEvent.click(button) // keyDown triggers click on buttons
-
-    expect(button).toHaveAttribute('aria-expanded', 'true')
-  })
-
-  it('toggles on Space key', () => {
-    render(<PreviewSection area={mockArea} />)
-    const button = screen.getByRole('button')
-
-    fireEvent.keyDown(button, { key: ' ', code: 'Space' })
-    fireEvent.click(button)
-
-    expect(button).toHaveAttribute('aria-expanded', 'true')
   })
 
   it('has correct aria-controls attribute', () => {
-    render(<PreviewSection area={mockArea} />)
+    render(<AreaSection area={mockArea} />)
     const button = screen.getByRole('button')
     expect(button).toHaveAttribute('aria-controls', 'section-entry')
   })
 
   it('shows sensory details when expanded', async () => {
     const user = userEvent.setup()
-    render(<PreviewSection area={mockArea} />)
+    render(<AreaSection area={mockArea} />)
 
     await user.click(screen.getByRole('button'))
 
@@ -123,7 +103,7 @@ describe('PreviewSection', () => {
     const emptyArea: Area = { ...mockArea, details: [] }
     const user = userEvent.setup()
 
-    render(<PreviewSection area={emptyArea} />)
+    render(<AreaSection area={emptyArea} />)
     await user.click(screen.getByRole('button'))
 
     expect(
@@ -131,19 +111,53 @@ describe('PreviewSection', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows +N indicator when more than 3 badges', () => {
-    const manyBadgesArea: Area = {
-      ...mockArea,
-      badges: ['Sound', 'Light', 'Crowds', 'Smell', 'Movement'],
-    }
-    render(<PreviewSection area={manyBadgesArea} />)
+  describe('preview text', () => {
+    it('shows first detail as preview when collapsed (legacy fallback)', () => {
+      render(<AreaSection area={mockArea} />)
+      // Preview paragraph should exist with the first detail text
+      const previewParagraph = screen.getByRole('button').querySelector('p.line-clamp-2')
+      expect(previewParagraph).toBeInTheDocument()
+      expect(previewParagraph).toHaveTextContent(/Quiet entrance area/i)
+    })
 
-    expect(screen.getByText('+2')).toBeInTheDocument()
+    it('shows summary field as preview when available', () => {
+      render(<AreaSection area={mockAreaWithSummary} />)
+      expect(
+        screen.getByText('A calm entry point with soft lighting and quiet ambience.')
+      ).toBeInTheDocument()
+    })
+
+    it('hides preview when expanded', async () => {
+      const user = userEvent.setup()
+      render(<AreaSection area={mockAreaWithSummary} />)
+
+      // Preview visible when collapsed
+      expect(
+        screen.getByText('A calm entry point with soft lighting and quiet ambience.')
+      ).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button'))
+
+      // After expanding, the preview paragraph should be hidden
+      // But the details should be visible
+      expect(
+        screen.getByText('Quiet entrance area with minimal background noise.')
+      ).toBeInTheDocument()
+    })
   })
 
-  it('meets minimum touch target height', () => {
-    render(<PreviewSection area={mockArea} />)
-    const button = screen.getByRole('button')
-    expect(button.className).toContain('min-h-[44px]')
+  describe('with venueSlug (Zustand persistence)', () => {
+    it('uses Zustand store when venueSlug provided', async () => {
+      const user = userEvent.setup()
+      const { rerender } = render(<AreaSection area={mockArea} venueSlug="test-venue" />)
+
+      const button = screen.getByRole('button')
+      await user.click(button)
+      expect(button).toHaveAttribute('aria-expanded', 'true')
+
+      // Re-render should maintain state via Zustand
+      rerender(<AreaSection area={mockArea} venueSlug="test-venue" />)
+      expect(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'true')
+    })
   })
 })

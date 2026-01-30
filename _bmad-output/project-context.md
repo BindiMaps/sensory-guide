@@ -173,8 +173,10 @@ functions/
 
 - Every publish creates `versions/{timestamp}.json` in Storage
 - Firestore `venues/{id}.liveVersion` points to which timestamp is live
-- "Rollback" = update pointer only (no data copying)
-- "Publish new" = create new version + update pointer atomically
+- Firestore `venues/{id}.draftVersion` points to unpublished transform (if any)
+- "Rollback" = update liveVersion pointer only (no data copying)
+- "Publish new" = create new version + update liveVersion atomically
+- Transform sets `draftVersion`; publish clears it (or keeps for history)
 
 **Functions:**
 - `setLiveVersion(venueId, timestamp)` - make any version live

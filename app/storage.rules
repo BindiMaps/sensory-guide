@@ -2,7 +2,18 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Venues folder - for PDF uploads and guide assets
+    // Published guide versions - public read access
+    // These files are made public via file.makePublic() in publishGuide function
+    // This rule provides explicit public read access as a fallback
+    match /venues/{venueId}/versions/{filename} {
+      // Public can read published guide JSON files
+      allow read: if true;
+
+      // Write only via Cloud Functions
+      allow write: if false;
+    }
+
+    // Venues folder - for PDF uploads and guide assets (non-versions paths)
     match /venues/{venueId}/{allPaths=**} {
       // Read: Allow authenticated users who are editors
       // Note: Storage rules can't check Firestore data directly,
@@ -14,8 +25,8 @@ service firebase.storage {
       allow write: if false;
     }
 
-    // Public guide assets (published guides)
-    match /public/guides/{slug}/{allPaths=**} {
+    // Public guide JSON files (slug-based, e.g. public/guides/my-venue.json)
+    match /public/guides/{filename} {
       // Anyone can read published guide content
       allow read: if true;
 

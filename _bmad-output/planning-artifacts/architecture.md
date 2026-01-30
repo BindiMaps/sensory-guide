@@ -164,9 +164,16 @@ npx shadcn@latest add button card dialog form input
   createdBy: "email1@example.com"
   createdAt, updatedAt
   liveVersion: "2026-01-28T10:30:00Z"  # pointer to which version is live
+  draftVersion?: "2026-01-29T14:00:00Z"  # pointer to unpublished draft (if any)
 
 /venues/{venueId}/embeddings
   {"Section Title": "https://bindiweb.com/...", ...}
+
+/config/access
+  allowedEmails: ["user1@example.com", "user2@aspect.org.au"]
+
+/config/superAdmins
+  emails: ["admin@bindimaps.com"]
 
 /usage/{userEmail}/{date}
   count: 5
@@ -234,6 +241,13 @@ if (!venue.editors.includes(user.email)) {
 - Any editor can remove other editors (except last one)
 - Last editor can delete the venue
 - Can't remove yourself if you're the last editor
+
+**Signup Approval: Allow-List Model**
+- `/config/access` document with `allowedEmails` array
+- `createVenue` function checks if user email is in allow-list
+- Super admins bypass check automatically
+- Non-approved users see "pending approval" message, cannot create venues
+- Existing venues remain accessible (no retroactive removal)
 
 **Rate Limiting: Per-User Daily Cap**
 - `/usage/{userId}/{date}` counter

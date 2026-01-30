@@ -1,9 +1,12 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useVenues } from '@/shared/hooks/useVenues'
+import { useApproval } from './ApprovalContext'
+import { AccessSetup } from './AccessSetup'
 
 export function AdminDashboard() {
   const { venues, loading, error } = useVenues()
+  const { approved, needsSetup, refetch } = useApproval()
 
   useEffect(() => {
     document.title = 'Dashboard - Sensory Guide Admin'
@@ -23,11 +26,19 @@ export function AdminDashboard() {
     )
   }
 
+  // Show setup UI if access config doesn't exist yet
+  if (needsSetup) {
+    return <AccessSetup onSetupComplete={refetch} />
+  }
+
+  // Show pending approval message for non-approved users
+  const showPendingApproval = !approved
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Your Venues</h1>
-        {venues.length > 0 && (
+        {venues.length > 0 && approved && (
           <Link
             to="/admin/venues/new"
             className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
@@ -37,15 +48,33 @@ export function AdminDashboard() {
         )}
       </div>
 
+      {/* Pending approval notice */}
+      {showPendingApproval && (
+        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+          <h2 className="font-semibold text-amber-800 mb-1">Account Pending Approval</h2>
+          <p className="text-sm text-amber-700">
+            Your account is pending approval. Contact support to request access to create venues.
+          </p>
+        </div>
+      )}
+
       {venues.length === 0 ? (
         <div className="text-center py-12 border rounded-lg bg-muted/20">
-          <p className="text-muted-foreground mb-4">No venues yet</p>
-          <Link
-            to="/admin/venues/new"
-            className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-          >
-            Create New Venue
-          </Link>
+          {approved ? (
+            <>
+              <p className="text-muted-foreground mb-4">No venues yet</p>
+              <Link
+                to="/admin/venues/new"
+                className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+              >
+                Create New Venue
+              </Link>
+            </>
+          ) : (
+            <p className="text-muted-foreground">
+              You don't have any venues yet. Contact support to get approved for venue creation.
+            </p>
+          )}
         </div>
       ) : (
         <div className="grid gap-4">

@@ -62,6 +62,11 @@ This document provides the complete epic and story breakdown for Sensory Guide, 
 - FR27: Admin can remove editors from a venue (except last editor)
 - FR28: Last remaining editor can delete the venue
 
+**Signup Approval (LLM Budget Protection):**
+- FR43: Only approved emails can create venues (invite-only model)
+- FR44: Super Admin can add/remove emails from the approved list
+- FR45: Non-approved users see "Account pending approval" message when attempting venue creation
+
 **Authentication:**
 - FR29: Admin can authenticate to access admin portal
 - FR30: System restricts admin features to authenticated users
@@ -82,6 +87,10 @@ This document provides the complete epic and story breakdown for Sensory Guide, 
 **Super Admin (Support Access):**
 - FR40: Super Admin can view all venues across all users (support access)
 - FR41: Super Admin can view global analytics and system health
+- FR46: Super Admin can administer any venue (add/remove editors, delete)
+- FR47: Super Admin can view all users with their venue counts
+- FR48: Super Admin can disable a user account (reversible)
+- FR49: Super Admin can delete a user account (with venue reassignment)
 
 **Index Page:**
 - FR42: User can view BindiMaps information on landing page
@@ -168,13 +177,15 @@ This document provides the complete epic and story breakdown for Sensory Guide, 
 | FR21-23 | Epic 3 | Content Suggestions |
 | FR24-28 | Epic 2 | Venue Sharing (Doc-Style Model) |
 | FR29-31 | Epic 2 | Authentication |
+| FR43-45 | Epic 2 | Signup Approval (LLM Budget Protection) |
 | FR32-35 | Epic 5 | User Feedback & Analytics |
 | FR36-39 | Epic 4 | Accessibility Compliance |
 | FR20a-b | Epic 6 | Version Rollback (make any version live) |
 | FR40-41 | Epic 6 | Super Admin (Support Access) |
+| FR46-49 | Epic 6 | Super Admin Venue & User Administration |
 | FR42 | Epic 4 | Index Page |
 
-**Coverage:** 44 FRs mapped ✅ (FR20a-b added for versioned publishing)
+**Coverage:** 48 FRs mapped ✅ (FR20a-b added for versioned publishing, FR46-49 for super admin administration)
 
 ---
 
@@ -960,6 +971,45 @@ So that **I can understand user behaviour and improve the product**.
 
 ## Epic 6: Guide Management & Super Admin
 
+### Story 6.0: Venue Lifecycle Dashboard (PRIORITY)
+
+As an **admin user**,
+I want **the venue detail page to show the current state of my venue on page load**,
+So that **I can see what's published, what drafts exist, and manage versions without losing context**.
+
+> **Context:** This story addresses a critical UX gap where page refresh/navigation loses all state. It implements the `listVersions` and `setLiveVersion` functions specified in architecture.md but never built. This is foundational to the management experience and significantly improves testing workflows.
+
+**Acceptance Criteria:**
+
+**Given** I navigate to a venue detail page
+**When** the page loads
+**Then** I see the venue's current state:
+  - If published: Show the live guide preview, publish date, shareable URL
+  - If has unpublished draft: Show the draft preview with "Publish" option
+  - If neither: Show the PDF upload prompt
+
+**Given** a venue has been published
+**When** I refresh the page
+**Then** I still see the published state (not reset to upload prompt)
+
+**Given** I have transformed a PDF but not published
+**When** I navigate away and return
+**Then** I see my draft preview (not lost)
+
+**Given** a venue has version history
+**When** I view the venue
+**Then** I can access a list of all versions (drafts and published) with:
+  - Timestamp
+  - Status (draft/published/live)
+  - Preview button
+  - "Make Live" button (for published versions)
+
+**Given** I want to re-publish an old version
+**When** I click "Make Live" on a previous version
+**Then** it becomes the live version immediately
+
+---
+
 ### Story 6.1: Guide Update via Re-upload
 
 As an **admin user**,
@@ -1279,6 +1329,48 @@ So that **I don't get stuck trying to find a unique slug**.
 **Given** I manually enter a slug that's taken
 **When** I try to submit
 **Then** I see the same suggestions UI
+
+---
+
+### Story 2.11: Signup Approval (Allow-List)
+
+As a **platform owner**,
+I want **only approved users to be able to create venues**,
+So that **I can control who consumes LLM API budget**.
+
+> **Context:** This is a security feature to prevent open signup abuse of LLM transformation costs. Implemented as invite-only (allow-list) model rather than approval queue to minimise complexity.
+
+**Acceptance Criteria:**
+
+**Given** a Firestore document `/config/access` with `allowedEmails` array
+**When** a user tries to create a venue
+**Then** the `createVenue` function checks if their email is in `allowedEmails`
+
+**Given** my email IS in the `allowedEmails` array
+**When** I click "Create New Venue"
+**Then** venue creation proceeds normally
+
+**Given** my email is NOT in the `allowedEmails` array
+**When** I click "Create New Venue"
+**Then** I see a message: "Your account is pending approval. Contact [admin email] to request access."
+**And** the create venue form is not shown
+**And** I can still view the dashboard (but it will be empty)
+
+**Given** I am a super admin
+**When** I view the super admin dashboard
+**Then** I see an "Approved Users" section
+**And** I can add emails to the allow-list
+**And** I can remove emails from the allow-list
+
+**Given** I remove an email from the allow-list
+**When** that user tries to create a new venue
+**Then** they see the "pending approval" message
+**And** their existing venues remain accessible (no retroactive removal)
+
+**Technical Notes:**
+- Check happens in `createVenue` Cloud Function, not client-side
+- Super admins are automatically allowed (bypass check)
+- Consider seeding with your email + ASPECT testers during deployment
 
 ---
 
@@ -1621,6 +1713,45 @@ So that **I can find essential facilities when stressed**.
 
 ---
 
+### Story 4.14: Area Preview Summaries (Guide-Like Experience)
+
+As an **end user**,
+I want **to see a brief preview of what to expect in each area without expanding**,
+So that **the guide feels like it's teaching me something, not making me hunt for information**.
+
+> **Context:** Current collapsed sections show only title + badges + level indicator. Users must tap to learn anything. This makes the UI feel like a database lookup rather than a helpful guide. Preview summaries transform passive "click to discover" into active "here's what to expect".
+
+**Phase 1 (Implemented):**
+
+**Given** I am viewing a collapsed section
+**When** the section has sensory details
+**Then** I see a 1-2 line preview of the first sensory description below the title
+**And** the preview is truncated at ~120 chars with ellipsis if longer
+**And** the preview disappears when the section is expanded (avoids duplication)
+
+**Phase 2 (Schema Evolution - Future):**
+
+**Given** the LLM transforms a PDF
+**When** generating guide content
+**Then** each area includes an optional `summary` field (1-2 sentences)
+**And** the summary is optimised for preview display (teaser, not duplicate of details)
+
+**Given** an area has a `summary` field
+**When** I view the collapsed section
+**Then** the summary is shown instead of the first detail description
+
+**Given** an area has no `summary` field (legacy guides)
+**When** I view the collapsed section
+**Then** the first detail description is used as fallback
+
+**Technical Notes:**
+- Phase 1: Pure frontend change in `AreaSection` component
+- Phase 2: Add optional `summary: z.string().optional()` to `areaSchema`
+- Phase 2: Update LLM prompt to generate area summaries
+- Backward compatible: existing guides work via fallback
+
+---
+
 ## Epic 5: Print & Feedback (Extended)
 
 ### Story 5.5: Print Header/Footer
@@ -1829,6 +1960,102 @@ So that **I can investigate issues reported by users**.
 **Then** I see only events for that venue
 
 **And** each log entry shows: timestamp, user, action, venue, details
+
+---
+
+### Story 6.10: Super Admin Venue & User Administration
+
+As a **super admin**,
+I want **to administer any venue and manage users across the platform**,
+So that **I can support growth, handle issues, and manage the user base**.
+
+**Acceptance Criteria:**
+
+#### Venue List with Ownership Clarity
+
+**Given** I am a super admin viewing the dashboard
+**When** I navigate to "All Venues"
+**Then** I see venues grouped/flagged by ownership:
+  - "My Venues" section: venues where I'm an editor (normal styling)
+  - "Other Venues" section: venues I can see as super admin (distinct visual - e.g., muted/outlined cards, badge "Admin View")
+**And** the distinction is immediately obvious at a glance
+
+**Given** I'm viewing a venue I don't own
+**When** I see the venue card
+**Then** it shows the owner/editors clearly
+**And** has visual indicator this is "admin access" not "my venue"
+
+#### Full Venue Administration
+
+**Given** I am a super admin
+**When** I view any venue (owned or not)
+**Then** I can:
+  - Add editors (bypass normal 5-editor limit if needed)
+  - Remove editors (including last editor - with warning)
+  - Delete the venue entirely (with confirmation dialog)
+  - Unpublish a live guide (hide from public without deleting)
+
+**Given** I remove the last editor from a venue
+**When** I confirm the action
+**Then** I'm prompted: "This venue has no editors. Delete venue or assign new editor?"
+**And** I must choose one before proceeding
+
+**Given** I delete a venue as super admin
+**When** I confirm
+**Then** venue doc, all versions, and storage files are deleted
+**And** action is recorded in audit log
+
+#### User Management Section
+
+**Given** I am a super admin
+**When** I navigate to "Users" section
+**Then** I see a list of all users who have logged in
+**And** each row shows: email, venue count, last active, status (active/disabled)
+**And** I can search/filter by email
+
+**Given** I view a specific user
+**When** I click on their row
+**Then** I see:
+  - List of venues they're an editor of
+  - Whether they're on the approved list
+  - Option to disable or delete account
+
+#### Disable User Account
+
+**Given** I click "Disable" on a user
+**When** I confirm
+**Then** user's `disabled` flag is set in Firestore
+**And** user sees "Account disabled" on next login attempt
+**And** their venues remain intact (other editors can still access)
+**And** I can re-enable at any time
+
+#### Delete User Account
+
+**Given** I click "Delete" on a user
+**When** I see the confirmation dialog
+**Then** I see a list of venues they're the ONLY editor of
+**And** for each such venue, I must choose:
+  - "Delete venue" (removes venue entirely)
+  - "Reassign to: [email input]" (transfer before deletion)
+
+**Given** I've resolved all orphan venues
+**When** I confirm deletion
+**Then**:
+  - User removed from editors array on all shared venues
+  - User's orphan venues deleted or reassigned per my choices
+  - User removed from approved list (if present)
+  - Firebase Auth account deleted
+  - User doc in Firestore deleted
+
+**Given** a user has venues shared with others
+**When** I delete that user
+**Then** those venues remain (just that user removed from editors)
+
+**Technical Notes:**
+- Super admin check: email in `/config/superAdmins` Firestore doc
+- User disable: add `disabled: true` to user doc, check in auth middleware
+- User deletion requires Cloud Function (cascades, Auth deletion)
+- Consider soft-delete with 30-day grace period for GDPR (optional)
 
 ---
 
@@ -2127,16 +2354,16 @@ So that **I can develop and review components in isolation**.
 ## Summary
 
 **Total Epics:** 8
-**Total Stories:** 52
+**Total Stories:** 56
 
 | Epic | Stories | Theme |
 |------|---------|-------|
 | Epic 1: Project Foundation | 8 | Infrastructure & setup |
-| Epic 2: Admin Auth & Venues | 10 | Authentication & sharing |
+| Epic 2: Admin Auth & Venues | 11 | Authentication & sharing (incl. signup approval) |
 | Epic 3: Guide Creation | 12 | PDF→Guide pipeline |
-| Epic 4: Public Guide | 13 | User-facing guide experience |
+| Epic 4: Public Guide | 14 | User-facing guide experience (incl. preview summaries) |
 | Epic 5: Print & Feedback | 9 | Print + analytics |
-| Epic 6: Management & Super Admin | 9 | Ongoing management |
+| Epic 6: Management & Super Admin | 11 | Ongoing management (incl. 6.0 lifecycle dashboard, super admin administration) |
 | Epic 7: Polish & Quality | 8 | UX refinement |
 | Epic 8: Testing & Docs | 6 | Quality assurance |
 

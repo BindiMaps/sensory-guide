@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:full": "concurrently -k -n functions,vite -c blue,green \"yarn emulators:functions\" \"yarn dev\"",
+    "dev:full": "concurrently -k -n tsc,functions,vite -c yellow,blue,green \"yarn --cwd functions build:watch\" \"yarn emulators:functions\" \"yarn dev\"",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -21,6 +21,7 @@
     "deploy:preview": "yarn build && firebase hosting:channel:deploy preview"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.15",
     "@tanstack/react-query": "^5.90.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

@@ -8,16 +8,18 @@ describe('CategoryBadge', () => {
     expect(screen.getByText('Sound')).toBeInTheDocument()
   })
 
-  it('applies known category colour', () => {
+  it('applies known category colour (v5 design system)', () => {
     const { container } = render(<CategoryBadge category="Sound" />)
     const badge = container.firstChild as HTMLElement
-    expect(badge.style.backgroundColor).toBe('rgb(205, 231, 255)') // #CDE7FF
+    // Sound: #E3ECF0 = rgb(227, 236, 240)
+    expect(badge.style.backgroundColor).toBe('rgb(227, 236, 240)')
   })
 
   it('applies fallback colour for unknown category', () => {
     const { container } = render(<CategoryBadge category="Unknown" />)
     const badge = container.firstChild as HTMLElement
-    expect(badge.style.backgroundColor).toBe('rgb(229, 231, 235)') // #E5E7EB grey
+    // Fallback: #EDE6E0 = rgb(237, 230, 224)
+    expect(badge.style.backgroundColor).toBe('rgb(237, 230, 224)')
   })
 
   it('accepts custom className', () => {
@@ -25,32 +27,38 @@ describe('CategoryBadge', () => {
     const badge = container.firstChild as HTMLElement
     expect(badge.className).toContain('custom-class')
   })
+
+  it('uses uppercase text styling', () => {
+    const { container } = render(<CategoryBadge category="Crowds" />)
+    const badge = container.firstChild as HTMLElement
+    expect(badge.className).toContain('uppercase')
+  })
 })
 
 describe('LevelBadge', () => {
-  it('renders level name capitalised', () => {
+  it('renders level name', () => {
     render(<LevelBadge level="low" />)
     expect(screen.getByText('low')).toBeInTheDocument()
   })
 
-  it('applies low level colours (green)', () => {
+  it('includes colour square indicator', () => {
     const { container } = render(<LevelBadge level="low" />)
-    const badge = container.firstChild as HTMLElement
-    expect(badge.style.backgroundColor).toBe('rgb(213, 245, 227)') // #D5F5E3
-    expect(badge.style.color).toBe('rgb(42, 99, 57)') // #2A6339
+    const square = container.querySelector('span > span:first-child') as HTMLElement
+    // Low: #2A6339 = rgb(42, 99, 57)
+    expect(square.style.backgroundColor).toBe('rgb(42, 99, 57)')
   })
 
-  it('applies medium level colours (amber)', () => {
+  it('applies medium level colour', () => {
     const { container } = render(<LevelBadge level="medium" />)
-    const badge = container.firstChild as HTMLElement
-    expect(badge.style.backgroundColor).toBe('rgb(254, 243, 199)') // #FEF3C7
-    expect(badge.style.color).toBe('rgb(138, 95, 8)') // #8A5F08
+    const square = container.querySelector('span > span:first-child') as HTMLElement
+    // Medium: #8A5F08 = rgb(138, 95, 8)
+    expect(square.style.backgroundColor).toBe('rgb(138, 95, 8)')
   })
 
-  it('applies high level colours (red)', () => {
+  it('applies high level colour', () => {
     const { container } = render(<LevelBadge level="high" />)
-    const badge = container.firstChild as HTMLElement
-    expect(badge.style.backgroundColor).toBe('rgb(254, 226, 226)') // #FEE2E2
-    expect(badge.style.color).toBe('rgb(158, 51, 34)') // #9E3322
+    const square = container.querySelector('span > span:first-child') as HTMLElement
+    // High: #9E3322 = rgb(158, 51, 34)
+    expect(square.style.backgroundColor).toBe('rgb(158, 51, 34)')
   })
 })

@@ -24,6 +24,8 @@ export const areaSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1, 'Area name is required'),
   order: z.number().int().min(0),
+  // LLM-generated preview summary (1-2 sentences, optimised for collapsed view)
+  summary: z.string().optional(),
   badges: z.array(sensoryCategorySchema).default([]),
   details: z.array(sensoryDetailSchema).default([]),
 })
@@ -132,6 +134,7 @@ export function getGuideJsonSchemaString(): string {
       "id": "string (unique identifier, e.g., 'entry', 'main-hall')",
       "name": "string (human-readable area name)",
       "order": number (0-based, journey order),
+      "summary": "string (one short sentence, max 15 words, key sensory highlight, e.g., 'Echoing announcements and bright skylights around midday.')",
       "badges": ["string (categories with warnings in this area)"],
       "details": [
         {

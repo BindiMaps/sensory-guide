@@ -63,6 +63,7 @@ ${getGuideJsonSchemaString()}
    - Start with Entry/Arrival
    - Progress through main areas in logical visit order
    - Include any distinct zones or sections
+   - **IMPORTANT**: For each area, write a "summary" field - one short sentence (max 15 words) with key sensory highlights
 
 3. **Sensory Details**: For each area, extract sensory information about:
    - **Sound**: Noise levels, announcements, music, echoes

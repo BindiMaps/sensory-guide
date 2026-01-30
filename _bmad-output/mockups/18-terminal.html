@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sensory Guide - Adelaide Railway Station | Terminal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: #0D1117;
+      --surface: #161B22;
+      --text: #C9D1D9;
+      --text-secondary: #8B949E;
+      --text-muted: #6E7681;
+      --border: #30363D;
+      --green: #3FB950;
+      --yellow: #D29922;
+      --red: #F85149;
+      --cyan: #58A6FF;
+      --purple: #A371F7;
+      --font: "Fira Code", monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :focus { outline: none; }
+    :focus-visible { outline: 1px solid var(--cyan); outline-offset: 2px; }
+
+    body {
+      font-family: var(--font);
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 0;
+      background: var(--green);
+      color: var(--background);
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      z-index: 1000;
+      text-decoration: none;
+    }
+    .skip-link:focus { top: 0; }
+
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      color: var(--green);
+      font-size: 0.8125rem;
+    }
+    .brand::before { content: '$ '; color: var(--text-muted); }
+
+    .header-actions { display: flex; gap: 1rem; }
+
+    .header-btn {
+      background: none;
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.75rem;
+      font-family: var(--font);
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .header-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    .main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .venue-header {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan);
+    }
+
+    .venue-label {
+      color: var(--text-muted);
+      font-size: 0.6875rem;
+      margin-bottom: 0.25rem;
+    }
+    .venue-label::before { content: '# '; color: var(--purple); }
+
+    .venue-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--cyan);
+      margin-bottom: 0.25rem;
+    }
+
+    .venue-meta {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+    .venue-meta::before { content: '// '; }
+
+    .intro {
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .intro::before {
+      content: '/**';
+      display: block;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+    .intro::after {
+      content: ' */';
+      display: block;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .intro-text {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      padding-left: 0.5rem;
+    }
+    .intro-text::before { content: ' * '; color: var(--text-muted); }
+
+    .sections { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .section[aria-expanded="true"] { border-color: var(--green); }
+
+    .section-header {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 0.875rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-align: left;
+      font-family: inherit;
+      color: inherit;
+      font-size: 0.8125rem;
+    }
+
+    .section-toggle {
+      color: var(--text-muted);
+      min-width: 1.5rem;
+    }
+    .section-toggle::before { content: '▶'; }
+    .section[aria-expanded="true"] .section-toggle { color: var(--green); }
+    .section[aria-expanded="true"] .section-toggle::before { content: '▼'; }
+
+    .section-info { flex: 1; display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+
+    .section-title {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--cyan);
+    }
+    .section-title::before { content: 'fn '; color: var(--purple); font-weight: 400; }
+    .section-title::after { content: '()'; color: var(--text-muted); }
+
+    .badges { display: flex; gap: 0.5rem; }
+
+    .badge {
+      font-size: 0.625rem;
+      color: var(--yellow);
+    }
+    .badge::before { content: '@'; }
+
+    .sensory-level { display: flex; align-items: center; gap: 0.5rem; }
+
+    .sensory-text { font-size: 0.6875rem; }
+    .sensory-text::before { content: 'level: '; color: var(--text-muted); }
+    .sensory-text.low { color: var(--green); }
+    .sensory-text.medium { color: var(--yellow); }
+    .sensory-text.high { color: var(--red); }
+
+    .section-content {
+      display: none;
+      padding: 0 1rem 1rem 2.5rem;
+      border-top: 1px dashed var(--border);
+    }
+    .section[aria-expanded="true"] .section-content { display: block; padding-top: 0.875rem; }
+
+    .category { margin-bottom: 0.75rem; }
+    .category:last-child { margin-bottom: 0; }
+
+    .category-title {
+      font-size: 0.75rem;
+      color: var(--purple);
+      margin-bottom: 0.125rem;
+    }
+    .category-title::before { content: '- '; color: var(--text-muted); }
+
+    .category-text {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      padding-left: 1rem;
+      line-height: 1.5;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .sensory-key-title {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    .sensory-key-title::before { content: '// '; }
+
+    .sensory-key-items { display: flex; gap: 2rem; flex-wrap: wrap; }
+
+    .sensory-key-item { font-size: 0.75rem; }
+    .sensory-key-item span:first-child { margin-right: 0.5rem; }
+    .sensory-key-item .low { color: var(--green); }
+    .sensory-key-item .medium { color: var(--yellow); }
+    .sensory-key-item .high { color: var(--red); }
+
+    @media (max-width: 640px) {
+      .section-info { flex-direction: column; gap: 0.25rem; }
+      .sensory-key-items { flex-direction: column; gap: 0.25rem; }
+    }
+
+    @media print {
+      body { background: white; color: black; }
+      .header, .skip-link { display: none; }
+      .section-content { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <header class="header">
+    <div class="header-inner">
+      <span class="brand">sensory-guide --venue="adelaide-station"</span>
+      <div class="header-actions">
+        <button class="header-btn" type="button">--export=pdf</button>
+        <button class="header-btn" type="button">--print</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main" id="main-content">
+    <div class="venue-header">
+      <p class="venue-label">VENUE_INFO</p>
+      <h1 class="venue-name">Adelaide Railway Station</h1>
+      <p class="venue-meta">North Terrace, Adelaide SA 5000 | updated: 2026-01</p>
+    </div>
+
+    <div class="intro">
+      <p class="intro-text">This guide describes sensory experiences at each station area.</p>
+    </div>
+
+    <div class="sections">
+      <article class="section" aria-expanded="true">
+        <button class="section-header" type="button" aria-expanded="true" onclick="toggleSection(this)">
+          <span class="section-toggle" aria-hidden="true"></span>
+          <span class="section-info">
+            <h2 class="section-title">main_concourse</h2>
+            <span class="badges"><span class="badge">sound</span><span class="badge">light</span><span class="badge">crowds</span></span>
+          </span>
+          <span class="sensory-level"><span class="sensory-text medium">"medium"</span></span>
+        </button>
+        <div class="section-content">
+          <div class="category"><p class="category-title">sound</p><p class="category-text">PA announcements every 2-3 min. High ceilings create echoes. Consider noise-cancelling headphones during peak hours.</p></div>
+          <div class="category"><p class="category-title">light</p><p class="category-text">Large skylights create bright conditions at midday. Fluorescent backup lighting throughout.</p></div>
+          <div class="category"><p class="category-title">crowds</p><p class="category-text">Peak: 07:30-09:00, 16:30-18:00 weekdays. Quiet: mid-morning, early afternoon.</p></div>
+        </div>
+      </article>
+
+      <article class="section" aria-expanded="false">
+        <button class="section-header" type="button" aria-expanded="false" onclick="toggleSection(this)">
+          <span class="section-toggle" aria-hidden="true"></span>
+          <span class="section-info">
+            <h2 class="section-title">ticketing_area</h2>
+            <span class="badges"><span class="badge">crowds</span><span class="badge">light</span></span>
+          </span>
+          <span class="sensory-level"><span class="sensory-text low">"low"</span></span>
+        </button>
+        <div class="section-content">
+          <div class="category"><p class="category-title">crowds</p><p class="category-text">Busy during peak times. Self-service machines available.</p></div>
+          <div class="category"><p class="category-title">screens</p><p class="category-text">Ticket machines: bright screens. Staff counter: softer lighting.</p></div>
+        </div>
+      </article>
+
+      <article class="section" aria-expanded="false">
+        <button class="section-header" type="button" aria-expanded="false" onclick="toggleSection(this)">
+          <span class="section-toggle" aria-hidden="true"></span>
+          <span class="section-info">
+            <h2 class="section-title">platform_access</h2>
+            <span class="badges"><span class="badge">sound</span></span>
+          </span>
+          <span class="sensory-level"><span class="sensory-text high">"high"</span></span>
+        </button>
+        <div class="section-content">
+          <div class="category"><p class="category-title">sound</p><p class="category-text">WARN: Loud, sudden announcements. Significant train noise. Headphones recommended.</p></div>
+        </div>
+      </article>
+
+      <article class="section" aria-expanded="false">
+        <button class="section-header" type="button" aria-expanded="false" onclick="toggleSection(this)">
+          <span class="section-toggle" aria-hidden="true"></span>
+          <span class="section-info">
+            <h2 class="section-title">restrooms</h2>
+            <span class="badges"><span class="badge">sound</span><span class="badge">smells</span></span>
+          </span>
+          <span class="sensory-level"><span class="sensory-text medium">"medium"</span></span>
+        </button>
+        <div class="section-content">
+          <div class="category"><p class="category-title">sound</p><p class="category-text">Hand dryers: loud. Paper towels available as alternative.</p></div>
+          <div class="category"><p class="category-title">smells</p><p class="category-text">Cleaning products. Air freshener present.</p></div>
+        </div>
+      </article>
+
+      <article class="section" aria-expanded="false">
+        <button class="section-header" type="button" aria-expanded="false" onclick="toggleSection(this)">
+          <span class="section-toggle" aria-hidden="true"></span>
+          <span class="section-info">
+            <h2 class="section-title">food_court</h2>
+            <span class="badges"><span class="badge">smells</span><span class="badge">crowds</span><span class="badge">sound</span></span>
+          </span>
+          <span class="sensory-level"><span class="sensory-text high">"high"</span></span>
+        </button>
+        <div class="section-content">
+          <div class="category"><p class="category-title">smells</p><p class="category-text">Mixed cooking smells from vendors. Peak intensity at lunch.</p></div>
+          <div class="category"><p class="category-title">seating</p><p class="category-text">Crowded at mealtimes. Quieter tables at edges.</p></div>
+        </div>
+      </article>
+    </div>
+
+    <footer class="footer">
+      <p class="sensory-key-title">SENSORY_LEVELS</p>
+      <div class="sensory-key-items">
+        <div class="sensory-key-item"><span class="low">LOW</span> = generally calm</div>
+        <div class="sensory-key-item"><span class="medium">MEDIUM</span> = some activity</div>
+        <div class="sensory-key-item"><span class="high">HIGH</span> = may be overwhelming</div>
+      </div>
+    </footer>
+  </main>
+
+  <script>function toggleSection(button) { const section = button.closest('.section'); const isExpanded = section.getAttribute('aria-expanded') === 'true'; section.setAttribute('aria-expanded', !isExpanded); button.setAttribute('aria-expanded', !isExpanded); }</script>
+</body>
+</html>

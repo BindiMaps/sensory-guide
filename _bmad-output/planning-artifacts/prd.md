@@ -708,6 +708,14 @@ sensoryGuideApp/
 
 - **FR42:** User can view BindiMaps information on landing page
 
+### Signup Approval (LLM Budget Protection)
+
+- **FR43:** Only approved emails can create venues (invite-only model)
+- **FR44:** Super Admin can add/remove emails from the approved list
+- **FR45:** Non-approved users see "Account pending approval" message when attempting venue creation
+
+> **Rationale:** Open Firebase Auth signup combined with per-user rate limiting doesn't prevent abuse via multiple account creation. Allow-list ensures only known users can consume LLM API budget. Minimal friction for MVP (manual approval via super admin), can evolve to domain allow-list or approval queue post-MVP.
+
 ## Non-Functional Requirements
 
 ### Accessibility (Critical)
@@ -739,6 +747,7 @@ sensoryGuideApp/
 | LLM Prompt Injection | Hardened prompts, no user input in system prompts | Security review |
 | Auth | Firebase Auth best practices | Config review |
 | Data Isolation | Venue editor access enforced | Integration tests |
+| Signup Approval | Allow-list enforced server-side (Cloud Function) | Integration tests |
 
 ### Integration
 

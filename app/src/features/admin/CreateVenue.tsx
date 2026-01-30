@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { collection, addDoc, query, where, getDocs, serverTimestamp } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { httpsCallable } from 'firebase/functions'
+import { functions } from '@/lib/firebase'
 import { useAuthStore } from '@/stores/authStore'
+import { useApproval } from './ApprovalContext'
 
 function slugify(text: string): string {
   return text
@@ -21,6 +22,7 @@ export function CreateVenue() {
   const [submitting, setSubmitting] = useState(false)
   const navigate = useNavigate()
   const { user } = useAuthStore()
+  const { approved } = useApproval()
 
   useEffect(() => {
     document.title = 'Create Venue - Sensory Guide Admin'
@@ -35,14 +37,6 @@ export function CreateVenue() {
   const handleSlugChange = (value: string) => {
     setSlugManuallyEdited(true)
     setSlug(slugify(value))
-  }
-
-  const checkSlugExists = async (slugToCheck: string): Promise<boolean> => {
-    if (!db) return false
-    const venuesRef = collection(db, 'venues')
-    const q = query(venuesRef, where('slug', '==', slugToCheck))
-    const snapshot = await getDocs(q)
-    return !snapshot.empty
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,39 +58,61 @@ export function CreateVenue() {
       return
     }
 
-    if (!db) {
-      setError('Database not configured')
+    if (!functions) {
+      setError('Functions not configured')
       return
     }
 
     setSubmitting(true)
 
     try {
-      const slugExists = await checkSlugExists(slug)
-      if (slugExists) {
-        setError('This slug is already taken')
-        setSubmitting(false)
-        return
-      }
+      const createVenueFn = httpsCallable<
+        { name: string; slug: string },
+        { success: boolean; venueId: string; slug: string }
+      >(functions, 'createVenue')
 
-      const venueData = {
-        name: name.trim(),
-        slug: slug.trim(),
-        status: 'draft',
-        editors: [user.email],
-        createdBy: user.email,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      }
-
-      const docRef = await addDoc(collection(db, 'venues'), venueData)
-      navigate(`/admin/venues/${docRef.id}`, { replace: true })
+      const result = await createVenueFn({ name: name.trim(), slug: slug.trim() })
+      navigate(`/admin/venues/${result.data.venueId}`, { replace: true })
     } catch (err) {
       console.error('Error creating venue:', err)
-      setError('Failed to create venue. Please try again.')
+      const error = err as { code?: string; message?: string }
+
+      // Handle specific error codes
+      if (error.code === 'functions/permission-denied') {
+        setError('Your account is not yet approved for venue creation. Contact support to request access.')
+      } else if (error.code === 'functions/already-exists') {
+        setError('This URL slug is already taken. Please choose a different one.')
+      } else if (error.message?.includes('permission-denied')) {
+        setError('Your account is not yet approved for venue creation. Contact support to request access.')
+      } else if (error.message?.includes('already-exists') || error.message?.includes('already taken')) {
+        setError('This URL slug is already taken. Please choose a different one.')
+      } else {
+        setError('Failed to create venue. Please try again.')
+      }
     } finally {
       setSubmitting(false)
     }
+  }
+
+  // Show pending approval message (approval loading handled by parent layout)
+  if (!approved) {
+    return (
+      <div className="max-w-md">
+        <Link
+          to="/admin"
+          className="text-sm text-muted-foreground hover:text-foreground mb-4 inline-block"
+        >
+          ← Back to venues
+        </Link>
+
+        <div className="p-6 bg-amber-50 border border-amber-200 rounded-lg">
+          <h1 className="text-xl font-semibold text-amber-800 mb-2">Account Pending Approval</h1>
+          <p className="text-amber-700">
+            Your account is pending approval. Contact support to request access to create venues.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (

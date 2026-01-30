@@ -55,14 +55,15 @@ development_status:
   2-3-create-new-venue: done
   2-4-venue-editor-management: done
   2-5-firestore-security-rules: done
+  2-11-signup-approval-allow-list: in-progress  # PRIORITY: LLM budget protection
   epic-2-retrospective: optional
 
   # Epic 3: Guide Creation & Publishing
   epic-3: in-progress
   3-1-pdf-upload-to-cloud-storage: done
   3-2-llm-transformation-pipeline: done
-  3-3-guide-preview-interface: in-progress
-  3-4-publish-guide: backlog
+  3-3-guide-preview-interface: done
+  3-4-publish-guide: done
   3-5-content-suggestions-display: backlog
   epic-3-retrospective: optional
 
@@ -85,8 +86,9 @@ development_status:
 
   # Epic 6: Guide Management & Super Admin
   epic-6: backlog
+  6-0-venue-lifecycle-dashboard: backlog  # PRIORITY: Fixes state persistence, enables testing
   6-1-guide-update-via-re-upload: backlog
-  6-2-version-history: backlog
+  6-2-version-history: backlog  # NOTE: May merge into 6-0
   6-3-super-admin-view-all-venues: backlog
   6-4-super-admin-global-analytics-dashboard: backlog
   epic-6-retrospective: optional

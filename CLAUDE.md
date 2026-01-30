@@ -8,12 +8,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The project is being built roughly using BMAD Method.
 
-This is a **planning and specification project** for BindiMaps, using two integrated frameworks:
+This is a **planning and implementation project** for BindiMaps, using two integrated frameworks:
 
 - **Speckit**: Feature specification workflow (`.specify/` + `.claude/commands/speckit.*`)
 - **BMad Method v6.0**: Agent-based development methodology (`_bmad/`)
 
-No application code exists yet - this repo generates specs, plans, tasks, and design artifacts.
+Application code lives in `app/` (React + Vite + Firebase). Planning artifacts are generated in `_bmad-output/`.
 
 ## Key Workflows
 
@@ -99,3 +99,36 @@ Project principles live in `.specify/memory/constitution.md`. Currently a templa
 Pattern: `{number}-{short-name}` (e.g., `1-user-auth`, `5-analytics-dashboard`)
 
 Scripts auto-increment feature numbers across remote branches, local branches, and specs directories.
+
+## Design System (CRITICAL)
+
+**Source of Truth**: `_bmad-output/planning-artifacts/design-system-v5.md`
+
+**Reference Implementation**: `_bmad-output/planning-artifacts/ux-design-direction-v5.html`
+
+All UI implementations MUST match the approved design system exactly. When implementing UI:
+
+1. **Reference by path, not inline values** - Never hardcode hex colours in stories or tasks. Always reference the design doc.
+
+2. **Key v5 tokens**:
+   - Terracotta accent: `#B8510D`
+   - Font: Inter (system fallback)
+   - Max width: 720px
+   - Border radius: 4px (rounded-sm)
+
+3. **Badge colours** (see design doc for full list):
+   - Sound: `#E3ECF0` / `#264854`
+   - Light: `#F4EBDA` / `#4D3F14`
+   - Crowds: `#EDE6E0` / `#3F352C`
+
+4. **Sensory levels**:
+   - Low: `#2A6339` (12px square + text)
+   - Medium: `#8A5F08`
+   - High: `#9E3322`
+
+5. **Component patterns**:
+   - Divider-separated rows (not bordered cards)
+   - SVG chevron toggle (not Lucide icons)
+   - Uppercase badge text with tracking-wide
+
+**Validation**: Before marking UI stories complete, verify implementation matches v5 design doc exactly.

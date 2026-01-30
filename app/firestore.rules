@@ -6,7 +6,28 @@ service cloud.firestore {
     // Super admin emails - can read any venue for support
     function isSuperAdmin() {
       return request.auth != null &&
+             exists(/databases/$(database)/documents/config/superAdmins) &&
+             request.auth.token.email in get(/databases/$(database)/documents/config/superAdmins).data.emails;
+    }
+
+    // Legacy super admin check (fallback if config doc doesn't exist yet)
+    function isSuperAdminFallback() {
+      return request.auth != null &&
              request.auth.token.email in ['keith@bindimaps.com'];
+    }
+
+    // Combined super admin check
+    function isAnySuperAdmin() {
+      return isSuperAdmin() || isSuperAdminFallback();
+    }
+
+    // Check if user is approved for venue creation (on allow-list or super admin)
+    function isApprovedUser() {
+      return request.auth != null && (
+        isAnySuperAdmin() ||
+        (exists(/databases/$(database)/documents/config/access) &&
+         request.auth.token.email in get(/databases/$(database)/documents/config/access).data.allowedEmails)
+      );
     }
 
     // Check if user is an editor of the venue
@@ -22,13 +43,15 @@ service cloud.firestore {
 
     // Venues collection
     match /venues/{venueId} {
-      // Read: Must be editor OR super admin
-      allow read: if isEditor(resource.data) || isSuperAdmin();
+      // Public read: Allow unauthenticated read of published venues (for public guide access)
+      // Authenticated read: Must be editor OR super admin
+      allow read: if (resource.data.status == 'published') ||
+                     isEditor(resource.data) ||
+                     isAnySuperAdmin();
 
-      // Create: Must be authenticated, creator must be in editors array
-      allow create: if request.auth != null &&
-                       request.auth.token.email in request.resource.data.editors &&
-                       request.resource.data.createdBy == request.auth.token.email;
+      // Create: Disabled client-side - use createVenue Cloud Function instead
+      // This ensures allow-list check is always enforced server-side
+      allow create: if false;
 
       // Update: Must be editor AND can't remove all editors
       allow update: if isEditor(resource.data) && hasAtLeastOneEditor();

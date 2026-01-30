@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sensory Guide Mockups</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f0f0f;
+      color: #f0f0f0;
+      min-height: 100vh;
+      padding: 3rem 2rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: #888;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+
+    .count {
+      display: inline-block;
+      background: #333;
+      color: #aaa;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8125rem;
+      margin-bottom: 2rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: #1a1a1a;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      border: 1px solid #2a2a2a;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+      border-color: #444;
+    }
+
+    .card-preview {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-body {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .card-number {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.125rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.375rem;
+    }
+
+    .card-desc {
+      font-size: 0.8125rem;
+      color: #888;
+      line-height: 1.4;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.625rem;
+      padding: 0.2rem 0.5rem;
+      background: #2a2a2a;
+      border-radius: 4px;
+      margin-top: 0.625rem;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tag.recommended {
+      background: #3d2a1a;
+      color: #e0a060;
+    }
+
+    .tag.warm { background: #3d2a1a; color: #e0a060; }
+    .tag.dark { background: #1a2a3d; color: #60a0e0; }
+    .tag.bold { background: #3d1a2a; color: #e060a0; }
+    .tag.minimal { background: #2a3d1a; color: #a0e060; }
+
+    /* Preview backgrounds */
+    .p1 { background: linear-gradient(135deg, #FFFCF8 0%, #F5F1EB 100%); }
+    .p2 { background: linear-gradient(135deg, #FEFEFE 0%, #F7F5F2 100%); }
+    .p3 { background: linear-gradient(135deg, #FAF8F5 0%, #F3EFE9 100%); }
+    .p4 { background: linear-gradient(135deg, #1A1A1A 0%, #2a2a2a 100%); color: #fff; }
+    .p5 { background: linear-gradient(135deg, #1C1917 0%, #262220 100%); color: #E07A4F; }
+    .p6 { background: linear-gradient(135deg, #F9F6F1 0%, #EFEAE2 100%); }
+    .p7 { background: linear-gradient(135deg, #EADAD4 0%, #F5E6C8 50%, #C8DEC8 100%); }
+    .p8 { background: #111; color: #fafafa; font-family: monospace; }
+    .p9 { background: linear-gradient(135deg, #F8F5F0 0%, #EFE9E0 100%); }
+    .p10 { background: linear-gradient(135deg, #FCFBF9 0%, #F5F3EF 100%); }
+    .p11 { background: #fff; color: #000; }
+    .p12 { background: linear-gradient(135deg, #FDF6E8 0%, #F5EBD5 100%); color: #8B5A2B; }
+    .p13 { background: #FAFAF8; color: #2C2C2A; }
+    .p14 { background: linear-gradient(135deg, #F5F2EB 0%, #EBE7DD 100%); }
+    .p15 { background: linear-gradient(135deg, #0F0F12 0%, #1A1A20 100%); }
+    .p16 { background: #2C3E2D; color: #F5F0E1; }
+    .p17 { background: #FDFCFB; }
+    .p18 { background: #0D1117; color: #3FB950; font-family: monospace; }
+    .p19 { background: linear-gradient(135deg, rgba(180,210,230,0.3), rgba(240,200,180,0.3)); }
+    .p20 { background: linear-gradient(135deg, #0B4778 0%, #005EA2 100%); color: #fff; }
+
+    .preview-text {
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid #2a2a2a;
+      color: #666;
+      font-size: 0.8125rem;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 1.5rem 1rem; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sensory Guide Mockups</h1>
+    <p class="subtitle">Design variations for Adelaide Railway Station sensory guide</p>
+    <span class="count">20 variations</span>
+
+    <div class="grid">
+      <a href="01-fraunces-serif.html" class="card">
+        <div class="card-preview p1"><span class="preview-text" style="font-family: Georgia, serif; font-style: italic;">Aa</span></div>
+        <div class="card-body">
+          <div class="card-number">01</div>
+          <div class="card-title">Fraunces Serif</div>
+          <div class="card-desc">Warm serif typography, soft shadows</div>
+          <span class="tag recommended">Recommended</span>
+        </div>
+      </a>
+
+      <a href="02-rounded-friendly.html" class="card">
+        <div class="card-preview p2"><span class="preview-text" style="font-weight: 700;">Aa</span></div>
+        <div class="card-body">
+          <div class="card-number">02</div>
+          <div class="card-title">Rounded Friendly</div>
+          <div class="card-desc">Card-based, large radii, Nunito</div>
+          <span class="tag warm">Approachable</span>
+        </div>
+      </a>
+
+      <a href="03-paper-texture.html" class="card">
+        <div class="card-preview p3"><span class="preview-text" style="font-family: Georgia, serif; font-size: 2.5rem;">"</span></div>
+        <div class="card-body">
+          <div class="card-number">03</div>
+          <div class="card-title">Paper Texture</div>
+          <div class="card-desc">Tactile, literary, Libre Baskerville</div>
+          <span class="tag recommended">Recommended</span>
+        </div>
+      </a>
+
+      <a href="04-bold-editorial.html" class="card">
+        <div class="card-preview p4"><span class="preview-text" style="font-weight: 900;">01</span></div>
+        <div class="card-body">
+          <div class="card-number">04</div>
+          <div class="card-title">Bold Editorial</div>
+          <div class="card-desc">Magazine-style, numbered sections</div>
+          <span class="tag bold">High contrast</span>
+        </div>
+      </a>
+
+      <a href="05-warm-dark.html" class="card">
+        <div class="card-preview p5"><span class="preview-text">Aa</span></div>
+        <div class="card-body">
+          <div class="card-number">05</div>
+          <div class="card-title">Warm Dark</div>
+          <div class="card-desc">Dark mode, terracotta accent</div>
+          <span class="tag dark">Dark mode</span>
+        </div>
+      </a>
+
+      <a href="06-geometric-deco.html" class="card">
+        <div class="card-preview p6"><span class="preview-text" style="transform: rotate(45deg);">◆</span></div>
+        <div class="card-body">
+          <div class="card-number">06</div>
+          <div class="card-title">Geometric Deco</div>
+          <div class="card-desc">Art deco, diamond shapes, gold</div>
+          <span class="tag">Distinctive</span>
+        </div>
+      </a>
+
+      <a href="07-pastel-soft.html" class="card">
+        <div class="card-preview p7"><span class="preview-text" style="font-weight: 700;">Aa</span></div>
+        <div class="card-body">
+          <div class="card-number">07</div>
+          <div class="card-title">Pastel Soft</div>
+          <div class="card-desc">Gentle pastels, gradient intro</div>
+          <span class="tag warm">Calming</span>
+        </div>
+      </a>
+
+      <a href="08-brutalist-mono.html" class="card">
+        <div class="card-preview p8"><span class="preview-text">[+]</span></div>
+        <div class="card-body">
+          <div class="card-number">08</div>
+          <div class="card-title">Brutalist Mono</div>
+          <div class="card-desc">Raw, industrial, JetBrains Mono</div>
+          <span class="tag bold">Bold</span>
+        </div>
+      </a>
+
+      <a href="09-organic-earth.html" class="card">
+        <div class="card-preview p9"><span class="preview-text" style="font-family: Georgia, serif; font-style: italic; color: #8B5E3C;">Aa</span></div>
+        <div class="card-body">
+          <div class="card-number">09</div>
+          <div class="card-title">Organic Earth</div>
+          <div class="card-desc">Natural earth tones, Lora font</div>
+          <span class="tag recommended">Recommended</span>
+        </div>
+      </a>
+
+      <a href="10-luxury-refined.html" class="card">
+        <div class="card-preview p10"><span class="preview-text" style="font-family: Georgia, serif; letter-spacing: 0.1em;">A</span></div>
+        <div class="card-body">
+          <div class="card-number">10</div>
+          <div class="card-title">Luxury Refined</div>
+          <div class="card-desc">Premium, Cormorant Garamond</div>
+          <span class="tag minimal">Sophisticated</span>
+        </div>
+      </a>
+
+      <a href="11-swiss-grid.html" class="card">
+        <div class="card-preview p11"><span class="preview-text" style="font-weight: 700; color: #E53935;">+</span></div>
+        <div class="card-body">
+          <div class="card-number">11</div>
+          <div class="card-title">Swiss Grid</div>
+          <div class="card-desc">International style, sidebar layout</div>
+          <span class="tag minimal">Structured</span>
+        </div>
+      </a>
+
+      <a href="12-retro-70s.html" class="card">
+        <div class="card-preview p12"><span class="preview-text" style="font-weight: 800;">Aa</span></div>
+        <div class="card-body">
+          <div class="card-number">12</div>
+          <div class="card-title">Retro 70s</div>
+          <div class="card-desc">Earthy oranges, browns, Outfit</div>
+          <span class="tag warm">Nostalgic</span>
+        </div>
+      </a>
+
+      <a href="13-japanese-minimal.html" class="card">
+        <div class="card-preview p13"><span class="preview-text" style="font-size: 1.5rem; letter-spacing: 0.2em;">間</span></div>
+        <div class="card-body">
+          <div class="card-number">13</div>
+          <div class="card-title">Japanese Minimal</div>
+          <div class="card-desc">Whitespace, delicate, zen</div>
+          <span class="tag minimal">Serene</span>
+        </div>
+      </a>
+
+      <a href="14-newsprint.html" class="card">
+        <div class="card-preview p14"><span class="preview-text" style="font-family: Georgia, serif; font-weight: 700;">▸</span></div>
+        <div class="card-body">
+          <div class="card-number">14</div>
+          <div class="card-title">Newsprint</div>
+          <div class="card-desc">Classic newspaper, columns</div>
+          <span class="tag">Editorial</span>
+        </div>
+      </a>
+
+      <a href="15-gradient-modern.html" class="card">
+        <div class="card-preview p15"><span class="preview-text" style="background: linear-gradient(135deg, #A855F7, #EC4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Aa</span></div>
+        <div class="card-body">
+          <div class="card-number">15</div>
+          <div class="card-title">Gradient Modern</div>
+          <div class="card-desc">Bold gradients, glowing accents</div>
+          <span class="tag dark">Contemporary</span>
+        </div>
+      </a>
+
+      <a href="16-chalkboard.html" class="card">
+        <div class="card-preview p16"><span class="preview-text" style="font-family: cursive;">Aa</span></div>
+        <div class="card-body">
+          <div class="card-number">16</div>
+          <div class="card-title">Chalkboard</div>
+          <div class="card-desc">Educational, handwritten feel</div>
+          <span class="tag">Playful</span>
+        </div>
+      </a>
+
+      <a href="17-scandinavian.html" class="card">
+        <div class="card-preview p17"><span class="preview-text" style="color: #C9A87C;">+</span></div>
+        <div class="card-body">
+          <div class="card-number">17</div>
+          <div class="card-title">Scandinavian</div>
+          <div class="card-desc">Light wood tones, hygge, clean</div>
+          <span class="tag recommended">Recommended</span>
+        </div>
+      </a>
+
+      <a href="18-terminal.html" class="card">
+        <div class="card-preview p18"><span class="preview-text">▶</span></div>
+        <div class="card-body">
+          <div class="card-number">18</div>
+          <div class="card-title">Terminal</div>
+          <div class="card-desc">Code syntax, Fira Code</div>
+          <span class="tag dark">Tech</span>
+        </div>
+      </a>
+
+      <a href="19-watercolor.html" class="card">
+        <div class="card-preview p19"><span class="preview-text" style="font-family: Georgia, serif; font-style: italic; color: #A67C52;">~</span></div>
+        <div class="card-body">
+          <div class="card-number">19</div>
+          <div class="card-title">Watercolor</div>
+          <div class="card-desc">Painted washes, artistic, soft</div>
+          <span class="tag warm">Artistic</span>
+        </div>
+      </a>
+
+      <a href="20-government.html" class="card">
+        <div class="card-preview p20"><span class="preview-text" style="font-weight: 700;">GOV</span></div>
+        <div class="card-body">
+          <div class="card-number">20</div>
+          <div class="card-title">Government</div>
+          <div class="card-desc">Official, USWDS-inspired, sidebar</div>
+          <span class="tag">Institutional</span>
+        </div>
+      </a>
+    </div>
+
+    <footer>
+      Based on Design System v5 · All variations maintain WCAG AA accessibility
+    </footer>
+  </div>
+</body>
+</html>

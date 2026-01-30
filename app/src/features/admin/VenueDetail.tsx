@@ -10,30 +10,71 @@ import { TransformProgress } from '@/features/admin/guides/TransformProgress'
 import { RateLimitDisplay, RateLimitBlocker } from '@/features/admin/guides/RateLimitDisplay'
 import { GuidePreview } from '@/features/admin/guides/GuidePreview'
 import { useGuideData } from '@/features/admin/guides/useGuideData'
+import { PublishDialog } from '@/features/admin/guides/PublishDialog'
+import { PublishedSuccess } from '@/features/admin/guides/PublishedSuccess'
+import { usePublishGuide } from '@/features/admin/guides/usePublishGuide'
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+type PublishState = 'idle' | 'confirming' | 'publishing' | 'success'
+
+interface PublishResult {
+  publicUrl: string
+  slug: string
+}
+
 /**
- * Wrapper component for guide preview that handles data fetching
+ * Wrapper component for guide preview that handles data fetching and publishing
  */
 function GuidePreviewWrapper({
   outputPath,
+  venueId,
+  venueSlug,
+  isAlreadyPublished,
   onReupload,
+  onPublishSuccess,
 }: {
   outputPath: string
+  venueId: string
+  venueSlug: string
+  isAlreadyPublished: boolean
   onReupload: () => void
+  onPublishSuccess: () => void
 }) {
   const { data: guide, isLoading, error, refetch } = useGuideData(outputPath)
-  const [isPublishing, setIsPublishing] = useState(false)
+  const { publish, isPublishing, error: publishError, reset: resetPublishError } = usePublishGuide()
+  const [publishState, setPublishState] = useState<PublishState>('idle')
+  const [publishResult, setPublishResult] = useState<PublishResult | null>(null)
 
-  const handlePublish = () => {
-    setIsPublishing(true)
-    // Stub for Story 3.4
-    console.log('Publish intent:', outputPath)
-    alert('Publish functionality coming in next story (3.4)')
-    setIsPublishing(false)
+  const handlePublishClick = () => {
+    resetPublishError()
+    setPublishState('confirming')
+  }
+
+  const handlePublishCancel = () => {
+    setPublishState('idle')
+  }
+
+  const handlePublishConfirm = async () => {
+    setPublishState('publishing')
+    const result = await publish(venueId, outputPath)
+
+    if (result) {
+      setPublishResult({ publicUrl: result.publicUrl, slug: result.slug })
+      setPublishState('success')
+      onPublishSuccess()
+    } else {
+      // Error is set by the hook
+      setPublishState('idle')
+    }
+  }
+
+  const handleUploadNew = () => {
+    setPublishState('idle')
+    setPublishResult(null)
+    onReupload()
   }
 
   if (isLoading) {
@@ -74,13 +115,43 @@ function GuidePreviewWrapper({
     return null
   }
 
+  // Show success state after publishing
+  if (publishState === 'success' && publishResult) {
+    return (
+      <PublishedSuccess
+        slug={publishResult.slug}
+        publicUrl={publishResult.publicUrl}
+        onUploadNew={handleUploadNew}
+      />
+    )
+  }
+
   return (
-    <GuidePreview
-      guide={guide}
-      onPublish={handlePublish}
-      onReupload={onReupload}
-      isPublishing={isPublishing}
-    />
+    <div className="space-y-4">
+      {/* Publish error message */}
+      {publishError && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800">
+          {publishError}
+        </div>
+      )}
+
+      <GuidePreview
+        guide={guide}
+        onPublish={handlePublishClick}
+        onReupload={onReupload}
+        isPublishing={isPublishing}
+      />
+
+      {/* Publish confirmation dialog */}
+      <PublishDialog
+        open={publishState === 'confirming' || publishState === 'publishing'}
+        onOpenChange={(open) => !open && handlePublishCancel()}
+        onConfirm={handlePublishConfirm}
+        isPublishing={isPublishing}
+        isAlreadyPublished={isAlreadyPublished}
+        slug={venueSlug}
+      />
+    </div>
   )
 }
 
@@ -423,7 +494,14 @@ export function VenueDetail() {
           /* Preview state - show full guide preview */
           <GuidePreviewWrapper
             outputPath={outputPath}
+            venueId={id!}
+            venueSlug={venue.slug}
+            isAlreadyPublished={venue.status === 'published'}
             onReupload={handleRetry}
+            onPublishSuccess={() => {
+              // Refetch venue to update status badge
+              // The useVenue hook will automatically update
+            }}
           />
         ) : transformState === 'error' ? (
           /* Error state */

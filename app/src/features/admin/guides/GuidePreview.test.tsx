@@ -74,14 +74,11 @@ describe('GuidePreview', () => {
     expect(screen.getByText('Test Venue')).toBeInTheDocument()
   })
 
-  it('renders venue address', () => {
+  it('renders venue address with date', () => {
     render(<GuidePreview guide={mockGuide} />)
-    expect(screen.getByText('123 Test Street')).toBeInTheDocument()
-  })
-
-  it('renders venue contact', () => {
-    render(<GuidePreview guide={mockGuide} />)
-    expect(screen.getByText('1800 TEST')).toBeInTheDocument()
+    // Address and date are combined in the header
+    expect(screen.getByText(/123 Test Street/)).toBeInTheDocument()
+    expect(screen.getByText(/January 2026/)).toBeInTheDocument()
   })
 
   it('renders venue summary', () => {
@@ -89,11 +86,6 @@ describe('GuidePreview', () => {
     expect(
       screen.getByText('A test venue for testing purposes.')
     ).toBeInTheDocument()
-  })
-
-  it('renders last updated date', () => {
-    render(<GuidePreview guide={mockGuide} />)
-    expect(screen.getByText(/Updated 29 January 2026/)).toBeInTheDocument()
   })
 
   it('renders all category badges', () => {

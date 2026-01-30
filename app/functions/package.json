@@ -2,11 +2,14 @@
   "name": "functions",
   "main": "lib/index.js",
   "scripts": {
+    "sync-schemas": "bash scripts/sync-schemas.sh",
+    "prebuild": "npm run sync-schemas",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
+    "predeploy": "npm run sync-schemas && npm run build",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "lint": "eslint src --ext .ts"

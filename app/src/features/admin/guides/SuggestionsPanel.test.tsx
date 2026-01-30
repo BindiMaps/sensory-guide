@@ -1,9 +1,26 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { SuggestionsPanel } from './SuggestionsPanel'
 
 describe('SuggestionsPanel', () => {
+  beforeEach(() => {
+    // Mock matchMedia for reduced motion
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    })
+  })
+
   const suggestions = [
     'Add more detail to the entry area',
     'Include crowd times for peak hours',
@@ -74,5 +91,29 @@ describe('SuggestionsPanel', () => {
     render(<SuggestionsPanel suggestions={suggestions} />)
     const button = screen.getByRole('button')
     expect(button.className).toContain('min-h-[44px]')
+  })
+
+  it('respects prefers-reduced-motion for animations', () => {
+    // Mock prefers-reduced-motion: reduce
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: query === '(prefers-reduced-motion: reduce)',
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    })
+
+    render(<SuggestionsPanel suggestions={suggestions} />)
+    // When reduced motion is preferred, chevron should not have transition class
+    const chevron = document.querySelector('svg.lucide-chevron-down')
+    // SVG className is an SVGAnimatedString, need to use baseVal or getAttribute
+    const classValue = chevron?.getAttribute('class') || ''
+    expect(classValue).not.toContain('transition-transform')
   })
 })
