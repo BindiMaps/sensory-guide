@@ -18,7 +18,8 @@ describe('usePublishGuide', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(httpsCallable).mockReturnValue(mockCallable)
+    const mockWithStream = Object.assign(mockCallable, { stream: vi.fn() })
+    vi.mocked(httpsCallable).mockReturnValue(mockWithStream)
   })
 
   it('returns initial state', () => {
@@ -61,12 +62,12 @@ describe('usePublishGuide', () => {
 
     const { result } = renderHook(() => usePublishGuide())
 
-    let response: Awaited<ReturnType<typeof result.current.publish>>
+    let response: Awaited<ReturnType<typeof result.current.publish>> | undefined
     await act(async () => {
       response = await result.current.publish('venue-123', 'venues/venue-123/versions/123.json')
     })
 
-    expect(response).toEqual(mockResponse.data)
+    expect(response!).toEqual(mockResponse.data)
     expect(result.current.error).toBe(null)
   })
 

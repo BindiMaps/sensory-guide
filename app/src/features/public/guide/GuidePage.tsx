@@ -64,7 +64,7 @@ export function GuidePage() {
     async function loadGuide() {
       setState({ status: 'loading' })
 
-      const guideData = await fetchGuide(slug)
+      const guideData = await fetchGuide(slug!)
 
       // Don't update state if slug changed or component unmounted
       if (cancelled) return
