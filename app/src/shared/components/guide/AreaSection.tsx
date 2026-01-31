@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import type { Area, SensoryLevel } from '@/lib/schemas/guideSchema'
 import { useGuideStore } from '@/stores/guideStore'
 import { CategoryBadge, LevelBadge } from './CategoryBadge'
@@ -71,6 +71,65 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
     mediaQuery.addEventListener('change', handler)
     return () => mediaQuery.removeEventListener('change', handler)
   }, [])
+
+  // Carousel scroll state
+  const carouselRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  const updateScrollState = useCallback(() => {
+    const el = carouselRef.current
+    if (!el) return
+    const canLeft = el.scrollLeft > 0
+    const canRight = el.scrollLeft < el.scrollWidth - el.clientWidth - 1
+    console.log('Carousel debug:', {
+      scrollLeft: el.scrollLeft,
+      scrollWidth: el.scrollWidth,
+      clientWidth: el.clientWidth,
+      canScrollLeft: canLeft,
+      canScrollRight: canRight,
+    })
+    setCanScrollLeft(canLeft)
+    setCanScrollRight(canRight)
+  }, [])
+
+  useEffect(() => {
+    if (!isExpanded) return
+
+    let resizeObserver: ResizeObserver | null = null
+
+    // Defer check until after browser paints the unhidden content
+    const frameId = requestAnimationFrame(() => {
+      const el = carouselRef.current
+      if (!el) return
+
+      updateScrollState()
+
+      el.addEventListener('scroll', updateScrollState)
+
+      resizeObserver = new ResizeObserver(updateScrollState)
+      resizeObserver.observe(el)
+    })
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      const el = carouselRef.current
+      if (el) {
+        el.removeEventListener('scroll', updateScrollState)
+      }
+      resizeObserver?.disconnect()
+    }
+  }, [isExpanded, updateScrollState, embedUrls, area.images])
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    const el = carouselRef.current
+    if (!el) return
+    const scrollAmount = el.clientWidth * 0.8
+    el.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: prefersReducedMotion ? 'auto' : 'smooth'
+    })
+  }
 
   const panelId = `section-${area.id}`
 
@@ -177,55 +236,75 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
       >
         {/* Media carousel - fixed height, embeds square, images scale to fit */}
         {((embedUrls && embedUrls.length > 0) || (area.images && area.images.length > 0)) && (
-          <div className="mb-4 overflow-hidden">
-            <div className="flex gap-3 overflow-x-auto pb-2 h-72">
-              {/* Embeds - square */}
-              {embedUrls && embedUrls.map((embedUrl, index) => (
-                <div key={`embed-${index}`} className="flex-shrink-0 h-full aspect-square">
-                  <div className="w-full h-full rounded-sm border border-[#E8E8E5] overflow-hidden">
-                    <iframe
-                      src={embedUrl}
-                      title={`Map ${index + 1} for ${area.name}`}
-                      className="w-full h-full border-0"
-                      loading="lazy"
-                      sandbox="allow-scripts allow-same-origin allow-popups"
-                      referrerPolicy="no-referrer-when-downgrade"
-                    />
-                  </div>
-                </div>
-              ))}
-
-              {/* Images - scale height to container, width auto */}
-              {area.images && area.images.length > 0 && area.images.map((imageUrl, index) => (
-                <ClickableImage
-                  key={index}
-                  src={imageUrl}
-                  alt={`${area.name} - Photo ${index + 1}`}
-                  sectionTitle={area.name}
-                  className="h-full w-auto rounded-sm object-cover flex-shrink-0"
-                />
-              ))}
-            </div>
-
-            {/* Map links below carousel */}
-            {embedUrls && embedUrls.length > 0 && (
-              <div className="flex flex-wrap gap-3 mt-1">
-                {embedUrls.map((embedUrl, index) => (
-                  <a
-                    key={index}
-                    href={embedUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-[#595959] hover:text-[#B8510D]"
+          <div className="mb-4">
+            <div className="relative group">
+              {/* Left arrow and gradient - only show when overflow exists */}
+              {canScrollLeft && (
+                <>
+                  <div className="absolute left-0 top-0 bottom-2 w-12 z-10 bg-gradient-to-r from-white/90 to-transparent pointer-events-none" />
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel('left')}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white border border-[#E8E8E5] shadow-md flex items-center justify-center hover:bg-[#F8F8F6] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D]"
+                    aria-label="Scroll left"
                   >
-                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    <svg className="w-4 h-4 text-[#595959]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                     </svg>
-                    {embedUrls.length === 1 ? 'Open in new tab' : `Open map ${index + 1}`}
-                  </a>
+                  </button>
+                </>
+              )}
+
+              {/* Right arrow and gradient - only show when overflow exists */}
+              {canScrollRight && (
+                <>
+                  <div className="absolute right-0 top-0 bottom-2 w-12 z-10 bg-gradient-to-l from-white/90 to-transparent pointer-events-none" />
+                  <button
+                    type="button"
+                    onClick={() => scrollCarousel('right')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white border border-[#E8E8E5] shadow-md flex items-center justify-center hover:bg-[#F8F8F6] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D]"
+                    aria-label="Scroll right"
+                  >
+                    <svg className="w-4 h-4 text-[#595959]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </>
+              )}
+
+              <div
+                ref={carouselRef}
+                className="flex gap-4 overflow-x-auto pb-2 h-72 scrollbar-hide snap-x snap-mandatory"
+              >
+                {/* Embeds - square */}
+                {embedUrls && embedUrls.map((embedUrl, index) => (
+                  <div key={`embed-${index}`} className="flex-shrink-0 w-72 h-72 snap-start">
+                    <div className="w-full h-full rounded-sm border border-[#E8E8E5] overflow-hidden">
+                      <iframe
+                        src={embedUrl}
+                        title={`Map ${index + 1} for ${area.name}`}
+                        className="w-full h-full border-0"
+                        loading="lazy"
+                        sandbox="allow-scripts allow-same-origin allow-popups"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                {/* Images - scale height to container, width auto */}
+                {area.images && area.images.length > 0 && area.images.map((imageUrl, index) => (
+                  <ClickableImage
+                    key={index}
+                    src={imageUrl}
+                    alt={`${area.name} - Photo ${index + 1}`}
+                    sectionTitle={area.name}
+                    className="h-full w-auto rounded-sm object-cover flex-shrink-0"
+                  />
                 ))}
               </div>
-            )}
+            </div>
+
           </div>
         )}
 

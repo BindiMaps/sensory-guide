@@ -243,7 +243,7 @@ export function ClickableImage({ src, alt, sectionTitle, className }: ClickableI
       type="button"
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 rounded"
+      className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 rounded flex-shrink-0 snap-start"
       aria-label={`View ${alt} in fullscreen`}
     >
       <img src={src} alt={alt} className={className} loading="lazy" />

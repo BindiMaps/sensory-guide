@@ -49,7 +49,7 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: Admin Authentication & Venue Sharing (+ Version Management)
-  epic-2: done
+  epic-2: in-progress  # Reopened for 2-15 venue name editing
   2-1-firebase-auth-integration: done
   2-2-admin-dashboard-your-venues-list: done
   2-3-create-new-venue: done
@@ -59,6 +59,7 @@ development_status:
   2-12-editor-removal-safeguards: done  # Prevent accidental owner deletion, confirm editor removal
   2-13-venue-lifecycle-dashboard: done  # Was 6-0: Version list + Make Live
   2-14-version-history: done  # Was 6-2: Full rollback UI - DEPENDS ON 2-13
+  2-15-edit-venue-name: backlog  # Edit existing venue name (slug unchanged)
   epic-2-retrospective: optional
 
   # Epic 3: Guide Creation & Publishing

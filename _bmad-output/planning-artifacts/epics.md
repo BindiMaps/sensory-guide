@@ -1374,6 +1374,45 @@ So that **I can control who consumes LLM API budget**.
 
 ---
 
+### Story 2.15: Edit Venue Name
+
+As an **admin user**,
+I want **to edit the name of my venue**,
+So that **I can correct mistakes or update the venue name if it changes**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing a venue I have edit access to
+**When** I navigate to venue settings
+**Then** I see the current venue name displayed with an "Edit" button/icon
+
+**Given** I click to edit the venue name
+**When** the edit mode activates
+**Then** the name becomes an editable text field with the current value
+**And** I see "Save" and "Cancel" buttons
+
+**Given** I enter a new valid name and click Save
+**When** the update is submitted
+**Then** the venue name is updated in Firestore
+**And** I see a success toast: "Venue name updated"
+**And** the display returns to view mode with the new name
+
+**Given** I try to save an empty name
+**When** I click Save
+**Then** I see a validation error: "Venue name is required"
+**And** the save is blocked
+
+**Given** I click Cancel while editing
+**When** the edit mode closes
+**Then** the original name is preserved (no changes saved)
+
+**Technical Notes:**
+- Slug remains unchanged (URLs should not break)
+- Only editors can update the name (security rules)
+- Audit log entry for name changes (optional)
+
+---
+
 ## Epic 3: Guide Creation & Publishing (Extended)
 
 ### Story 3.6: PDF Upload Progress Details
@@ -2354,12 +2393,12 @@ So that **I can develop and review components in isolation**.
 ## Summary
 
 **Total Epics:** 8
-**Total Stories:** 56
+**Total Stories:** 57
 
 | Epic | Stories | Theme |
 |------|---------|-------|
 | Epic 1: Project Foundation | 8 | Infrastructure & setup |
-| Epic 2: Admin Auth & Venues | 11 | Authentication & sharing (incl. signup approval) |
+| Epic 2: Admin Auth & Venues | 12 | Authentication & sharing (incl. signup approval, venue name editing) |
 | Epic 3: Guide Creation | 12 | PDF→Guide pipeline |
 | Epic 4: Public Guide | 14 | User-facing guide experience (incl. preview summaries) |
 | Epic 5: Print & Feedback | 9 | Print + analytics |
