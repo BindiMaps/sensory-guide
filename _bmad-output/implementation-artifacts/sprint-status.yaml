@@ -91,10 +91,11 @@ development_status:
 
   # Epic 6: Guide Management & Super Admin
   # NOTE: 6-0 and 6-2 moved to Epic 2 as 2-13 and 2-14
-  epic-6: backlog
+  epic-6: in-progress
   6-1-guide-update-via-re-upload: backlog
   6-3-super-admin-view-all-venues: backlog
   6-4-super-admin-global-analytics-dashboard: backlog
+  6-5-section-embed-urls: ready-for-dev  # Embed maps/videos per section, persist across re-uploads
   epic-6-retrospective: optional
 
   # Epic 7: Final Audits & Polish (Pre-Release)
