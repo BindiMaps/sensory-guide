@@ -158,6 +158,20 @@ Like a good MVP, we should prioritise features in order of unavoidable, core, th
 1. **Upload**: Admin uploads PDF with mapping notes, map URLs, images, all data
    - [Example mapping notes PDF](./ExampleMappingNotes.pdf)
 2. **Transform**: LLM converts text to view model
+
+### Why PDF Upload?
+
+PDF was chosen as the admin input format for several strategic reasons:
+
+**Universal compatibility**: PDF is an extremely common format that works with any supplier regardless of their internal systems. Whether auditors use Word, Google Docs, InDesign, or any other tool - everything can export to PDF.
+
+**Zero workflow disruption**: Domain experts (like ASPECT auditors) are experts in accessibility auditing, not our software. PDF lets them work exactly how they like using their existing tools and processes. They simply upload their finished work - no need to learn new systems or change how they operate.
+
+**No rigid forms**: Unlike structured data entry forms that constrain what auditors can capture, PDF accepts freeform content. The AI handles all the parsing and extraction, so auditors don't need to worry about fitting their observations into predetermined fields. This is much easier for everyone.
+
+**AI-powered flexibility**: Because we use LLM transformation, we can accept varying PDF formats and structures. Auditors don't need to follow a strict template - the AI figures out how to structure the content for display.
+
+**Core philosophy**: We're not replacing PDFs - we're generating *better* PDFs. Most sensory guides are static PDFs. Our web approach produces superior, personalised output while adding web-only benefits like progressive disclosure, live updates, and mobile "during" features.
    - [Example data.json from MVP](./previouseMVP/data.json) (starting point, will need more fields)
 3. **Review**: Admin previews/tests before publishing
 4. **Publish**: Content goes live (replaces current for that venue)

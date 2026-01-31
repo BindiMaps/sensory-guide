@@ -50,7 +50,7 @@ export function useGuideData(outputPath: string | null): UseGuideDataResult {
       return result.data
     },
     enabled: Boolean(outputPath),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 30 * 1000, // 30 seconds
     retry: 2,
   })
 

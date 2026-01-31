@@ -12,7 +12,10 @@
     "predeploy": "npm run sync-schemas && npm run build",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "lint": "eslint src --ext .ts"
+    "lint": "eslint src --ext .ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:pdf": "tsx scripts/test-pdf-extraction.ts"
   },
   "engines": {
     "node": "22"
@@ -27,7 +30,9 @@
   "devDependencies": {
     "@types/node": "^20.17.0",
     "@types/pdf-parse": "^1.1.5",
-    "typescript": "^5.7.0"
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.0",
+    "vitest": "^4.0.18"
   },
   "private": true
 }

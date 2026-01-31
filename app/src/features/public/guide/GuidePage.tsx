@@ -13,7 +13,7 @@ async function fetchGuide(slug: string): Promise<Guide | null> {
   const url = `https://storage.googleapis.com/${STORAGE_BUCKET}/public/guides/${slug}.json`
 
   try {
-    const response = await fetch(url)
+    const response = await fetch(url, { cache: 'no-store' })
 
     if (response.status === 404) {
       return null // Not found = not published

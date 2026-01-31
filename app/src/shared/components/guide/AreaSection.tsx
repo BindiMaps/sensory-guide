@@ -3,11 +3,16 @@ import type { Area, SensoryLevel } from '@/lib/schemas/guideSchema'
 import { useGuideStore } from '@/stores/guideStore'
 import { CategoryBadge, LevelBadge } from './CategoryBadge'
 import { SensoryDetail } from './SensoryDetail'
+import { ClickableImage } from './ImageLightbox'
 
 interface AreaSectionProps {
   area: Area
   /** If provided, expansion state persists to localStorage via Zustand */
   venueSlug?: string
+  /** Controlled expansion state (used when no venueSlug) */
+  isExpanded?: boolean
+  /** Controlled toggle handler (used when no venueSlug) */
+  onToggle?: () => void
 }
 
 // Initialize from media query synchronously to avoid animation flash on mount
@@ -18,19 +23,23 @@ const getInitialReducedMotion = () =>
  * Collapsible section for a venue area - Design System v5
  * Shows preview summary when collapsed for guide-like experience
  */
-export function AreaSection({ area, venueSlug }: AreaSectionProps) {
-  // Use Zustand for persistence if venueSlug provided, otherwise local state
-  // Note: venueSlug should not change during component lifecycle
+export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, onToggle }: AreaSectionProps) {
+  // Use Zustand for persistence if venueSlug provided, controlled props if given, otherwise local state
   const store = useGuideStore()
   const [localExpanded, setLocalExpanded] = useState(false)
 
+  // Priority: venueSlug (store) > controlled props > local state
   const isExpanded = venueSlug
     ? store.isExpanded(venueSlug, area.id)
-    : localExpanded
+    : controlledExpanded !== undefined
+      ? controlledExpanded
+      : localExpanded
 
   const toggleExpanded = () => {
     if (venueSlug) {
       store.toggleSection(venueSlug, area.id)
+    } else if (onToggle) {
+      onToggle()
     } else {
       setLocalExpanded((prev) => !prev)
     }
@@ -140,10 +149,27 @@ export function AreaSection({ area, venueSlug }: AreaSectionProps) {
         tabIndex={isExpanded ? 0 : -1}
         className="pb-5 pl-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 rounded-sm"
       >
+        {/* Section images from PDF extraction */}
+        {area.images && area.images.length > 0 && (
+          <div className="mb-4">
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {area.images.map((imageUrl, index) => (
+                <ClickableImage
+                  key={index}
+                  src={imageUrl}
+                  alt={`${area.name} - Photo ${index + 1}`}
+                  sectionTitle={area.name}
+                  className="rounded max-h-48 w-auto object-cover flex-shrink-0"
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {area.details.length > 0 ? (
           <div className="space-y-4">
             {area.details.map((detail, index) => (
-              <SensoryDetail key={`${detail.category}-${index}`} detail={detail} />
+              <SensoryDetail key={`${detail.category}-${index}`} detail={detail} sectionTitle={area.name} />
             ))}
           </div>
         ) : (

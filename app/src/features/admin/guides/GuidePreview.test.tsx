@@ -27,6 +27,7 @@ const mockGuide: Guide = {
           description: 'Quiet area.',
         },
       ],
+      images: [],
     },
     {
       id: 'main',
@@ -40,6 +41,7 @@ const mockGuide: Guide = {
           description: 'Bright lights.',
         },
       ],
+      images: [],
     },
   ],
   facilities: {

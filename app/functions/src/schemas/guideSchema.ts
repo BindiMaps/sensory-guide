@@ -28,6 +28,8 @@ export const areaSchema = z.object({
   summary: z.string().optional(),
   badges: z.array(sensoryCategorySchema).default([]),
   details: z.array(sensoryDetailSchema).default([]),
+  // Section-level images extracted from PDF (public URLs)
+  images: z.array(z.string().url()).default([]),
 })
 export type Area = z.infer<typeof areaSchema>
 

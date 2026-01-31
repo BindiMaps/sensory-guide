@@ -14,7 +14,7 @@ So that **I know exactly what to expect and where things are**.
 
 ## Acceptance Criteria
 
-1. **Given** a section has associated images, **When** I expand that section, **Then** I see the images displayed within the section **And** images have alt text for screen readers
+1. **Given** a section has associated images, **When** I expand that section, **Then** I see the images displayed within the section **And** images have alt text for screen readers **And** clicking an image opens a fullscreen lightbox **And** I can navigate between all guide images with prev/next controls **And** the lightbox shows which section the image belongs to
 
 2. **Given** the guide has facility information, **When** I view the guide, **Then** I see a "Key Facilities" section (always visible or prominent) **And** it shows: exits, bathrooms, quiet zones (if available) **And** each facility can link to an external map if URL provided
 
@@ -98,6 +98,20 @@ facilitiesSchema: { exits, bathrooms, quietZones }
   - [ ] Review existing alt text pattern
   - [ ] Ensure alt text is descriptive (current: `"{category} detail for this area"`)
   - [ ] Add test for alt text presence
+
+- [ ] **Task 6: Add image lightbox with navigation** (AC: #1 enhancement)
+  - [ ] Create `ImageLightbox` component with accessible modal
+    - Click any image → opens in full-screen modal
+    - Shows section/area title above image
+    - Prev/Next navigation through ALL images in guide
+    - Keyboard: Esc to close, Left/Right arrows for navigation
+    - Focus trap with return-to-trigger on close
+    - `aria-modal="true"`, proper role and labels
+    - Respect `prefers-reduced-motion`
+  - [ ] Integrate into `AreaSection.tsx` for section images
+  - [ ] Integrate into `SensoryDetail.tsx` for per-detail images
+  - [ ] Create ImageLightboxContext to share image list across components
+  - [ ] Add tests for lightbox accessibility and navigation
 
 ---
 

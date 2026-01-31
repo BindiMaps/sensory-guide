@@ -21,6 +21,7 @@ const mockArea: Area = {
       description: 'Bright fluorescent lighting throughout.',
     },
   ],
+  images: [],
 }
 
 const mockAreaWithSummary: Area = {

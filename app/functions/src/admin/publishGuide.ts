@@ -99,6 +99,9 @@ export const publishGuide = onCall<PublishGuideRequest>(
       const publicPath = `public/guides/${slug}.json`
       const publicFile = bucket.file(publicPath)
       await file.copy(publicFile)
+      await publicFile.setMetadata({
+        cacheControl: 'public, max-age=0, must-revalidate',
+      })
       await publicFile.makePublic()
 
       // 9. Also make versioned file public (for admin version history)

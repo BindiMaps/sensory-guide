@@ -28,6 +28,7 @@ const mockGuide: Guide = {
           description: 'Moderate noise from foot traffic.',
         },
       ],
+      images: [],
     },
   ],
   facilities: {
@@ -69,6 +70,7 @@ const mockGuideWithMultipleAreas: Guide = {
       order: 0,
       badges: ['Sound'],
       details: [{ category: 'Sound', level: 'medium', description: 'Moderate noise.' }],
+      images: [],
     },
     {
       id: 'concourse',
@@ -76,6 +78,7 @@ const mockGuideWithMultipleAreas: Guide = {
       order: 1,
       badges: ['Light', 'Crowds'],
       details: [{ category: 'Light', level: 'high', description: 'Bright lighting.' }],
+      images: [],
     },
     {
       id: 'platforms',
@@ -83,6 +86,7 @@ const mockGuideWithMultipleAreas: Guide = {
       order: 2,
       badges: ['Sound'],
       details: [{ category: 'Sound', level: 'high', description: 'Train announcements.' }],
+      images: [],
     },
   ],
 }

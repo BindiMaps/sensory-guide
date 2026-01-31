@@ -63,6 +63,7 @@ ${getGuideJsonSchemaString()}
    - Start with Entry/Arrival
    - Progress through main areas in logical visit order
    - Include any distinct zones or sections
+   - **IMPORTANT**: Preserve area/section names EXACTLY as they appear in the PDF (for image matching)
    - **IMPORTANT**: For each area, write a "summary" field - one short sentence (max 15 words) with key sensory highlights
 
 3. **Sensory Details**: For each area, extract sensory information about:
@@ -73,6 +74,11 @@ ${getGuideJsonSchemaString()}
    - **Touch**: Textures, temperatures, vibrations
    - **Movement**: Escalators, lifts, moving walkways
    - **Temperature**: Air conditioning, drafts, outdoor exposure
+
+   **IMPORTANT for descriptions**: Simplify language but preserve key context and qualifiers:
+   - If source says "speakers were good quality but became indistinguishable during announcements", keep BOTH parts
+   - Retain causality and contributing factors (e.g., "adds to overall sound levels")
+   - Don't over-compress - descriptions should capture the full picture, just in clearer language
 
 4. **Sensory Levels**:
    - "low" = Generally calm, minimal sensory input
@@ -93,7 +99,8 @@ ${getGuideJsonSchemaString()}
 ## Important Rules:
 - Output ONLY valid JSON, no markdown code blocks
 - Use Australian English spelling (e.g., "colour" not "color")
-- Be specific and practical in descriptions
+- **Summaries** should be brief (max 15 words), but **full descriptions** should preserve nuance and context from the source
+- Simplify vocabulary, not information - the source text was often written by experts, so retain their insights
 - If information is not in the document, omit that field rather than guessing
 - The "badges" array for each area should list categories that have warnings in that area
 - Set generatedAt to the current ISO timestamp

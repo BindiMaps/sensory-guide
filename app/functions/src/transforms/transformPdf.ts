@@ -5,7 +5,8 @@ import { requireAuth, requireEditorAccess } from '../middleware/auth'
 import { checkRateLimit, incrementUsage, DAILY_TRANSFORM_LIMIT } from '../utils/rateLimiter'
 import { isSuperAdmin } from '../utils/accessControl'
 import { transformPdfToGuide, isRetryableError, getModelInfo } from '../utils/gemini'
-import type { TransformProgressStatus } from '../schemas/guideSchema'
+import type { TransformProgressStatus, Guide } from '../schemas/guideSchema'
+import { processPdfImages, pdfLikelyHasImages } from '../utils/pdfImagePipeline'
 
 // pdf-parse v2 uses class-based API
 import { PDFParse } from 'pdf-parse'
@@ -24,6 +25,10 @@ interface TransformPdfResponse {
   usageToday: number
   usageLimit: number
   isUnlimited: boolean
+  /** Number of images extracted from PDF */
+  imagesExtracted: number
+  /** Number of images uploaded to storage */
+  imagesUploaded: number
 }
 
 interface ProgressData {
@@ -78,9 +83,9 @@ async function updateLlmLog(
 }
 
 /**
- * Extract text from PDF file in Cloud Storage
+ * Download PDF file from Cloud Storage
  */
-async function extractPdfText(uploadPath: string): Promise<string> {
+async function downloadPdf(uploadPath: string): Promise<Buffer> {
   const bucket = getStorage().bucket()
   const file = bucket.file(uploadPath)
 
@@ -92,11 +97,17 @@ async function extractPdfText(uploadPath: string): Promise<string> {
 
   // Download file to buffer
   const [buffer] = await file.download()
+  return buffer
+}
 
+/**
+ * Extract text from PDF buffer
+ */
+async function extractPdfText(pdfBuffer: Buffer): Promise<string> {
   // Parse PDF using pdf-parse v2 class API
   let parser: PDFParse | null = null
   try {
-    parser = new PDFParse({ data: buffer })
+    parser = new PDFParse({ data: pdfBuffer })
     const result = await parser.getText()
     return result.text
   } catch (err) {
@@ -199,9 +210,13 @@ export const transformPdf = onCall<TransformPdfRequest>(
     await updateProgress(venueId, logId, 'uploaded', 0)
 
     try {
-      // 4. Extract text from PDF
+      // 4. Download PDF from storage
+      await updateProgress(venueId, logId, 'extracting', 10)
+      const pdfBuffer = await downloadPdf(uploadPath)
+
+      // 5. Extract text from PDF
       await updateProgress(venueId, logId, 'extracting', 20)
-      const pdfText = await extractPdfText(uploadPath)
+      const pdfText = await extractPdfText(pdfBuffer)
 
       if (!pdfText || pdfText.trim().length < 50) {
         throw new HttpsError(
@@ -210,15 +225,15 @@ export const transformPdf = onCall<TransformPdfRequest>(
         )
       }
 
-      // 5. Get venue name for context
+      // 6. Get venue name for context
       const db = getFirestore()
       const venueDoc = await db.collection('venues').doc(venueId).get()
       const venueName = venueDoc.data()?.name || 'Unknown Venue'
 
-      // 6. Transform via Gemini
+      // 7. Transform via Gemini
       await updateProgress(venueId, logId, 'analysing', 40)
 
-      let result: { guide: object; tokensUsed: number }
+      let result: { guide: Guide; tokensUsed: number }
       let retryCount = 0
 
       try {
@@ -232,33 +247,65 @@ export const transformPdf = onCall<TransformPdfRequest>(
         throw err
       }
 
-      await updateProgress(venueId, logId, 'generating', 70)
+      await updateProgress(venueId, logId, 'generating', 60)
 
-      // 7. Store guide JSON
+      // 8. Process images from PDF and attach to guide
+      let imagesExtracted = 0
+      let imagesUploaded = 0
+
+      // Only attempt image extraction if PDF likely has images
+      if (pdfLikelyHasImages(pdfBuffer)) {
+        await updateProgress(venueId, logId, 'generating', 70)
+
+        try {
+          const imageResult = await processPdfImages(pdfBuffer, result.guide, venueId)
+          imagesExtracted = imageResult.imagesExtracted
+          imagesUploaded = imageResult.imagesUploaded
+
+          // Log any warnings
+          if (imageResult.warnings.length > 0) {
+            console.warn(
+              `Image processing warnings for venue=${venueId}:`,
+              imageResult.warnings.join('; ')
+            )
+          }
+
+          console.log(
+            `Images processed: venue=${venueId}, extracted=${imagesExtracted}, uploaded=${imagesUploaded}`
+          )
+        } catch (err) {
+          // Image extraction is non-fatal - guide still works without images
+          console.error(`Image extraction failed for venue=${venueId}:`, (err as Error).message)
+        }
+      }
+
+      await updateProgress(venueId, logId, 'generating', 85)
+
+      // 9. Store guide JSON (now includes images if extracted)
       const { outputPath, timestamp } = await storeGuideJson(venueId, result.guide)
 
-      // 8. Update venue status to draft with draftVersion pointer
+      // 10. Update venue status to draft with draftVersion pointer
       await updateVenueStatus(venueId, timestamp)
 
-      // 9. Mark complete
+      // 11. Mark complete
       await updateProgress(venueId, logId, 'ready', 100, { outputPath })
       await updateLlmLog(logId, 'complete', {
         tokensUsed: result.tokensUsed,
         outputPath,
       })
 
-      // 10. Increment usage counter (only on success)
+      // 12. Increment usage counter (only on success)
       await incrementUsage(userEmail)
 
       // Log for monitoring
       const modelInfo = getModelInfo()
       console.log(
         `Transform complete: venue=${venueId}, user=${userEmail}, ` +
-          `tokens=${result.tokensUsed}, model=${modelInfo.name}`
+          `tokens=${result.tokensUsed}, model=${modelInfo.name}, images=${imagesUploaded}`
       )
 
       // Extract suggestions from guide
-      const suggestions = (result.guide as { suggestions?: string[] }).suggestions || []
+      const suggestions = result.guide.suggestions || []
 
       return {
         success: true,
@@ -268,6 +315,8 @@ export const transformPdf = onCall<TransformPdfRequest>(
         usageToday: usageToday + 1,
         usageLimit: DAILY_TRANSFORM_LIMIT,
         isUnlimited: isAdmin,
+        imagesExtracted,
+        imagesUploaded,
       }
     } catch (err) {
       const error = err as Error

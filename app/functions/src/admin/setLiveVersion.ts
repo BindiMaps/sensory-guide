@@ -68,6 +68,9 @@ export async function setLiveVersionHandler(
     const publicPath = `public/guides/${slug}.json`
     const publicFile = bucket.file(publicPath)
     await versionFile.copy(publicFile)
+    await publicFile.setMetadata({
+      cacheControl: 'public, max-age=0, must-revalidate',
+    })
     await publicFile.makePublic()
 
     // 7. Also keep the versioned file public (for admin version history preview)
