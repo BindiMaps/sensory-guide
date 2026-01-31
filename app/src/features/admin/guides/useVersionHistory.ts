@@ -8,6 +8,7 @@ interface VersionFromApi {
   previewUrl: string
   size: number
   created: string
+  publishedBy?: string
 }
 
 export interface Version extends VersionFromApi {

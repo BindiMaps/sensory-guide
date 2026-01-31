@@ -58,7 +58,7 @@ development_status:
   2-11-signup-approval-allow-list: done  # LLM budget protection - completed
   2-12-editor-removal-safeguards: done  # Prevent accidental owner deletion, confirm editor removal
   2-13-venue-lifecycle-dashboard: done  # Was 6-0: Version list + Make Live
-  2-14-version-history: ready-for-dev  # Was 6-2: Full rollback UI - DEPENDS ON 2-13
+  2-14-version-history: done  # Was 6-2: Full rollback UI - DEPENDS ON 2-13
   epic-2-retrospective: optional
 
   # Epic 3: Guide Creation & Publishing

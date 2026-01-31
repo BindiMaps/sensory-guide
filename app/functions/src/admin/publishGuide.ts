@@ -88,16 +88,23 @@ export const publishGuide = onCall<PublishGuideRequest>(
     }
 
     try {
-      // 6. Copy to public slug-based path (this is what public page fetches)
+      // 6. Set publishedBy metadata on the version file
+      await file.setMetadata({
+        metadata: {
+          publishedBy: userEmail,
+        },
+      })
+
+      // 7. Copy to public slug-based path (this is what public page fetches)
       const publicPath = `public/guides/${slug}.json`
       const publicFile = bucket.file(publicPath)
       await file.copy(publicFile)
       await publicFile.makePublic()
 
-      // 7. Also make versioned file public (for admin version history)
+      // 9. Also make versioned file public (for admin version history)
       await file.makePublic()
 
-      // 8. Update Firestore venue doc
+      // 10. Update Firestore venue doc
       await venueRef.update({
         liveVersion,
         status: 'published',

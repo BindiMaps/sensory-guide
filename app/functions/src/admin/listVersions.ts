@@ -11,6 +11,7 @@ interface VersionInfo {
   previewUrl: string
   size: number
   created: string
+  publishedBy?: string
 }
 
 interface ListVersionsResponse {
@@ -57,11 +58,15 @@ export async function listVersionsHandler(
         expires: Date.now() + 60 * 60 * 1000, // 1 hour
       })
 
+      // Get custom metadata (publishedBy is set when version is published)
+      const customMetadata = file.metadata.metadata as Record<string, string> | undefined
+
       return {
         timestamp,
         previewUrl: signedUrl,
         size: parseInt(file.metadata.size as string, 10) || 0,
         created: file.metadata.timeCreated as string,
+        publishedBy: customMetadata?.publishedBy,
       }
     })
   )

@@ -13,3 +13,4 @@ export { getAllowList, addToAllowList, removeFromAllowList } from './admin/manag
 export { seedAccessConfig } from './admin/seedAccessConfig'
 export { listVersions } from './admin/listVersions'
 export { setLiveVersion } from './admin/setLiveVersion'
+export { deleteVersion } from './admin/deleteVersion'

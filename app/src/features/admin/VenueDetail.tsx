@@ -314,6 +314,28 @@ export function VenueDetail() {
     }
   }
 
+  // Handle deleting a version (from version history)
+  const handleDeleteVersion = async (timestamp: string) => {
+    if (!functions || !id) return
+
+    setMakingLiveError(null)
+    try {
+      const deleteVersion = httpsCallable<
+        { venueId: string; timestamp: string },
+        { success: boolean; deletedVersion: string }
+      >(functions, 'deleteVersion')
+
+      await deleteVersion({ venueId: id, timestamp })
+
+      // Refetch versions to update UI
+      refetchVersions()
+    } catch (err) {
+      const error = err as Error
+      setMakingLiveError(error.message || 'Failed to delete version')
+      throw error // Re-throw so VersionHistory dialog can handle it
+    }
+  }
+
   // Handle preview from version history
   const handleVersionPreview = (version: { previewUrl: string; timestamp: string }) => {
     // Format timestamp for display
@@ -727,6 +749,7 @@ export function VenueDetail() {
                 isLoading={versionsLoading}
                 error={versionsError}
                 onMakeLive={handleMakeLive}
+                onDelete={handleDeleteVersion}
                 onPreview={handleVersionPreview}
               />
             </div>

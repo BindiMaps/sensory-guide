@@ -45,6 +45,7 @@ describe('VersionHistory', () => {
     isLoading: false,
     error: null,
     onMakeLive: vi.fn(),
+    onDelete: vi.fn(),
     onPreview: vi.fn(),
   }
 
@@ -150,5 +151,51 @@ describe('VersionHistory', () => {
     fireEvent.click(screen.getByRole('button', { name: /cancel/i }))
 
     expect(screen.queryByText(/are you sure/i)).not.toBeInTheDocument()
+  })
+
+  it('disables Delete button on the live version', () => {
+    render(<VersionHistory {...defaultProps} />)
+
+    const deleteButtons = screen.getAllByTitle(/delete version/i)
+
+    // The live version is at index 1 in our mock data
+    expect(deleteButtons[1]).toBeDisabled()
+  })
+
+  it('shows delete confirmation dialog when Delete is clicked', () => {
+    render(<VersionHistory {...defaultProps} />)
+
+    // Click Delete on first (non-live) version
+    const deleteButtons = screen.getAllByTitle(/delete version/i)
+    fireEvent.click(deleteButtons[0])
+
+    expect(screen.getByText(/delete this version/i)).toBeInTheDocument()
+    expect(screen.getByText(/cannot be undone/i)).toBeInTheDocument()
+  })
+
+  it('calls onDelete after confirmation', async () => {
+    render(<VersionHistory {...defaultProps} />)
+
+    // Click Delete on first version
+    const deleteButtons = screen.getAllByTitle(/delete version/i)
+    fireEvent.click(deleteButtons[0])
+
+    // Confirm in dialog (the button says "Delete")
+    const confirmButton = screen.getByRole('button', { name: /^delete$/i })
+    fireEvent.click(confirmButton)
+
+    await waitFor(() => {
+      expect(defaultProps.onDelete).toHaveBeenCalledWith(mockVersions[0].timestamp)
+    })
+  })
+
+  it('shows publishedBy when available', () => {
+    const versionsWithPublisher = [
+      { ...mockVersions[0], publishedBy: 'admin@example.com' },
+      ...mockVersions.slice(1),
+    ]
+    render(<VersionHistory {...defaultProps} versions={versionsWithPublisher} />)
+
+    expect(screen.getByText(/published by admin@example.com/i)).toBeInTheDocument()
   })
 })
