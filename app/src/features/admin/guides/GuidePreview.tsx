@@ -42,7 +42,7 @@ export function GuidePreview({
 
     try {
       // Dynamic import to avoid loading Firebase in public bundle
-      const { getFunctions, httpsCallable } = await import('firebase/functions')
+      const { httpsCallable } = await import('firebase/functions')
       const { functions } = await import('@/lib/firebase')
 
       if (!functions) {

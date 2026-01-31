@@ -32,10 +32,6 @@ interface ImageAssignmentEditorProps {
 type ImageId = number
 type Assignments = Record<string, ImageId[]> // sectionId -> image IDs
 
-interface ImageData {
-  id: ImageId
-  url: string
-}
 
 function initializeState(areas: Area[]): {
   assignments: Assignments

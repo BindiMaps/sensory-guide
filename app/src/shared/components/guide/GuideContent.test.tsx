@@ -208,10 +208,10 @@ describe('GuideContent', () => {
       useGuideStore.setState({ expandedSections: {} })
     })
 
-    it('does not render button when no venueSlug provided', () => {
+    it('renders button even when no venueSlug (uses local state)', () => {
       render(<GuideContent guide={mockGuideWithMultipleAreas} />)
-      expect(screen.queryByRole('button', { name: /expand all/i })).not.toBeInTheDocument()
-      expect(screen.queryByRole('button', { name: /collapse all/i })).not.toBeInTheDocument()
+      // Button should render - just uses local state instead of persisted store
+      expect(screen.getByRole('button', { name: /expand all sections/i })).toBeInTheDocument()
     })
 
     it('does not render button when only one area', () => {
