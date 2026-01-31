@@ -113,9 +113,20 @@ describe('GuidePreview', () => {
     expect(screen.getByText('Reading room')).toBeInTheDocument()
   })
 
-  it('renders suggestions panel', () => {
+  it('renders suggestions panel expanded by default', () => {
     render(<GuidePreview guide={mockGuide} />)
     expect(screen.getByText('Content Suggestions (2)')).toBeInTheDocument()
+    // Should start expanded - suggestions visible without clicking
+    const button = screen.getByRole('button', { name: /Content Suggestions/ })
+    expect(button).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('renders suggestions panel above guide content', () => {
+    render(<GuidePreview guide={mockGuide} />)
+    const suggestionsPanel = screen.getByText('Content Suggestions (2)').closest('div[class*="max-w"]')
+    const venueName = screen.getByText('Test Venue')
+    // Suggestions panel should appear before venue name in DOM order
+    expect(suggestionsPanel?.compareDocumentPosition(venueName)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
   })
 
   it('renders Publish button', () => {

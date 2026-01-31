@@ -21,14 +21,16 @@ export function GuidePreview({
 }: GuidePreviewProps) {
   return (
     <div>
+      {/* Suggestions Panel - admin only, shown first for immediate visibility */}
+      <div className="max-w-[720px] mx-auto mb-6">
+        <SuggestionsPanel suggestions={guide.suggestions} defaultExpanded />
+      </div>
+
       {/* Guide content - shared with public view */}
       <GuideContent guide={guide} />
 
-      {/* Suggestions Panel - admin only */}
+      {/* Action Bar - v5 styling */}
       <div className="max-w-[720px] mx-auto">
-        <SuggestionsPanel suggestions={guide.suggestions} />
-
-        {/* Action Bar - v5 styling */}
         <div className="flex flex-wrap gap-3 pt-6 border-t border-[#E8E8E5]">
           <button
             type="button"

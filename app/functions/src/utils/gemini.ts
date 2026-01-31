@@ -84,7 +84,11 @@ ${getGuideJsonSchemaString()}
    - Bathrooms (especially accessible ones)
    - Quiet zones or low-sensory areas
 
-6. **Suggestions**: Generate 3-5 specific, actionable suggestions for improving the guide content based on what might be missing or unclear.
+6. **Suggestions**: Generate 3-5 specific, actionable suggestions for improving the guide content. Always include suggestions for:
+   - Missing contact information (phone, email, or website) if not found in the document
+   - Missing or incomplete venue address if not clearly stated
+   - Any sensory categories that seem underrepresented
+   - Areas that lack detail or specificity
 
 ## Important Rules:
 - Output ONLY valid JSON, no markdown code blocks

@@ -14,9 +14,9 @@ So that **I can update my PDF to create better content**.
 
 ## Acceptance Criteria
 
-1. **Given** the LLM transformation completed, **When** I view the preview, **Then** I see a "Show Suggestions" button
+1. **Given** the LLM transformation completed, **When** I view the preview, **Then** I see the suggestions panel expanded above the guide content **And** suggestions are immediately visible without clicking
 
-2. **Given** I click "Show Suggestions", **When** the suggestions panel opens, **Then** I see a bullet list of improvement ideas **And** suggestions are specific and actionable (e.g., "Consider adding info about quiet hours")
+2. **Given** the suggestions panel is displayed, **Then** I see a bullet list of improvement ideas **And** suggestions are specific and actionable (e.g., "Consider adding info about quiet hours") **And** I can collapse the panel if desired
 
 3. **Given** I want to implement suggestions, **When** I update my source PDF, **Then** I can re-upload the PDF **And** the guide regenerates with new content
 
@@ -42,7 +42,9 @@ So that **I can update my PDF to create better content**.
 ## Tasks / Subtasks
 
 - [x] **Task 1: Verify SuggestionsPanel renders correctly** (AC: #1, #2)
-  - [x] Collapsible panel shows "Content Suggestions (n)" header
+  - [x] Panel shows "Content Suggestions (n)" header
+  - [x] Panel starts expanded (defaultExpanded=true) for immediate visibility
+  - [x] Panel positioned above guide content, not below
   - [x] Expand/collapse toggle works with chevron icon
   - [x] Bullet list renders suggestions when expanded
   - [x] Amber/warm styling distinguishes from guide content
@@ -76,6 +78,8 @@ So that **I can update my PDF to create better content**.
 The SuggestionsPanel was implemented as part of Epic 3's Guide Preview work. Key implementation details:
 
 **SuggestionsPanel Features:**
+- **Positioned above guide preview** for immediate visibility after transform
+- **Starts expanded by default** (`defaultExpanded={true}`) - no click required to see suggestions
 - Collapsible panel with amber/warm colour scheme (`bg-[#FDF8F0]`, `border-[#E5D9C3]`)
 - Lightbulb icon for visual context
 - Count displayed in header: "Content Suggestions (3)"
@@ -91,8 +95,9 @@ The SuggestionsPanel was implemented as part of Epic 3's Guide Preview work. Key
 **Integration Flow:**
 1. User uploads PDF → Transform runs → Guide JSON includes `suggestions` array
 2. VenueDetail fetches guide via useGuideData hook
-3. GuidePreview renders SuggestionsPanel with `guide.suggestions`
-4. User can expand panel, see suggestions, click "Re-upload PDF"
+3. GuidePreview renders SuggestionsPanel ABOVE GuideContent with `guide.suggestions`
+4. Panel starts expanded - user sees suggestions immediately without clicking
+5. User can collapse panel, review guide below, click "Re-upload PDF" to apply suggestions
 
 ### Previous Story Intelligence (3.4)
 
@@ -207,3 +212,4 @@ N/A - Story validates existing implementation
 - 2026-01-31: Added suggestion quality considerations and future improvement notes
 - 2026-01-31: Validation complete - all tests pass (169/169), manual testing confirmed working
 - 2026-01-31: Code review APPROVED - all ACs verified, 23 relevant tests pass, no issues found
+- 2026-01-31: UX refinement - suggestions panel now positioned above preview and starts expanded for immediate visibility
