@@ -22,6 +22,7 @@ const ALLOWED_EMBED_DOMAINS = [
   'google.com',
   'maps.google.com',
   'www.google.com',
+  'tinyurl.com',
 ]
 
 export function isEmbeddableUrl(url: string): { valid: boolean; error?: string } {

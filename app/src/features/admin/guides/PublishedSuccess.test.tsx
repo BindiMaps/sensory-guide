@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { PublishedSuccess } from './PublishedSuccess'
+import type { Area } from '@/lib/schemas/guideSchema'
 
 // Mock clipboard API
 const mockClipboard = {
@@ -8,11 +9,34 @@ const mockClipboard = {
 }
 Object.assign(navigator, { clipboard: mockClipboard })
 
+// Mock hooks
+vi.mock('./useEmbeddings', () => ({
+  useEmbeddings: () => ({
+    embeddings: {},
+    saveEmbeddings: vi.fn(),
+    refetch: vi.fn(),
+  }),
+}))
+
+vi.mock('./useRepublishEmbeddings', () => ({
+  useRepublishEmbeddings: () => ({
+    republish: vi.fn(),
+    isRepublishing: false,
+    error: null,
+  }),
+}))
+
 describe('PublishedSuccess', () => {
+  const mockAreas: Area[] = [
+    { id: 'entry', name: 'Entry', order: 0, badges: [], details: [], images: [] },
+  ]
+
   const defaultProps = {
     slug: 'test-venue',
     publicUrl: 'https://storage.googleapis.com/bucket/guide.json',
     onUploadNew: vi.fn(),
+    venueId: 'venue-123',
+    areas: mockAreas,
   }
 
   beforeEach(() => {

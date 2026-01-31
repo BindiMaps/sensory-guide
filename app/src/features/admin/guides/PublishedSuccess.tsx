@@ -1,10 +1,16 @@
 import { useState } from 'react'
-import { CheckCircle, Copy, ExternalLink, Upload } from 'lucide-react'
+import { CheckCircle, Copy, ExternalLink, Upload, Link, Loader2 } from 'lucide-react'
+import type { Area } from '@/lib/schemas/guideSchema'
+import { EmbedEditor } from './EmbedEditor'
+import { useEmbeddings } from './useEmbeddings'
+import { useRepublishEmbeddings } from './useRepublishEmbeddings'
 
 interface PublishedSuccessProps {
   slug: string
   publicUrl: string
   onUploadNew: () => void
+  venueId: string
+  areas: Area[]
 }
 
 /**
@@ -20,8 +26,32 @@ export function PublishedSuccess({
   slug,
   publicUrl,
   onUploadNew,
+  venueId,
+  areas,
 }: PublishedSuccessProps) {
   const [copied, setCopied] = useState(false)
+  const [isEmbedEditorOpen, setIsEmbedEditorOpen] = useState(false)
+  const [republishSuccess, setRepublishSuccess] = useState(false)
+  const [isSavingEmbeddings, setIsSavingEmbeddings] = useState(false)
+
+  const { embeddings, saveEmbeddings, refetch: refetchEmbeddings } = useEmbeddings(venueId)
+  const { republish, isRepublishing, error: republishError } = useRepublishEmbeddings()
+
+  const handleSaveEmbeddings = async (newEmbeddings: Record<string, string>) => {
+    setIsSavingEmbeddings(true)
+    try {
+      await saveEmbeddings(newEmbeddings)
+      const success = await republish(venueId)
+      if (success) {
+        setIsEmbedEditorOpen(false)
+        setRepublishSuccess(true)
+        refetchEmbeddings()
+        setTimeout(() => setRepublishSuccess(false), 3000)
+      }
+    } finally {
+      setIsSavingEmbeddings(false)
+    }
+  }
 
   // Use window location to construct the public guide URL
   const guideUrl = `${window.location.origin}/venue/${slug}`
@@ -85,6 +115,25 @@ export function PublishedSuccess({
         )}
       </div>
 
+      {/* Embed republish success flash */}
+      {republishSuccess && (
+        <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-lg p-4">
+          <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" aria-hidden="true" />
+          <p className="text-sm text-green-800" role="status" aria-live="polite">
+            Embeds updated and republished successfully.
+          </p>
+        </div>
+      )}
+
+      {/* Embed republish error */}
+      {republishError && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-sm text-red-800" role="alert">
+            {republishError}
+          </p>
+        </div>
+      )}
+
       {/* Action buttons */}
       <div className="flex flex-col sm:flex-row gap-3">
         <a
@@ -98,6 +147,19 @@ export function PublishedSuccess({
         </a>
         <button
           type="button"
+          onClick={() => setIsEmbedEditorOpen(true)}
+          disabled={isRepublishing}
+          className="inline-flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isRepublishing ? (
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+          ) : (
+            <Link className="h-4 w-4" aria-hidden="true" />
+          )}
+          Edit Embeds
+        </button>
+        <button
+          type="button"
           onClick={onUploadNew}
           className="inline-flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
         >
@@ -105,6 +167,16 @@ export function PublishedSuccess({
           Upload New Version
         </button>
       </div>
+
+      {/* Embed Editor Modal */}
+      <EmbedEditor
+        open={isEmbedEditorOpen}
+        onOpenChange={setIsEmbedEditorOpen}
+        areas={areas}
+        embeddings={embeddings}
+        onSave={handleSaveEmbeddings}
+        isSaving={isSavingEmbeddings || isRepublishing}
+      />
 
       {/* Debug info for development */}
       {import.meta.env.DEV && (
