@@ -152,6 +152,8 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
                   className="hover:text-[#B8510D] hover:underline"
                 >
                   {venue.address}
+                  <span aria-hidden="true" className="ml-0.5 text-xs">↗</span>
+                  <span className="sr-only">(opens in new tab)</span>
                 </a>
               </>
             )}
@@ -173,7 +175,10 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
                 )}
               </>
             )}
-            {' · '}Updated {formatDate(venue.lastUpdated)}
+            {' · '}
+            <span className="whitespace-nowrap">
+              Updated {formatDate(venue.lastUpdated || guide.generatedAt)}
+            </span>
           </p>
 
           {/* Top-level category badges */}

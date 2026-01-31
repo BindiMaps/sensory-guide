@@ -30,6 +30,8 @@ export const areaSchema = z.object({
   details: z.array(sensoryDetailSchema).default([]),
   // Section-level images extracted from PDF (public URLs)
   images: z.array(z.string().url()).default([]),
+  // Embed URL for maps, videos, etc. (persisted separately in Firestore, merged at runtime)
+  embedUrl: z.string().url().optional(),
 })
 export type Area = z.infer<typeof areaSchema>
 
@@ -60,8 +62,8 @@ export const venueOverviewSchema = z.object({
   address: z.string().min(1, 'Address is required'),
   contact: z.string().optional(),
   summary: z.string().min(1, 'Summary is required'),
-  // LLMs return various date formats - be lenient on client
-  lastUpdated: z.string().min(1, 'Last updated date is required'),
+  // Optional - only if source document has an explicit update date
+  lastUpdated: z.string().optional(),
 })
 export type VenueOverview = z.infer<typeof venueOverviewSchema>
 
@@ -128,7 +130,7 @@ export function getGuideJsonSchemaString(): string {
     "address": "string (full address)",
     "contact": "string (optional - phone or email)",
     "summary": "string (1-2 sentence overview)",
-    "lastUpdated": "string (ISO date, e.g., 2026-01-29)"
+    "lastUpdated": "string (optional - ISO date if document has explicit update date)"
   },
   "categories": ["string (sensory categories present in this venue - use whatever makes sense, e.g., Sound, Light, Crowds, Smell, Touch, Movement, Temperature, Vibration, Air Quality, etc.)"],
   "areas": [

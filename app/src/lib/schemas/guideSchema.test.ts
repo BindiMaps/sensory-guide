@@ -221,6 +221,44 @@ describe('areaSchema', () => {
     expect(areaSchema.safeParse(noId).success).toBe(false)
     expect(areaSchema.safeParse(noName).success).toBe(false)
   })
+
+  it('accepts optional embedUrl with valid URL', () => {
+    const area = {
+      id: 'entry',
+      name: 'Entry Hall',
+      order: 0,
+      embedUrl: 'https://bindiweb.com/map/venue123',
+    }
+    const result = areaSchema.safeParse(area)
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.embedUrl).toBe('https://bindiweb.com/map/venue123')
+    }
+  })
+
+  it('allows area without embedUrl', () => {
+    const area = {
+      id: 'entry',
+      name: 'Entry Hall',
+      order: 0,
+    }
+    const result = areaSchema.safeParse(area)
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.embedUrl).toBeUndefined()
+    }
+  })
+
+  it('rejects invalid embedUrl', () => {
+    const area = {
+      id: 'entry',
+      name: 'Entry Hall',
+      order: 0,
+      embedUrl: 'not-a-valid-url',
+    }
+    const result = areaSchema.safeParse(area)
+    expect(result.success).toBe(false)
+  })
 })
 
 describe('transformProgressStatusSchema', () => {

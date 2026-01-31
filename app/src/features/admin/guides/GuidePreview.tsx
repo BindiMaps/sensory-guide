@@ -1,8 +1,28 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { Guide, Area } from '@/lib/schemas/guideSchema'
 import { GuideContent } from '@/shared/components/guide'
 import { SuggestionsPanel } from './SuggestionsPanel'
 import { ImageAssignmentEditor } from './components/ImageAssignmentEditor'
+import { EmbedEditor } from './EmbedEditor'
+import { useEmbeddings, type Embeddings } from './useEmbeddings'
+
+/**
+ * Merge embeddings into guide areas.
+ * Creates a new guide object with embedUrl fields populated.
+ */
+function mergeEmbeddingsIntoGuide(guide: Guide, embeddings: Embeddings): Guide {
+  if (Object.keys(embeddings).length === 0) {
+    return guide
+  }
+
+  return {
+    ...guide,
+    areas: guide.areas.map((area) => ({
+      ...area,
+      embedUrl: embeddings[area.id] || area.embedUrl,
+    })),
+  }
+}
 
 interface GuidePreviewProps {
   guide: Guide
@@ -29,9 +49,30 @@ export function GuidePreview({
 }: GuidePreviewProps) {
   const [isImageEditorOpen, setIsImageEditorOpen] = useState(false)
   const [isSavingImages, setIsSavingImages] = useState(false)
+  const [isEmbedEditorOpen, setIsEmbedEditorOpen] = useState(false)
+  const [isSavingEmbeds, setIsSavingEmbeds] = useState(false)
+
+  // Fetch embeddings for this venue
+  const { embeddings, saveEmbeddings } = useEmbeddings(venueId)
+
+  // Merge embeddings into guide for display
+  const guideWithEmbeds = useMemo(
+    () => mergeEmbeddingsIntoGuide(guide, embeddings),
+    [guide, embeddings]
+  )
 
   // Check if guide has any images to edit
   const hasImages = guide.areas.some((area) => area.images && area.images.length > 0)
+
+  const handleSaveEmbeds = async (newEmbeddings: Record<string, string>) => {
+    setIsSavingEmbeds(true)
+    try {
+      await saveEmbeddings(newEmbeddings)
+      setIsEmbedEditorOpen(false)
+    } finally {
+      setIsSavingEmbeds(false)
+    }
+  }
 
   const handleSaveImages = async (updatedAreas: Area[]) => {
     if (!outputPath || !venueId) {
@@ -75,8 +116,8 @@ export function GuidePreview({
         <SuggestionsPanel suggestions={guide.suggestions} defaultExpanded />
       </div>
 
-      {/* Guide content - shared with public view */}
-      <GuideContent guide={guide} />
+      {/* Guide content - shared with public view, with embeddings merged */}
+      <GuideContent guide={guideWithEmbeds} />
 
       {/* Action Bar - v5 styling */}
       <div className="max-w-[720px] mx-auto">
@@ -90,6 +131,17 @@ export function GuidePreview({
               className="px-5 py-2.5 border border-[#DDDDD9] text-[#3D3D3D] rounded hover:bg-[#F8F8F6] disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm min-h-[44px] transition-colors"
             >
               Edit Images
+            </button>
+          )}
+          {/* Edit Embeds button - show when we have venueId */}
+          {venueId && (
+            <button
+              type="button"
+              onClick={() => setIsEmbedEditorOpen(true)}
+              disabled={isPublishing || isSavingEmbeds}
+              className="px-5 py-2.5 border border-[#DDDDD9] text-[#3D3D3D] rounded hover:bg-[#F8F8F6] disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm min-h-[44px] transition-colors"
+            >
+              Edit Embeds
             </button>
           )}
           <button
@@ -118,6 +170,18 @@ export function GuidePreview({
           isOpen={isImageEditorOpen}
           onClose={() => setIsImageEditorOpen(false)}
           onSave={handleSaveImages}
+        />
+      )}
+
+      {/* Embed Editor Modal */}
+      {venueId && (
+        <EmbedEditor
+          open={isEmbedEditorOpen}
+          onOpenChange={setIsEmbedEditorOpen}
+          areas={guide.areas}
+          embeddings={embeddings}
+          onSave={handleSaveEmbeds}
+          isSaving={isSavingEmbeds}
         />
       )}
     </div>

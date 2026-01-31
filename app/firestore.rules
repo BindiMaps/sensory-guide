@@ -64,6 +64,12 @@ service cloud.firestore {
         allow read: if isEditor(get(/databases/$(database)/documents/venues/$(venueId)).data) || isSuperAdmin();
         allow write: if false; // Only Cloud Functions can write
       }
+
+      // Embeddings subcollection - editors can read/write embed URLs
+      match /embeddings/{docId} {
+        allow read: if isEditor(get(/databases/$(database)/documents/venues/$(venueId)).data) || isAnySuperAdmin();
+        allow write: if isEditor(get(/databases/$(database)/documents/venues/$(venueId)).data);
+      }
     }
 
     // Config collection for super admin list (read-only)

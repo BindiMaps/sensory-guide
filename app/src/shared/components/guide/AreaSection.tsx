@@ -129,10 +129,19 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
               {previewText}
             </p>
           )}
-          <span className="flex flex-wrap gap-1.5" aria-label="Sensory categories">
+          <span className="flex flex-wrap gap-1.5 items-center" aria-label="Sensory categories">
             {area.badges.map((badge) => (
               <CategoryBadge key={badge} category={badge} />
             ))}
+            {/* Embed indicator - shows when collapsed and embed exists */}
+            {!isExpanded && area.embedUrl && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium text-[#264854] bg-[#E3ECF0] rounded-sm">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                Has map
+              </span>
+            )}
           </span>
         </span>
 
@@ -149,6 +158,33 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
         tabIndex={isExpanded ? 0 : -1}
         className="pb-5 pl-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 rounded-sm"
       >
+        {/* Embedded content (map, video) */}
+        {area.embedUrl && (
+          <div className="mb-4">
+            <div className="aspect-video w-full max-w-md rounded-sm border border-[#E8E8E5] overflow-hidden">
+              <iframe
+                src={area.embedUrl}
+                title={`Map for ${area.name}`}
+                className="w-full h-full border-0"
+                loading="lazy"
+                sandbox="allow-scripts allow-same-origin allow-popups"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+            <a
+              href={area.embedUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-[#595959] hover:text-[#B8510D] mt-1"
+            >
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              Open in new tab
+            </a>
+          </div>
+        )}
+
         {/* Section images from PDF extraction */}
         {area.images && area.images.length > 0 && (
           <div className="mb-4">

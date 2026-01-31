@@ -2,6 +2,7 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https'
 import { getStorage } from 'firebase-admin/storage'
 import { getFirestore, FieldValue } from 'firebase-admin/firestore'
 import { requireAuth, requireEditorAccess } from '../middleware/auth'
+import type { Guide } from '../schemas/guideSchema'
 
 interface PublishGuideRequest {
   venueId: string
@@ -88,17 +89,53 @@ export const publishGuide = onCall<PublishGuideRequest>(
     }
 
     try {
-      // 6. Set publishedBy metadata on the version file
+      // 6. Load guide JSON and merge embeddings
+      const [guideContent] = await file.download()
+      let guide: Guide = JSON.parse(guideContent.toString('utf-8'))
+
+      // Fetch embeddings from Firestore
+      const embeddingsRef = db.collection('venues').doc(venueId).collection('embeddings').doc('urls')
+      const embeddingsSnap = await embeddingsRef.get()
+
+      if (embeddingsSnap.exists) {
+        const embeddings = embeddingsSnap.data() as Record<string, string>
+        const guideAreaIds = new Set(guide.areas.map((a) => a.id))
+
+        // Check for orphaned embeddings (section IDs that no longer exist in guide)
+        const orphanedEmbeddings = Object.keys(embeddings).filter((id) => !guideAreaIds.has(id))
+        if (orphanedEmbeddings.length > 0) {
+          console.warn(
+            `Orphaned embeddings detected at publish: venue=${venueId}, orphaned_ids=${orphanedEmbeddings.join(', ')}`
+          )
+        }
+
+        // Merge embeddings into guide areas
+        guide = {
+          ...guide,
+          areas: guide.areas.map((area) => ({
+            ...area,
+            embedUrl: embeddings[area.id] || area.embedUrl,
+          })),
+        }
+      }
+
+      // 7. Set publishedBy metadata on the version file
       await file.setMetadata({
         metadata: {
           publishedBy: userEmail,
         },
       })
 
-      // 7. Copy to public slug-based path (this is what public page fetches)
+      // 8. Copy to public slug-based path (this is what public page fetches)
+      // Write the merged guide (with embeddings baked in) to public path
       const publicPath = `public/guides/${slug}.json`
       const publicFile = bucket.file(publicPath)
-      await file.copy(publicFile)
+      await publicFile.save(JSON.stringify(guide), {
+        contentType: 'application/json',
+        metadata: {
+          publishedBy: userEmail,
+        },
+      })
       await publicFile.setMetadata({
         cacheControl: 'public, max-age=0, must-revalidate',
       })

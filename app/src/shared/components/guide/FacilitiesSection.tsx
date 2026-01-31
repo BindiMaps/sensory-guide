@@ -19,7 +19,7 @@ export function FacilitiesSection({ facilities }: FacilitiesSectionProps) {
   return (
     <section className="mb-10">
       <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">
-        Facilities
+        Key Facilities
       </h2>
 
       <div className="space-y-4">
@@ -42,6 +42,8 @@ export function FacilitiesSection({ facilities }: FacilitiesSectionProps) {
                         className="ml-2 text-[#B8510D] hover:underline"
                       >
                         View map
+                        <span aria-hidden="true" className="ml-0.5 text-xs">↗</span>
+                        <span className="sr-only">(opens in new tab)</span>
                       </a>
                     )}
                   </span>
@@ -70,6 +72,8 @@ export function FacilitiesSection({ facilities }: FacilitiesSectionProps) {
                         className="ml-2 text-[#B8510D] hover:underline"
                       >
                         View map
+                        <span aria-hidden="true" className="ml-0.5 text-xs">↗</span>
+                        <span className="sr-only">(opens in new tab)</span>
                       </a>
                     )}
                   </span>

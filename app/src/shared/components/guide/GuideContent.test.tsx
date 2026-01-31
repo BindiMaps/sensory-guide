@@ -125,6 +125,20 @@ describe('GuideContent', () => {
       expect(addressLink).toHaveAttribute('rel', 'noopener noreferrer')
     })
 
+    it('renders external link icon on address link', () => {
+      render(<GuideContent guide={mockGuide} />)
+      const addressLink = screen.getByRole('link', { name: /125 North Terrace, Adelaide SA 5000/ })
+      expect(addressLink.textContent).toContain('↗')
+    })
+
+    it('renders sr-only text for address link accessibility', () => {
+      render(<GuideContent guide={mockGuide} />)
+      const addressLink = screen.getByRole('link', { name: /125 North Terrace, Adelaide SA 5000/ })
+      const srOnly = addressLink.querySelector('.sr-only')
+      expect(srOnly).toBeInTheDocument()
+      expect(srOnly).toHaveTextContent('(opens in new tab)')
+    })
+
     it('renders phone as tel link when present', () => {
       render(<GuideContent guide={mockGuide} />)
       const phoneLink = screen.getByRole('link', { name: /08 8218 2222/ })

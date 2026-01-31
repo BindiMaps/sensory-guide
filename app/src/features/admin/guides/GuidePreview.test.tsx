@@ -1,8 +1,19 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { GuidePreview } from './GuidePreview'
 import type { Guide } from '@/lib/schemas/guideSchema'
+
+// Mock useEmbeddings hook
+vi.mock('./useEmbeddings', () => ({
+  useEmbeddings: () => ({
+    embeddings: {},
+    isLoading: false,
+    error: null,
+    saveEmbeddings: vi.fn(),
+    refetch: vi.fn(),
+  }),
+}))
 
 const mockGuide: Guide = {
   schemaVersion: '1.0',
@@ -189,5 +200,21 @@ describe('GuidePreview', () => {
     expect(screen.queryByText('Exits')).not.toBeInTheDocument()
     // No suggestions panel when empty
     expect(screen.queryByText(/Content Suggestions/)).not.toBeInTheDocument()
+  })
+
+  it('renders Edit Embeds button when venueId is provided', () => {
+    render(<GuidePreview guide={mockGuide} venueId="venue123" outputPath="path/to/guide.json" />)
+    expect(screen.getByRole('button', { name: 'Edit Embeds' })).toBeInTheDocument()
+  })
+
+  it('opens EmbedEditor when Edit Embeds clicked', async () => {
+    const user = userEvent.setup()
+    render(<GuidePreview guide={mockGuide} venueId="venue123" outputPath="path/to/guide.json" />)
+
+    await user.click(screen.getByRole('button', { name: 'Edit Embeds' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Edit Section Embeds')).toBeInTheDocument()
+    })
   })
 })

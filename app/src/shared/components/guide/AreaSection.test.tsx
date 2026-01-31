@@ -29,6 +29,11 @@ const mockAreaWithSummary: Area = {
   summary: 'A calm entry point with soft lighting and quiet ambience.',
 }
 
+const mockAreaWithEmbed: Area = {
+  ...mockArea,
+  embedUrl: 'https://bindiweb.com/map/venue123',
+}
+
 describe('AreaSection', () => {
   beforeEach(() => {
     // Mock matchMedia for reduced motion
@@ -159,6 +164,50 @@ describe('AreaSection', () => {
       // Re-render should maintain state via Zustand
       rerender(<AreaSection area={mockArea} venueSlug="test-venue" />)
       expect(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'true')
+    })
+  })
+
+  describe('embedUrl', () => {
+    it('shows "Has map" indicator when collapsed and embedUrl exists', () => {
+      render(<AreaSection area={mockAreaWithEmbed} />)
+      expect(screen.getByText('Has map')).toBeInTheDocument()
+    })
+
+    it('does not show indicator when no embedUrl', () => {
+      render(<AreaSection area={mockArea} />)
+      expect(screen.queryByText('Has map')).not.toBeInTheDocument()
+    })
+
+    it('renders iframe when expanded and embedUrl exists', async () => {
+      const user = userEvent.setup()
+      render(<AreaSection area={mockAreaWithEmbed} />)
+
+      await user.click(screen.getByRole('button'))
+
+      const iframe = screen.getByTitle(`Map for ${mockAreaWithEmbed.name}`)
+      expect(iframe).toBeInTheDocument()
+      expect(iframe).toHaveAttribute('src', mockAreaWithEmbed.embedUrl)
+    })
+
+    it('includes accessible title on iframe', async () => {
+      const user = userEvent.setup()
+      render(<AreaSection area={mockAreaWithEmbed} />)
+
+      await user.click(screen.getByRole('button'))
+
+      const iframe = screen.getByTitle('Map for Entry Hall')
+      expect(iframe).toBeInTheDocument()
+    })
+
+    it('provides fallback link for iframe content', async () => {
+      const user = userEvent.setup()
+      render(<AreaSection area={mockAreaWithEmbed} />)
+
+      await user.click(screen.getByRole('button'))
+
+      const fallbackLink = screen.getByRole('link', { name: /open in new tab/i })
+      expect(fallbackLink).toHaveAttribute('href', mockAreaWithEmbed.embedUrl)
+      expect(fallbackLink).toHaveAttribute('target', '_blank')
     })
   })
 })

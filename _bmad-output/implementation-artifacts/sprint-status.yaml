@@ -72,13 +72,16 @@ development_status:
   3-7-image-assignment-editor: done  # Manual drag/drop to fix image-section mapping
   epic-3-retrospective: optional
 
-  # Epic 4: Public Guide Experience
+  # Epic 4: Public Guide Experience (Sprint 1)
   epic-4: in-progress
   4-1-public-guide-page-layout: done
   4-2-progressive-disclosure-sections: done
-  4-3-images-and-facilities: ready-for-dev
-  4-4-accessibility-compliance: backlog
+  4-3-images-and-facilities: done
   4-5-landing-page: done
+  epic-4-sprint-1-retrospective: optional
+
+  # Epic 4: Accessibility Sprint (Sprint 2)
+  4-4-accessibility-compliance: backlog
   epic-4-retrospective: optional
 
   # Epic 5: Print & Feedback
@@ -95,7 +98,7 @@ development_status:
   6-1-guide-update-via-re-upload: backlog
   6-3-super-admin-view-all-venues: backlog
   6-4-super-admin-global-analytics-dashboard: backlog
-  6-5-section-embed-urls: ready-for-dev  # Embed maps/videos per section, persist across re-uploads
+  6-5-section-embed-urls: done  # Embed maps/videos per section, persist across re-uploads
   epic-6-retrospective: optional
 
   # Epic 7: Final Audits & Polish (Pre-Release)
