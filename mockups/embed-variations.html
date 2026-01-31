@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Embed Layout Variations - Design Exploration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: #FFFFFF;
+      --surface: #F8F8F6;
+      --surface-hover: #F2F2EF;
+      --text: #1A1A1A;
+      --text-secondary: #3D3D3D;
+      --text-muted: #595959;
+      --border: #DDDDD9;
+      --border-light: #E8E8E5;
+      --accent: #B8510D;
+      --accent-hover: #9A4409;
+      --accent-light: #FEF7F2;
+      --sensory-low: #2A6339;
+      --sensory-medium: #8A5F08;
+      --sensory-high: #9E3322;
+      --badge-light-bg: #F4EBDA;
+      --badge-light-text: #4D3F14;
+      --badge-sound-bg: #E3ECF0;
+      --badge-sound-text: #264854;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: #f0f0ed;
+      color: var(--text);
+      line-height: 1.55;
+      padding: 40px 20px;
+    }
+
+    .page-header {
+      max-width: 900px;
+      margin: 0 auto 60px;
+      text-align: center;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .page-header p {
+      color: var(--text-muted);
+      font-size: 0.9375rem;
+    }
+
+    .variation {
+      max-width: 720px;
+      margin: 0 auto 60px;
+      background: var(--background);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .variation-header {
+      background: var(--surface);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .variation-header h2 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .variation-header span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: var(--background);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .variation-content {
+      padding: 20px;
+    }
+
+    /* Section header (shared) */
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .toggle-circle {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .toggle-circle svg {
+      width: 12px;
+      height: 12px;
+      stroke: white;
+      stroke-width: 2;
+      fill: none;
+      transform: rotate(90deg);
+    }
+
+    .section-info {
+      flex: 1;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      border-radius: 2px;
+      background: var(--badge-light-bg);
+      color: var(--badge-light-text);
+    }
+
+    .badge-sound {
+      background: var(--badge-sound-bg);
+      color: var(--badge-sound-text);
+    }
+
+    .level-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--sensory-high);
+      flex-shrink: 0;
+    }
+
+    .level-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--sensory-high);
+    }
+
+    /* Sensory details (shared) */
+    .sensory-details {
+      margin-top: 16px;
+    }
+
+    .detail-item {
+      margin-bottom: 16px;
+    }
+
+    .detail-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-category {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .detail-text {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Map placeholder */
+    .map-placeholder {
+      background: linear-gradient(135deg, #e8f4f8 0%, #d4e8ed 100%);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--badge-sound-text);
+      font-size: 0.75rem;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-placeholder::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='%23264854' fill-opacity='0.03'/%3E%3C/svg%3E");
+      background-size: 30px 30px;
+    }
+
+    .map-placeholder span {
+      position: relative;
+      z-index: 1;
+      background: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Photo placeholder */
+    .photo-placeholder {
+      background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d4 100%);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--badge-light-text);
+      font-size: 0.75rem;
+    }
+
+    /* Link styles */
+    .link-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .link-text:hover {
+      color: var(--accent);
+    }
+
+    .link-text svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* ========================================
+       VARIATION SPECIFIC STYLES
+       ======================================== */
+
+    /* V1: Current (baseline) */
+    .v1 .embed-area {
+      margin-bottom: 16px;
+    }
+
+    .v1 .embed-area .map-placeholder {
+      aspect-ratio: 16/9;
+      max-width: 400px;
+    }
+
+    .v1 .embed-link {
+      margin-top: 8px;
+    }
+
+    .v1 .photo-area {
+      margin-bottom: 16px;
+    }
+
+    .v1 .photo-area .photo-placeholder {
+      width: 200px;
+      height: 140px;
+    }
+
+    /* V2: Map thumbnail with expand */
+    .v2 .media-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .v2 .map-thumb {
+      width: 120px;
+      height: 80px;
+      border-radius: 4px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .v2 .map-thumb .map-placeholder {
+      width: 100%;
+      height: 100%;
+    }
+
+    .v2 .map-thumb .expand-icon {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: white;
+      border-radius: 4px;
+      padding: 4px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+
+    .v2 .photo-thumb {
+      width: 120px;
+      height: 80px;
+    }
+
+    .v2 .photo-thumb .photo-placeholder {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* V3: Side-by-side map and content */
+    .v3 .content-layout {
+      display: grid;
+      grid-template-columns: 1fr 200px;
+      gap: 20px;
+    }
+
+    .v3 .map-sidebar .map-placeholder {
+      width: 100%;
+      height: 160px;
+      margin-bottom: 8px;
+    }
+
+    /* V4: Map as accent strip */
+    .v4 .map-strip {
+      height: 60px;
+      margin: -20px -20px 16px;
+      position: relative;
+    }
+
+    .v4 .map-strip .map-placeholder {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+    }
+
+    .v4 .map-strip .strip-label {
+      position: absolute;
+      bottom: 8px;
+      left: 20px;
+      background: white;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* V5: Tabbed content */
+    .v5 .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 16px;
+    }
+
+    .v5 .tab {
+      padding: 10px 16px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer;
+    }
+
+    .v5 .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .v5 .tab-content {
+      min-height: 200px;
+    }
+
+    .v5 .map-placeholder {
+      width: 100%;
+      height: 200px;
+    }
+
+    /* V6: Floating map card */
+    .v6 .map-float {
+      float: right;
+      width: 180px;
+      margin: 0 0 12px 16px;
+      background: var(--surface);
+      border-radius: 6px;
+      padding: 8px;
+    }
+
+    .v6 .map-float .map-placeholder {
+      width: 100%;
+      height: 100px;
+      margin-bottom: 8px;
+    }
+
+    .v6 .map-float .map-label {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* V7: Map button trigger */
+    .v7 .map-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--badge-sound-bg);
+      color: var(--badge-sound-text);
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .v7 .map-trigger:hover {
+      background: #d4e3e8;
+    }
+
+    .v7 .map-trigger svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* V8: Inline map with border accent */
+    .v8 .map-inline {
+      border-left: 3px solid var(--accent);
+      padding-left: 16px;
+      margin-bottom: 20px;
+    }
+
+    .v8 .map-inline .map-placeholder {
+      width: 100%;
+      max-width: 320px;
+      height: 140px;
+      margin-bottom: 8px;
+    }
+
+    .v8 .map-inline .map-caption {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* V9: Card grid (map + photo equal) */
+    .v9 .media-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .v9 .media-card {
+      background: var(--surface);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .v9 .media-card .map-placeholder,
+    .v9 .media-card .photo-placeholder {
+      width: 100%;
+      height: 120px;
+    }
+
+    .v9 .media-card .card-label {
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* V10: Minimalist icon link */
+    .v10 .icon-links {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .v10 .icon-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+
+    .v10 .icon-link:hover {
+      color: var(--accent);
+    }
+
+    .v10 .icon-link svg {
+      width: 20px;
+      height: 20px;
+      color: var(--text-muted);
+    }
+
+    .v10 .icon-link:hover svg {
+      color: var(--accent);
+    }
+
+    /* V11: Map banner with gradient overlay */
+    .v11 .map-banner {
+      height: 100px;
+      margin: -20px -20px 16px;
+      position: relative;
+    }
+
+    .v11 .map-banner .map-placeholder {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+    }
+
+    .v11 .map-banner::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(to top, white, transparent);
+    }
+
+    .v11 .map-banner .banner-action {
+      position: absolute;
+      bottom: -8px;
+      left: 20px;
+      z-index: 1;
+      background: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* V12: Stacked cards */
+    .v12 .stacked-media {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .v12 .stack-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background: var(--surface);
+      border-radius: 6px;
+    }
+
+    .v12 .stack-item .item-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .v12 .stack-item .item-icon.map-icon {
+      background: var(--badge-sound-bg);
+      color: var(--badge-sound-text);
+    }
+
+    .v12 .stack-item .item-icon.photo-icon {
+      background: var(--badge-light-bg);
+      color: var(--badge-light-text);
+    }
+
+    .v12 .stack-item .item-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .v12 .stack-item .item-label {
+      flex: 1;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .v12 .stack-item .item-action {
+      font-size: 0.75rem;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* V13: Map pill in header */
+    .v13 .section-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .v13 .map-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      background: var(--badge-sound-bg);
+      color: var(--badge-sound-text);
+      border-radius: 12px;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .v13 .map-pill svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    .v13 .map-area {
+      margin-bottom: 16px;
+    }
+
+    .v13 .map-area .map-placeholder {
+      width: 100%;
+      max-width: 360px;
+      height: 160px;
+    }
+
+    /* V14: Bottom drawer style */
+    .v14 .content-main {
+      margin-bottom: 16px;
+    }
+
+    .v14 .map-drawer {
+      background: var(--surface);
+      margin: 0 -20px -20px;
+      padding: 12px 20px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .v14 .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .v14 .drawer-title {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .v14 .drawer-title svg {
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+    }
+
+    .v14 .map-drawer .map-placeholder {
+      width: 100%;
+      height: 140px;
+    }
+
+    /* V15: Compact inline badge */
+    .v15 .has-map-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 8px;
+      padding: 2px 8px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 4px;
+      font-size: 0.6875rem;
+      font-weight: 600;
+    }
+
+    .v15 .has-map-badge svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    .v15 .map-embed {
+      margin-bottom: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-light);
+    }
+
+    .v15 .map-embed .map-placeholder {
+      width: 100%;
+      height: 180px;
+    }
+
+    .v15 .map-embed .embed-footer {
+      padding: 8px 12px;
+      background: var(--surface);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .v15 .embed-footer .venue-name {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    /* V16: Two-column with sticky map */
+    .v16 .two-col {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .v16 .map-sticky {
+      position: sticky;
+      top: 20px;
+    }
+
+    .v16 .map-sticky .map-placeholder {
+      width: 100%;
+      height: 140px;
+      margin-bottom: 8px;
+    }
+
+    .v16 .map-sticky .map-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .v16 .map-sticky .map-action {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .v16 .map-sticky .map-action:hover {
+      color: var(--accent);
+    }
+
+    /* V17: Accordion media section */
+    .v17 .media-accordion {
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .v17 .accordion-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--surface);
+      cursor: pointer;
+    }
+
+    .v17 .accordion-header svg {
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+    }
+
+    .v17 .accordion-header span {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .v17 .accordion-content {
+      padding: 12px 14px;
+    }
+
+    .v17 .accordion-content .map-placeholder {
+      width: 100%;
+      height: 160px;
+    }
+
+    /* V18: Chip links row */
+    .v18 .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .v18 .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .v18 .chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .v18 .chip svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* V19: Hero map with content overlay */
+    .v19 .hero-map {
+      position: relative;
+      margin: -20px -20px 0;
+      height: 180px;
+    }
+
+    .v19 .hero-map .map-placeholder {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+    }
+
+    .v19 .hero-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+      padding: 40px 20px 12px;
+    }
+
+    .v19 .hero-overlay .overlay-link {
+      color: white;
+      font-size: 0.75rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      opacity: 0.9;
+    }
+
+    .v19 .hero-overlay .overlay-link:hover {
+      opacity: 1;
+    }
+
+    .v19 .content-below {
+      padding-top: 16px;
+    }
+
+    /* V20: Minimal dot indicator */
+    .v20 .title-with-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .v20 .map-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--badge-sound-text);
+      position: relative;
+    }
+
+    .v20 .map-indicator::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border: 1px solid var(--badge-sound-text);
+      border-radius: 50%;
+      opacity: 0.3;
+    }
+
+    .v20 .map-inline-small {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: var(--surface);
+      border-radius: 6px;
+    }
+
+    .v20 .map-inline-small .map-placeholder {
+      width: 100px;
+      height: 70px;
+      flex-shrink: 0;
+    }
+
+    .v20 .map-inline-small .map-info {
+      flex: 1;
+    }
+
+    .v20 .map-inline-small .map-title {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .v20 .map-inline-small .map-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    /* Clearfix for floats */
+    .clearfix::after {
+      content: '';
+      display: table;
+      clear: both;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <h1>Embed Layout Variations</h1>
+    <p>20 different approaches to displaying maps within guide sections</p>
+  </div>
+
+  <!-- V1: Current baseline -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 1: Current (Baseline)</h2>
+      <span>Stacked vertical</span>
+    </div>
+    <div class="variation-content v1">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="embed-area">
+        <div class="map-placeholder" style="aspect-ratio: 16/9; max-width: 400px;">
+          <span>BindiWeb Map</span>
+        </div>
+        <div class="embed-link">
+          <a href="#" class="link-text">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            Open in new tab
+          </a>
+        </div>
+      </div>
+
+      <div class="photo-area">
+        <div class="photo-placeholder">Photo</div>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving and mirrored glass on nearby buildings.</p>
+        </div>
+        <div class="detail-item">
+          <p class="detail-category">Temperature</p>
+          <p class="detail-text">A strong breeze comes from the direction of the river.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V2: Thumbnail row -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 2: Thumbnail Row</h2>
+      <span>Compact media strip</span>
+    </div>
+    <div class="variation-content v2">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="media-row">
+        <div class="map-thumb">
+          <div class="map-placeholder"></div>
+          <div class="expand-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          </div>
+        </div>
+        <div class="photo-thumb">
+          <div class="photo-placeholder">Photo</div>
+        </div>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving and mirrored glass on nearby buildings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V3: Side-by-side -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 3: Side-by-Side</h2>
+      <span>Map in sidebar</span>
+    </div>
+    <div class="variation-content v3">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="content-layout">
+        <div class="sensory-details">
+          <div class="detail-item">
+            <p class="detail-category">Light</p>
+            <p class="detail-text">Very bright sun reflects strongly from light-coloured paving and mirrored glass on nearby buildings.</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-category">Temperature</p>
+            <p class="detail-text">A strong breeze comes from the direction of the river.</p>
+          </div>
+        </div>
+        <div class="map-sidebar">
+          <div class="map-placeholder"></div>
+          <a href="#" class="link-text">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            View map
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V4: Map strip header -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 4: Map Strip Header</h2>
+      <span>Thin decorative band</span>
+    </div>
+    <div class="variation-content v4">
+      <div class="map-strip">
+        <div class="map-placeholder"></div>
+        <div class="strip-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          View full map
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving and mirrored glass on nearby buildings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V5: Tabbed content -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 5: Tabbed Content</h2>
+      <span>Info / Map tabs</span>
+    </div>
+    <div class="variation-content v5">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active">Sensory Info</div>
+        <div class="tab">Map</div>
+        <div class="tab">Photos</div>
+      </div>
+
+      <div class="tab-content">
+        <div class="sensory-details">
+          <div class="detail-item">
+            <p class="detail-category">Light</p>
+            <p class="detail-text">Very bright sun reflects strongly from light-coloured paving and mirrored glass on nearby buildings.</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-category">Temperature</p>
+            <p class="detail-text">A strong breeze comes from the direction of the river.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V6: Floating card -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 6: Floating Card</h2>
+      <span>Text wraps around</span>
+    </div>
+    <div class="variation-content v6 clearfix">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="map-float">
+        <div class="map-placeholder"></div>
+        <p class="map-label">Interactive map</p>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving and mirrored glass on nearby buildings. This creates a high-contrast shadow line at the entrance.</p>
+        </div>
+        <div class="detail-item">
+          <p class="detail-category">Temperature</p>
+          <p class="detail-text">A strong breeze comes from the direction of the river.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V7: Button trigger -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 7: Button Trigger</h2>
+      <span>On-demand reveal</span>
+    </div>
+    <div class="variation-content v7">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="map-trigger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        View area on map
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving and mirrored glass on nearby buildings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V8: Border accent -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 8: Border Accent</h2>
+      <span>Left border highlight</span>
+    </div>
+    <div class="variation-content v8">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="map-inline">
+        <div class="map-placeholder"></div>
+        <p class="map-caption">St Vincent's Hospital - Entry area</p>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V9: Card grid -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 9: Card Grid</h2>
+      <span>Equal media cards</span>
+    </div>
+    <div class="variation-content v9">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="media-grid">
+        <div class="media-card">
+          <div class="map-placeholder"></div>
+          <div class="card-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Interactive Map
+          </div>
+        </div>
+        <div class="media-card">
+          <div class="photo-placeholder">Photo</div>
+          <div class="card-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Area Photo
+          </div>
+        </div>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V10: Icon links -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 10: Icon Links</h2>
+      <span>Minimalist text links</span>
+    </div>
+    <div class="variation-content v10">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="icon-links">
+        <a href="#" class="icon-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          View on map
+        </a>
+        <a href="#" class="icon-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          View photo
+        </a>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving and mirrored glass on nearby buildings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V11: Banner with gradient -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 11: Hero Banner</h2>
+      <span>Gradient fade overlay</span>
+    </div>
+    <div class="variation-content v11">
+      <div class="map-banner">
+        <div class="map-placeholder"></div>
+        <div class="banner-action">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          Expand map
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V12: Stacked list -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 12: Stacked List</h2>
+      <span>List-style media items</span>
+    </div>
+    <div class="variation-content v12">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="stacked-media">
+        <div class="stack-item">
+          <div class="item-icon map-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <span class="item-label">Interactive area map</span>
+          <a href="#" class="item-action">Open</a>
+        </div>
+        <div class="stack-item">
+          <div class="item-icon photo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <span class="item-label">Area photograph</span>
+          <a href="#" class="item-action">View</a>
+        </div>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V13: Pill in header -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 13: Header Pill</h2>
+      <span>Map badge in title</span>
+    </div>
+    <div class="variation-content v13">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <div class="section-title-row">
+            <h3 class="section-title">Entry/Exit Festival Drive</h3>
+            <span class="map-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Map
+            </span>
+          </div>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="map-area">
+        <div class="map-placeholder"></div>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V14: Bottom drawer -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 14: Bottom Drawer</h2>
+      <span>Map in footer zone</span>
+    </div>
+    <div class="variation-content v14">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="content-main">
+        <div class="sensory-details">
+          <div class="detail-item">
+            <p class="detail-category">Light</p>
+            <p class="detail-text">Very bright sun reflects strongly from light-coloured paving and mirrored glass.</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-category">Temperature</p>
+            <p class="detail-text">A strong breeze comes from the direction of the river.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="map-drawer">
+        <div class="drawer-header">
+          <div class="drawer-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Area Map
+          </div>
+          <a href="#" class="link-text">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            Full screen
+          </a>
+        </div>
+        <div class="map-placeholder"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V15: Framed embed -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 15: Framed Embed</h2>
+      <span>Card with footer bar</span>
+    </div>
+    <div class="variation-content v15">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive<span class="has-map-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Map</span></h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="map-embed">
+        <div class="map-placeholder"></div>
+        <div class="embed-footer">
+          <span class="venue-name">St Vincent's Hospital</span>
+          <a href="#" class="link-text">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            Open
+          </a>
+        </div>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V16: Two column sticky -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 16: Sticky Sidebar</h2>
+      <span>Map stays visible</span>
+    </div>
+    <div class="variation-content v16">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="sensory-details">
+          <div class="detail-item">
+            <p class="detail-category">Light</p>
+            <p class="detail-text">Very bright sun reflects strongly from light-coloured paving and mirrored glass on nearby buildings. This creates high contrast shadow lines.</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-category">Temperature</p>
+            <p class="detail-text">A strong breeze comes from the direction of the river.</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-category">Sound</p>
+            <p class="detail-text">There were no strong noises before entering the building.</p>
+          </div>
+        </div>
+        <div class="map-sticky">
+          <div class="map-placeholder"></div>
+          <div class="map-actions">
+            <a href="#" class="map-action">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+              Expand
+            </a>
+            <a href="#" class="map-action">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              New tab
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V17: Accordion -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 17: Nested Accordion</h2>
+      <span>Collapsible map panel</span>
+    </div>
+    <div class="variation-content v17">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="media-accordion">
+        <div class="accordion-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>View area map</span>
+          <svg style="margin-left: auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="accordion-content">
+          <div class="map-placeholder"></div>
+        </div>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V18: Chip links -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 18: Chip Links</h2>
+      <span>Pill-style actions</span>
+    </div>
+    <div class="variation-content v18">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <h3 class="section-title">Entry/Exit Festival Drive</h3>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="chip-row">
+        <a href="#" class="chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          View Map
+        </a>
+        <a href="#" class="chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Photos (2)
+        </a>
+        <a href="#" class="chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          Video
+        </a>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving and mirrored glass on nearby buildings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V19: Hero overlay -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 19: Hero Overlay</h2>
+      <span>Content over map</span>
+    </div>
+    <div class="variation-content v19" style="padding: 0;">
+      <div class="hero-map">
+        <div class="map-placeholder"></div>
+        <div class="hero-overlay">
+          <a href="#" class="overlay-link">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            Open full map
+          </a>
+        </div>
+      </div>
+      <div class="content-below" style="padding: 0 20px 20px;">
+        <div class="section-header">
+          <div class="toggle-circle">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="section-info">
+            <h3 class="section-title">Entry/Exit Festival Drive</h3>
+            <div class="badges">
+              <span class="badge">Light</span>
+            </div>
+          </div>
+          <div class="level-badge">
+            <span class="level-dot"></span>
+            HIGH
+          </div>
+        </div>
+        <div class="sensory-details">
+          <div class="detail-item">
+            <p class="detail-category">Light</p>
+            <p class="detail-text">Very bright sun reflects strongly from light-coloured paving.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V20: Minimal inline -->
+  <div class="variation">
+    <div class="variation-header">
+      <h2>Variation 20: Compact Inline</h2>
+      <span>Small map with description</span>
+    </div>
+    <div class="variation-content v20">
+      <div class="section-header">
+        <div class="toggle-circle">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="section-info">
+          <div class="title-with-indicator">
+            <h3 class="section-title">Entry/Exit Festival Drive</h3>
+            <span class="map-indicator" title="Has interactive map"></span>
+          </div>
+          <div class="badges">
+            <span class="badge">Light</span>
+          </div>
+        </div>
+        <div class="level-badge">
+          <span class="level-dot"></span>
+          HIGH
+        </div>
+      </div>
+
+      <div class="map-inline-small">
+        <div class="map-placeholder"></div>
+        <div class="map-info">
+          <p class="map-title">Interactive Map</p>
+          <p class="map-desc">See this area highlighted on the venue map</p>
+          <a href="#" class="link-text">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            Open map
+          </a>
+        </div>
+      </div>
+
+      <div class="sensory-details">
+        <div class="detail-item">
+          <p class="detail-category">Light</p>
+          <p class="detail-text">Very bright sun reflects strongly from light-coloured paving.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
