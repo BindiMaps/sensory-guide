@@ -16,8 +16,8 @@ vi.mock('@/lib/firebase', () => ({
 
 describe('useEmbeddings', () => {
   const mockEmbeddings = {
-    'entry-hall': 'https://bindiweb.com/map/venue123',
-    'main-concourse': 'https://www.youtube.com/embed/abc123',
+    'entry-hall': ['https://bindiweb.com/map/venue123'],
+    'main-concourse': ['https://www.youtube.com/embed/abc123'],
   }
 
   beforeEach(() => {
@@ -92,7 +92,7 @@ describe('useEmbeddings', () => {
     })
 
     const newEmbeddings = {
-      'entry-hall': 'https://bindiweb.com/map/updated',
+      'entry-hall': ['https://bindiweb.com/map/updated'],
     }
 
     await act(async () => {
@@ -117,7 +117,7 @@ describe('useEmbeddings', () => {
       callCount++
       return Promise.resolve({
         exists: () => true,
-        data: () => callCount === 1 ? mockEmbeddings : { 'entry-hall': 'https://updated.com' },
+        data: () => callCount === 1 ? mockEmbeddings : { 'entry-hall': ['https://updated.com'] },
       })
     })
     ;(setDoc as Mock).mockResolvedValue(undefined)
@@ -129,11 +129,11 @@ describe('useEmbeddings', () => {
     })
 
     await act(async () => {
-      await result.current.saveEmbeddings({ 'entry-hall': 'https://updated.com' })
+      await result.current.saveEmbeddings({ 'entry-hall': ['https://updated.com'] })
     })
 
     await waitFor(() => {
-      expect(result.current.embeddings).toEqual({ 'entry-hall': 'https://updated.com' })
+      expect(result.current.embeddings).toEqual({ 'entry-hall': ['https://updated.com'] })
     })
   })
 })

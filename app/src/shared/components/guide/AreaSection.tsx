@@ -19,6 +19,20 @@ interface AreaSectionProps {
 const getInitialReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+// Normalise embedUrls - handles both old (embedUrl: string) and new (embedUrls: string[]) formats
+function getEmbedUrls(area: Area): string[] {
+  // New format
+  if (Array.isArray(area.embedUrls) && area.embedUrls.length > 0) {
+    return area.embedUrls
+  }
+  // Old format (runtime data from published guides)
+  const legacy = (area as unknown as { embedUrl?: string }).embedUrl
+  if (legacy && typeof legacy === 'string') {
+    return [legacy]
+  }
+  return []
+}
+
 /**
  * Collapsible section for a venue area - Design System v5
  * Shows preview summary when collapsed for guide-like experience
@@ -27,6 +41,9 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
   // Use Zustand for persistence if venueSlug provided, controlled props if given, otherwise local state
   const store = useGuideStore()
   const [localExpanded, setLocalExpanded] = useState(false)
+
+  // Normalise embed URLs (handles legacy embedUrl string format)
+  const embedUrls = getEmbedUrls(area)
 
   // Priority: venueSlug (store) > controlled props > local state
   const isExpanded = venueSlug
@@ -133,13 +150,13 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
             {area.badges.map((badge) => (
               <CategoryBadge key={badge} category={badge} />
             ))}
-            {/* Embed indicator - shows when collapsed and embed exists */}
-            {!isExpanded && area.embedUrl && (
+            {/* Embed indicator - shows when collapsed and embeds exist */}
+            {!isExpanded && embedUrls && embedUrls.length > 0 && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium text-[#264854] bg-[#E3ECF0] rounded-sm">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
-                Has map
+                {embedUrls.length === 1 ? 'Has map' : `${embedUrls.length} maps`}
               </span>
             )}
           </span>
@@ -158,17 +175,17 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
         tabIndex={isExpanded ? 0 : -1}
         className="pb-5 pl-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 rounded-sm"
       >
-        {/* Media carousel - fixed height, embed square, images scale to fit */}
-        {(area.embedUrl || (area.images && area.images.length > 0)) && (
-          <div className="mb-4">
+        {/* Media carousel - fixed height, embeds square, images scale to fit */}
+        {((embedUrls && embedUrls.length > 0) || (area.images && area.images.length > 0)) && (
+          <div className="mb-4 overflow-hidden">
             <div className="flex gap-3 overflow-x-auto pb-2 h-72">
-              {/* Embed - square */}
-              {area.embedUrl && (
-                <div className="flex-shrink-0 h-full aspect-square">
+              {/* Embeds - square */}
+              {embedUrls && embedUrls.map((embedUrl, index) => (
+                <div key={`embed-${index}`} className="flex-shrink-0 h-full aspect-square">
                   <div className="w-full h-full rounded-sm border border-[#E8E8E5] overflow-hidden">
                     <iframe
-                      src={area.embedUrl}
-                      title={`Map for ${area.name}`}
+                      src={embedUrl}
+                      title={`Map ${index + 1} for ${area.name}`}
                       className="w-full h-full border-0"
                       loading="lazy"
                       sandbox="allow-scripts allow-same-origin allow-popups"
@@ -176,7 +193,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
                     />
                   </div>
                 </div>
-              )}
+              ))}
 
               {/* Images - scale height to container, width auto */}
               {area.images && area.images.length > 0 && area.images.map((imageUrl, index) => (
@@ -190,19 +207,24 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
               ))}
             </div>
 
-            {/* Map link below carousel */}
-            {area.embedUrl && (
-              <a
-                href={area.embedUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-[#595959] hover:text-[#B8510D] mt-1"
-              >
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-                Open in new tab
-              </a>
+            {/* Map links below carousel */}
+            {embedUrls && embedUrls.length > 0 && (
+              <div className="flex flex-wrap gap-3 mt-1">
+                {embedUrls.map((embedUrl, index) => (
+                  <a
+                    key={index}
+                    href={embedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-[#595959] hover:text-[#B8510D]"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    {embedUrls.length === 1 ? 'Open in new tab' : `Open map ${index + 1}`}
+                  </a>
+                ))}
+              </div>
             )}
           </div>
         )}

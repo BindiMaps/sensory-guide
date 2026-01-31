@@ -222,21 +222,21 @@ describe('areaSchema', () => {
     expect(areaSchema.safeParse(noName).success).toBe(false)
   })
 
-  it('accepts optional embedUrl with valid URL', () => {
+  it('accepts embedUrls with valid URLs', () => {
     const area = {
       id: 'entry',
       name: 'Entry Hall',
       order: 0,
-      embedUrl: 'https://bindiweb.com/map/venue123',
+      embedUrls: ['https://bindiweb.com/map/venue123', 'https://youtube.com/embed/abc'],
     }
     const result = areaSchema.safeParse(area)
     expect(result.success).toBe(true)
     if (result.success) {
-      expect(result.data.embedUrl).toBe('https://bindiweb.com/map/venue123')
+      expect(result.data.embedUrls).toEqual(['https://bindiweb.com/map/venue123', 'https://youtube.com/embed/abc'])
     }
   })
 
-  it('allows area without embedUrl', () => {
+  it('defaults embedUrls to empty array', () => {
     const area = {
       id: 'entry',
       name: 'Entry Hall',
@@ -245,16 +245,16 @@ describe('areaSchema', () => {
     const result = areaSchema.safeParse(area)
     expect(result.success).toBe(true)
     if (result.success) {
-      expect(result.data.embedUrl).toBeUndefined()
+      expect(result.data.embedUrls).toEqual([])
     }
   })
 
-  it('rejects invalid embedUrl', () => {
+  it('rejects invalid embedUrls', () => {
     const area = {
       id: 'entry',
       name: 'Entry Hall',
       order: 0,
-      embedUrl: 'not-a-valid-url',
+      embedUrls: ['not-a-valid-url'],
     }
     const result = areaSchema.safeParse(area)
     expect(result.success).toBe(false)

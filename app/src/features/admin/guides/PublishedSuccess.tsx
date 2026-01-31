@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { CheckCircle, Copy, ExternalLink, Upload, Link, Loader2 } from 'lucide-react'
 import type { Area } from '@/lib/schemas/guideSchema'
 import { EmbedEditor } from './EmbedEditor'
-import { useEmbeddings } from './useEmbeddings'
+import { useEmbeddings, type Embeddings } from './useEmbeddings'
 import { useRepublishEmbeddings } from './useRepublishEmbeddings'
 
 interface PublishedSuccessProps {
@@ -37,7 +37,7 @@ export function PublishedSuccess({
   const { embeddings, saveEmbeddings, refetch: refetchEmbeddings } = useEmbeddings(venueId)
   const { republish, isRepublishing, error: republishError } = useRepublishEmbeddings()
 
-  const handleSaveEmbeddings = async (newEmbeddings: Record<string, string>) => {
+  const handleSaveEmbeddings = async (newEmbeddings: Embeddings) => {
     setIsSavingEmbeddings(true)
     try {
       await saveEmbeddings(newEmbeddings)

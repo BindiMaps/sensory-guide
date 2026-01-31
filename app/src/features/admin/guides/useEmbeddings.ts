@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 
-export type Embeddings = Record<string, string>
+export type Embeddings = Record<string, string[]>
 
 interface UseEmbeddingsResult {
   embeddings: Embeddings

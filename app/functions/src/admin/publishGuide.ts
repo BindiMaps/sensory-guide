@@ -98,7 +98,7 @@ export const publishGuide = onCall<PublishGuideRequest>(
       const embeddingsSnap = await embeddingsRef.get()
 
       if (embeddingsSnap.exists) {
-        const embeddings = embeddingsSnap.data() as Record<string, string>
+        const embeddings = embeddingsSnap.data() as Record<string, string[]>
         const guideAreaIds = new Set(guide.areas.map((a) => a.id))
 
         // Check for orphaned embeddings (section IDs that no longer exist in guide)
@@ -114,7 +114,7 @@ export const publishGuide = onCall<PublishGuideRequest>(
           ...guide,
           areas: guide.areas.map((area) => ({
             ...area,
-            embedUrl: embeddings[area.id] || area.embedUrl,
+            embedUrls: embeddings[area.id] || area.embedUrls || [],
           })),
         }
       }

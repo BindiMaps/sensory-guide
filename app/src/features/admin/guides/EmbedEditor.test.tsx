@@ -58,7 +58,7 @@ describe('EmbedEditor', () => {
   ]
 
   const mockEmbeddings = {
-    'entry-hall': 'https://bindiweb.com/map/venue123',
+    'entry-hall': ['https://bindiweb.com/map/venue123'],
   }
 
   const defaultProps = {
@@ -81,7 +81,7 @@ describe('EmbedEditor', () => {
   it('shows existing embeddings in input fields', () => {
     render(<EmbedEditor {...defaultProps} />)
 
-    const entryInput = screen.getByLabelText('Entry Hall embed URL')
+    const entryInput = screen.getByLabelText('Entry Hall embed URL 1')
     expect(entryInput).toHaveValue('https://bindiweb.com/map/venue123')
   })
 
@@ -89,7 +89,7 @@ describe('EmbedEditor', () => {
     const user = userEvent.setup()
     render(<EmbedEditor {...defaultProps} />)
 
-    const concourseInput = screen.getByLabelText('Main Concourse embed URL')
+    const concourseInput = screen.getByLabelText('Main Concourse embed URL 1')
     await user.type(concourseInput, 'not-a-valid-url')
     await user.tab() // blur
 
@@ -102,7 +102,7 @@ describe('EmbedEditor', () => {
     const user = userEvent.setup()
     render(<EmbedEditor {...defaultProps} />)
 
-    const concourseInput = screen.getByLabelText('Main Concourse embed URL')
+    const concourseInput = screen.getByLabelText('Main Concourse embed URL 1')
     await user.type(concourseInput, 'https://www.youtube.com/embed/abc123')
     await user.tab()
 
@@ -115,7 +115,7 @@ describe('EmbedEditor', () => {
     const user = userEvent.setup()
     render(<EmbedEditor {...defaultProps} />)
 
-    const concourseInput = screen.getByLabelText('Main Concourse embed URL')
+    const concourseInput = screen.getByLabelText('Main Concourse embed URL 1')
     await user.type(concourseInput, 'https://random-site.com/page')
     await user.tab()
 
@@ -129,15 +129,15 @@ describe('EmbedEditor', () => {
     const onSave = vi.fn()
     render(<EmbedEditor {...defaultProps} onSave={onSave} />)
 
-    const concourseInput = screen.getByLabelText('Main Concourse embed URL')
+    const concourseInput = screen.getByLabelText('Main Concourse embed URL 1')
     await user.type(concourseInput, 'https://www.youtube.com/embed/xyz789')
 
     const saveButton = screen.getByRole('button', { name: /save/i })
     await user.click(saveButton)
 
     expect(onSave).toHaveBeenCalledWith({
-      'entry-hall': 'https://bindiweb.com/map/venue123',
-      'main-concourse': 'https://www.youtube.com/embed/xyz789',
+      'entry-hall': ['https://bindiweb.com/map/venue123'],
+      'main-concourse': ['https://www.youtube.com/embed/xyz789'],
     })
   })
 
@@ -147,7 +147,7 @@ describe('EmbedEditor', () => {
     render(<EmbedEditor {...defaultProps} onSave={onSave} />)
 
     // Clear the existing entry-hall URL
-    const entryInput = screen.getByLabelText('Entry Hall embed URL')
+    const entryInput = screen.getByLabelText('Entry Hall embed URL 1')
     await user.clear(entryInput)
 
     const saveButton = screen.getByRole('button', { name: /save/i })
@@ -179,7 +179,7 @@ describe('EmbedEditor', () => {
     const onSave = vi.fn()
     render(<EmbedEditor {...defaultProps} onSave={onSave} />)
 
-    const concourseInput = screen.getByLabelText('Main Concourse embed URL')
+    const concourseInput = screen.getByLabelText('Main Concourse embed URL 1')
     await user.type(concourseInput, 'not-valid')
     await user.tab()
 

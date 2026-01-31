@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Plus, X } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -64,17 +64,16 @@ interface EmbedEditorProps {
   isSaving: boolean
 }
 
-interface FieldState {
+interface UrlFieldState {
   value: string
   error: string | null
-  touched: boolean
 }
 
-type FormState = Record<string, FieldState>
+type FormState = Record<string, UrlFieldState[]>
 
 /**
  * Modal for editing embed URLs for venue sections.
- * Shows an input field for each area in the guide.
+ * Supports multiple URLs per section.
  */
 export function EmbedEditor({
   open,
@@ -91,44 +90,61 @@ export function EmbedEditor({
     if (open) {
       const initial: FormState = {}
       for (const area of areas) {
-        initial[area.id] = {
-          value: embeddings[area.id] || '',
-          error: null,
-          touched: false,
-        }
+        const urls = embeddings[area.id] || []
+        initial[area.id] = urls.length > 0
+          ? urls.map((url) => ({ value: url, error: null }))
+          : [{ value: '', error: null }] // Always show at least one empty input
       }
       setFormState(initial)
     }
   }, [open, areas, embeddings])
 
-  const handleChange = useCallback((areaId: string, value: string) => {
-    setFormState((prev) => ({
-      ...prev,
-      [areaId]: {
-        value,
-        error: null, // Clear error on change
-        touched: true,
-      },
-    }))
-  }, [])
-
-  const handleBlur = useCallback((areaId: string) => {
+  const handleChange = useCallback((areaId: string, index: number, value: string) => {
     setFormState((prev) => {
-      const field = prev[areaId]
-      if (!field) return prev
-
-      const validation = isEmbeddableUrl(field.value)
-      return {
-        ...prev,
-        [areaId]: {
-          ...field,
-          error: validation.valid ? null : validation.error || 'Invalid URL',
-        },
-      }
+      const fields = [...(prev[areaId] || [])]
+      fields[index] = { value, error: null }
+      return { ...prev, [areaId]: fields }
     })
   }, [])
 
-  const hasErrors = Object.values(formState).some((field) => field.error !== null)
+  const handleBlur = useCallback((areaId: string, index: number) => {
+    setFormState((prev) => {
+      const fields = [...(prev[areaId] || [])]
+      const field = fields[index]
+      if (!field) return prev
+
+      const validation = isEmbeddableUrl(field.value)
+      fields[index] = {
+        ...field,
+        error: validation.valid ? null : validation.error || 'Invalid URL',
+      }
+      return { ...prev, [areaId]: fields }
+    })
+  }, [])
+
+  const handleAddUrl = useCallback((areaId: string) => {
+    setFormState((prev) => {
+      const fields = [...(prev[areaId] || [])]
+      fields.push({ value: '', error: null })
+      return { ...prev, [areaId]: fields }
+    })
+  }, [])
+
+  const handleRemoveUrl = useCallback((areaId: string, index: number) => {
+    setFormState((prev) => {
+      const fields = [...(prev[areaId] || [])]
+      fields.splice(index, 1)
+      // Keep at least one empty input
+      if (fields.length === 0) {
+        fields.push({ value: '', error: null })
+      }
+      return { ...prev, [areaId]: fields }
+    })
+  }, [])
+
+  const hasErrors = Object.values(formState).some((fields) =>
+    fields.some((field) => field.error !== null)
+  )
 
   const handleSave = () => {
     // Validate all fields
@@ -136,14 +152,14 @@ export function EmbedEditor({
     const newState = { ...formState }
 
     for (const areaId of Object.keys(newState)) {
-      const validation = isEmbeddableUrl(newState[areaId].value)
-      if (!validation.valid) {
-        newState[areaId] = {
-          ...newState[areaId],
-          error: validation.error || 'Invalid URL',
+      newState[areaId] = newState[areaId].map((field) => {
+        const validation = isEmbeddableUrl(field.value)
+        if (!validation.valid) {
+          hasValidationErrors = true
+          return { ...field, error: validation.error || 'Invalid URL' }
         }
-        hasValidationErrors = true
-      }
+        return field
+      })
     }
 
     if (hasValidationErrors) {
@@ -154,9 +170,11 @@ export function EmbedEditor({
     // Build embeddings object, excluding empty values
     const result: Embeddings = {}
     for (const areaId of Object.keys(formState)) {
-      const value = formState[areaId].value.trim()
-      if (value) {
-        result[areaId] = value
+      const urls = formState[areaId]
+        .map((f) => f.value.trim())
+        .filter((url) => url.length > 0)
+      if (urls.length > 0) {
+        result[areaId] = urls
       }
     }
 
@@ -180,38 +198,55 @@ export function EmbedEditor({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-6 py-4">
           {areas.map((area) => {
-            const field = formState[area.id] || { value: '', error: null, touched: false }
+            const fields = formState[area.id] || [{ value: '', error: null }]
             return (
-              <div key={area.id} className="space-y-1">
-                <label
-                  htmlFor={`embed-${area.id}`}
-                  className="block text-sm font-medium text-gray-700"
-                >
+              <div key={area.id} className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
                   {area.name}
                 </label>
-                <input
-                  id={`embed-${area.id}`}
-                  type="url"
-                  value={field.value}
-                  onChange={(e) => handleChange(area.id, e.target.value)}
-                  onBlur={() => handleBlur(area.id)}
-                  placeholder="Paste embed URL (BindiWeb, YouTube, etc.)"
-                  aria-label={`${area.name} embed URL`}
-                  aria-invalid={field.error ? 'true' : 'false'}
-                  aria-describedby={field.error ? `error-${area.id}` : undefined}
-                  className={`w-full px-3 py-2 text-sm border rounded-sm focus:outline-none focus:ring-2 focus:ring-[#B8510D] focus:border-transparent ${
-                    field.error
-                      ? 'border-red-500 focus:ring-red-500'
-                      : 'border-[#DDDDD9]'
-                  }`}
-                />
-                {field.error && (
-                  <p id={`error-${area.id}`} className="text-xs text-red-600" role="alert">
-                    {field.error}
-                  </p>
-                )}
+                {fields.map((field, index) => (
+                  <div key={index} className="flex gap-2 items-start">
+                    <div className="flex-1">
+                      <input
+                        type="url"
+                        value={field.value}
+                        onChange={(e) => handleChange(area.id, index, e.target.value)}
+                        onBlur={() => handleBlur(area.id, index)}
+                        placeholder="Paste embed URL (BindiWeb, YouTube, etc.)"
+                        aria-label={`${area.name} embed URL ${index + 1}`}
+                        aria-invalid={field.error ? 'true' : 'false'}
+                        className={`w-full px-3 py-2 text-sm border rounded-sm focus:outline-none focus:ring-2 focus:ring-[#B8510D] focus:border-transparent ${
+                          field.error
+                            ? 'border-red-500 focus:ring-red-500'
+                            : 'border-[#DDDDD9]'
+                        }`}
+                      />
+                      {field.error && (
+                        <p className="text-xs text-red-600 mt-1" role="alert">
+                          {field.error}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveUrl(area.id, index)}
+                      className="p-2 text-gray-400 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-sm"
+                      aria-label={`Remove URL ${index + 1} from ${area.name}`}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => handleAddUrl(area.id)}
+                  className="inline-flex items-center gap-1 text-sm text-[#B8510D] hover:text-[#9A4410] focus:outline-none focus:ring-2 focus:ring-[#B8510D] rounded-sm px-1"
+                >
+                  <Plus className="h-3 w-3" />
+                  Add another URL
+                </button>
               </div>
             )
           })}

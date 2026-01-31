@@ -8,7 +8,7 @@ import { useEmbeddings, type Embeddings } from './useEmbeddings'
 
 /**
  * Merge embeddings into guide areas.
- * Creates a new guide object with embedUrl fields populated.
+ * Creates a new guide object with embedUrls fields populated.
  */
 function mergeEmbeddingsIntoGuide(guide: Guide, embeddings: Embeddings): Guide {
   if (Object.keys(embeddings).length === 0) {
@@ -19,7 +19,7 @@ function mergeEmbeddingsIntoGuide(guide: Guide, embeddings: Embeddings): Guide {
     ...guide,
     areas: guide.areas.map((area) => ({
       ...area,
-      embedUrl: embeddings[area.id] || area.embedUrl,
+      embedUrls: embeddings[area.id] || area.embedUrls || [],
     })),
   }
 }
@@ -64,7 +64,7 @@ export function GuidePreview({
   // Check if guide has any images to edit
   const hasImages = guide.areas.some((area) => area.images && area.images.length > 0)
 
-  const handleSaveEmbeds = async (newEmbeddings: Record<string, string>) => {
+  const handleSaveEmbeds = async (newEmbeddings: Embeddings) => {
     setIsSavingEmbeds(true)
     try {
       await saveEmbeddings(newEmbeddings)

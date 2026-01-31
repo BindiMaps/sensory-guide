@@ -30,8 +30,8 @@ export const areaSchema = z.object({
   details: z.array(sensoryDetailSchema).default([]),
   // Section-level images extracted from PDF (public URLs)
   images: z.array(z.string().url()).default([]),
-  // Embed URL for maps, videos, etc. (persisted separately in Firestore, merged at runtime)
-  embedUrl: z.string().url().optional(),
+  // Embed URLs for maps, videos, etc. (persisted separately in Firestore, merged at runtime)
+  embedUrls: z.array(z.string().url()).default([]),
 })
 export type Area = z.infer<typeof areaSchema>
 
@@ -63,7 +63,8 @@ export const venueOverviewSchema = z.object({
   contact: z.string().optional(),
   summary: z.string().min(1, 'Summary is required'),
   // Optional - only if source document has an explicit update date
-  lastUpdated: z.string().optional(),
+  // LLM may return null, so we coerce null to undefined
+  lastUpdated: z.string().nullish().transform((v) => v ?? undefined),
 })
 export type VenueOverview = z.infer<typeof venueOverviewSchema>
 

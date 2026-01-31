@@ -31,7 +31,7 @@ const mockAreaWithSummary: Area = {
 
 const mockAreaWithEmbed: Area = {
   ...mockArea,
-  embedUrl: 'https://bindiweb.com/map/venue123',
+  embedUrls: ['https://bindiweb.com/map/venue123'],
 }
 
 describe('AreaSection', () => {
@@ -167,26 +167,26 @@ describe('AreaSection', () => {
     })
   })
 
-  describe('embedUrl', () => {
-    it('shows "Has map" indicator when collapsed and embedUrl exists', () => {
+  describe('embedUrls', () => {
+    it('shows "Has map" indicator when collapsed and embedUrls exists', () => {
       render(<AreaSection area={mockAreaWithEmbed} />)
       expect(screen.getByText('Has map')).toBeInTheDocument()
     })
 
-    it('does not show indicator when no embedUrl', () => {
+    it('does not show indicator when no embedUrls', () => {
       render(<AreaSection area={mockArea} />)
       expect(screen.queryByText('Has map')).not.toBeInTheDocument()
     })
 
-    it('renders iframe when expanded and embedUrl exists', async () => {
+    it('renders iframe when expanded and embedUrls exists', async () => {
       const user = userEvent.setup()
       render(<AreaSection area={mockAreaWithEmbed} />)
 
       await user.click(screen.getByRole('button'))
 
-      const iframe = screen.getByTitle(`Map for ${mockAreaWithEmbed.name}`)
+      const iframe = screen.getByTitle(`Map 1 for ${mockAreaWithEmbed.name}`)
       expect(iframe).toBeInTheDocument()
-      expect(iframe).toHaveAttribute('src', mockAreaWithEmbed.embedUrl)
+      expect(iframe).toHaveAttribute('src', mockAreaWithEmbed.embedUrls[0])
     })
 
     it('includes accessible title on iframe', async () => {
@@ -195,7 +195,7 @@ describe('AreaSection', () => {
 
       await user.click(screen.getByRole('button'))
 
-      const iframe = screen.getByTitle('Map for Entry Hall')
+      const iframe = screen.getByTitle('Map 1 for Entry Hall')
       expect(iframe).toBeInTheDocument()
     })
 
@@ -206,7 +206,7 @@ describe('AreaSection', () => {
       await user.click(screen.getByRole('button'))
 
       const fallbackLink = screen.getByRole('link', { name: /open in new tab/i })
-      expect(fallbackLink).toHaveAttribute('href', mockAreaWithEmbed.embedUrl)
+      expect(fallbackLink).toHaveAttribute('href', mockAreaWithEmbed.embedUrls[0])
       expect(fallbackLink).toHaveAttribute('target', '_blank')
     })
   })
