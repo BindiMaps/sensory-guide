@@ -62,19 +62,20 @@ development_status:
   epic-2-retrospective: optional
 
   # Epic 3: Guide Creation & Publishing
-  epic-3: done
+  epic-3: in-progress  # Re-opened for image extraction
   3-1-pdf-upload-to-cloud-storage: done
   3-2-llm-transformation-pipeline: done
   3-3-guide-preview-interface: done
   3-4-publish-guide: done
   3-5-content-suggestions-display: done
+  3-6-pdf-image-extraction: backlog  # NEW: Extract images from PDF for guide display
   epic-3-retrospective: optional
 
   # Epic 4: Public Guide Experience
   epic-4: in-progress
   4-1-public-guide-page-layout: done
   4-2-progressive-disclosure-sections: done
-  4-3-images-and-facilities: backlog
+  4-3-images-and-facilities: ready-for-dev
   4-4-accessibility-compliance: backlog
   4-5-landing-page: backlog
   epic-4-retrospective: optional
