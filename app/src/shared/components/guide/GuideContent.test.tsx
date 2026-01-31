@@ -60,6 +60,33 @@ const mockGuideWithPhoneAndEmail: Guide = {
   },
 }
 
+const mockGuideWithMultipleAreas: Guide = {
+  ...mockGuide,
+  areas: [
+    {
+      id: 'entry',
+      name: 'Main Entry',
+      order: 0,
+      badges: ['Sound'],
+      details: [{ category: 'Sound', level: 'medium', description: 'Moderate noise.' }],
+    },
+    {
+      id: 'concourse',
+      name: 'Main Concourse',
+      order: 1,
+      badges: ['Light', 'Crowds'],
+      details: [{ category: 'Light', level: 'high', description: 'Bright lighting.' }],
+    },
+    {
+      id: 'platforms',
+      name: 'Platforms',
+      order: 2,
+      badges: ['Sound'],
+      details: [{ category: 'Sound', level: 'high', description: 'Train announcements.' }],
+    },
+  ],
+}
+
 describe('GuideContent', () => {
   beforeEach(() => {
     // Mock matchMedia for reduced motion
@@ -168,6 +195,82 @@ describe('GuideContent', () => {
     it('renders area sections', () => {
       render(<GuideContent guide={mockGuide} />)
       expect(screen.getByText('Main Entry')).toBeInTheDocument()
+    })
+  })
+
+  describe('expand/collapse all', () => {
+    beforeEach(() => {
+      // Reset store state before each test
+      useGuideStore.setState({ expandedSections: {} })
+    })
+
+    it('does not render button when no venueSlug provided', () => {
+      render(<GuideContent guide={mockGuideWithMultipleAreas} />)
+      expect(screen.queryByRole('button', { name: /expand all/i })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /collapse all/i })).not.toBeInTheDocument()
+    })
+
+    it('does not render button when only one area', () => {
+      render(<GuideContent guide={mockGuide} venueSlug="test-venue" />)
+      expect(screen.queryByRole('button', { name: /expand all/i })).not.toBeInTheDocument()
+    })
+
+    it('renders "Expand all" button when venueSlug provided and multiple areas', () => {
+      render(<GuideContent guide={mockGuideWithMultipleAreas} venueSlug="test-venue" />)
+      expect(screen.getByRole('button', { name: /expand all sections/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /expand all sections/i })).toHaveTextContent('Expand all')
+    })
+
+    it('expands all sections when Expand all clicked', async () => {
+      const user = userEvent.setup()
+      render(<GuideContent guide={mockGuideWithMultipleAreas} venueSlug="test-venue" />)
+
+      const button = screen.getByRole('button', { name: /expand all sections/i })
+      await user.click(button)
+
+      // Button should now say Collapse all
+      expect(screen.getByRole('button', { name: /collapse all sections/i })).toHaveTextContent('Collapse all')
+
+      // Verify store state
+      const state = useGuideStore.getState()
+      expect(state.expandedSections['test-venue:entry']).toBe(true)
+      expect(state.expandedSections['test-venue:concourse']).toBe(true)
+      expect(state.expandedSections['test-venue:platforms']).toBe(true)
+    })
+
+    it('collapses all sections when Collapse all clicked', async () => {
+      const user = userEvent.setup()
+
+      // Pre-expand all sections
+      useGuideStore.setState({
+        expandedSections: {
+          'test-venue:entry': true,
+          'test-venue:concourse': true,
+          'test-venue:platforms': true,
+        },
+      })
+
+      render(<GuideContent guide={mockGuideWithMultipleAreas} venueSlug="test-venue" />)
+
+      const button = screen.getByRole('button', { name: /collapse all sections/i })
+      expect(button).toHaveTextContent('Collapse all')
+
+      await user.click(button)
+
+      // Button should now say Expand all
+      expect(screen.getByRole('button', { name: /expand all sections/i })).toHaveTextContent('Expand all')
+
+      // Verify store state - all venue sections removed
+      const state = useGuideStore.getState()
+      expect(state.expandedSections['test-venue:entry']).toBeUndefined()
+      expect(state.expandedSections['test-venue:concourse']).toBeUndefined()
+      expect(state.expandedSections['test-venue:platforms']).toBeUndefined()
+    })
+
+    it('has accessible aria-label on button', () => {
+      render(<GuideContent guide={mockGuideWithMultipleAreas} venueSlug="test-venue" />)
+      const button = screen.getByRole('button', { name: /expand all sections/i })
+      expect(button).toHaveAttribute('aria-label', 'Expand all sections')
     })
   })
 })

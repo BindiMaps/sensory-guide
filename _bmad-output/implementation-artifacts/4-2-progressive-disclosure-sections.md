@@ -1,6 +1,6 @@
 # Story 4.2: Progressive Disclosure Sections
 
-Status: ready-for-dev
+Status: done
 
 ---
 
@@ -31,11 +31,11 @@ So that **I'm not overwhelmed with information**.
 **Design System Reference**: `_bmad-output/planning-artifacts/design-system-v5.md`
 
 **Design Checklist** (for UI stories):
-- [ ] All colours match design system tokens exactly
-- [ ] Typography (font, size, weight) matches design system
-- [ ] Component patterns (badges, toggles, cards) match reference implementation
-- [ ] Spacing and layout match design system specifications
-- [ ] Accessibility requirements (contrast, touch targets) verified
+- [x] All colours match design system tokens exactly
+- [x] Typography (font, size, weight) matches design system
+- [x] Component patterns (badges, toggles, cards) match reference implementation
+- [x] Spacing and layout match design system specifications
+- [x] Accessibility requirements (contrast, touch targets) verified
 
 ---
 
@@ -66,29 +66,29 @@ So that **I'm not overwhelmed with information**.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1: Add expandAll/collapseAll to guideStore** (AC: #3)
-  - [ ] Add `expandAll(venueSlug: string, areaIds: string[])` action
-  - [ ] Add `collapseAll(venueSlug: string)` action
-  - [ ] Add `areAllExpanded(venueSlug: string, areaIds: string[])` selector
+- [x] **Task 1: Add expandAll/collapseAll to guideStore** (AC: #3)
+  - [x] Add `expandAll(venueSlug: string, areaIds: string[])` action
+  - [x] Add `collapseAll(venueSlug: string)` action
+  - [x] Add `areAllExpanded(venueSlug: string, areaIds: string[])` selector
 
-- [ ] **Task 2: Add Expand/Collapse All button to GuideContent** (AC: #3)
-  - [ ] Add button above areas section in `GuideContent.tsx`
-  - [ ] Button text toggles: "Expand all" ↔ "Collapse all"
-  - [ ] Pass area IDs to store actions
-  - [ ] Style per v5: text button with terracotta accent on hover
-  - [ ] Position: right-aligned above first section
+- [x] **Task 2: Add Expand/Collapse All button to GuideContent** (AC: #3)
+  - [x] Add button above areas section in `GuideContent.tsx`
+  - [x] Button text toggles: "Expand all" ↔ "Collapse all"
+  - [x] Pass area IDs to store actions
+  - [x] Style per v5: text button with terracotta accent on hover
+  - [x] Position: right-aligned above first section
 
-- [ ] **Task 3: Accessibility for toggle button** (AC: #3, #4)
-  - [ ] Add `aria-label` describing current action
-  - [ ] Ensure keyboard accessible (already button element)
-  - [ ] Respect reduced motion (button itself has no animation)
+- [x] **Task 3: Accessibility for toggle button** (AC: #3, #4)
+  - [x] Add `aria-label` describing current action
+  - [x] Ensure keyboard accessible (already button element)
+  - [x] Respect reduced motion (button itself has no animation)
 
-- [ ] **Task 4: Update/add tests** (AC: all)
-  - [ ] Test `expandAll` sets all specified sections to expanded
-  - [ ] Test `collapseAll` sets all sections to collapsed
-  - [ ] Test `areAllExpanded` returns correct boolean
-  - [ ] Test button toggles label based on state
-  - [ ] Test button triggers correct store action
+- [x] **Task 4: Update/add tests** (AC: all)
+  - [x] Test `expandAll` sets all specified sections to expanded
+  - [x] Test `collapseAll` sets all sections to collapsed
+  - [x] Test `areAllExpanded` returns correct boolean
+  - [x] Test button toggles label based on state
+  - [x] Test button triggers correct store action
 
 ---
 
@@ -201,16 +201,39 @@ const allExpanded = venueSlug
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
 
+N/A
+
 ### Completion Notes List
 
+- Added `expandAll`, `collapseAll`, and `areAllExpanded` actions to guideStore
+- Added "Expand all" / "Collapse all" toggle button to GuideContent
+- Button only appears when venueSlug provided AND multiple areas exist
+- Button styled per v5 design: text-sm, muted text with terracotta hover
+- Full accessibility: aria-label, keyboard accessible, focus ring
+- Added 13 unit tests for guideStore actions
+- Added 6 integration tests for expand/collapse button in GuideContent
+- All 202 tests pass, lint clean, build successful
+
 ### File List
+
+**Modified:**
+- `app/src/stores/guideStore.ts` - Added expandAll, collapseAll, areAllExpanded actions
+- `app/src/shared/components/guide/GuideContent.tsx` - Added expand/collapse all button
+
+**Created:**
+- `app/src/stores/guideStore.test.ts` - 13 unit tests for store actions
+
+**Updated Tests:**
+- `app/src/shared/components/guide/GuideContent.test.tsx` - Added 6 tests for expand/collapse all
 
 ---
 
 ## Change Log
 
 - 2026-01-31: Story created - 90% already implemented, only Expand All button missing
+- 2026-01-31: Implementation complete - expand/collapse all button added with full test coverage
+- 2026-01-31: Manual testing passed - story done
