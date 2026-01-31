@@ -49,7 +49,7 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: Admin Authentication & Venue Sharing (+ Version Management)
-  epic-2: in-progress
+  epic-2: done
   2-1-firebase-auth-integration: done
   2-2-admin-dashboard-your-venues-list: done
   2-3-create-new-venue: done
@@ -62,12 +62,12 @@ development_status:
   epic-2-retrospective: optional
 
   # Epic 3: Guide Creation & Publishing
-  epic-3: in-progress
+  epic-3: done
   3-1-pdf-upload-to-cloud-storage: done
   3-2-llm-transformation-pipeline: done
   3-3-guide-preview-interface: done
   3-4-publish-guide: done
-  3-5-content-suggestions-display: backlog
+  3-5-content-suggestions-display: done
   epic-3-retrospective: optional
 
   # Epic 4: Public Guide Experience

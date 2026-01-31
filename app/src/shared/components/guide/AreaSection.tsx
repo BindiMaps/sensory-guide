@@ -137,7 +137,8 @@ export function AreaSection({ area, venueSlug }: AreaSectionProps) {
       <div
         id={panelId}
         hidden={!isExpanded}
-        className="pb-5 pl-10"
+        tabIndex={isExpanded ? 0 : -1}
+        className="pb-5 pl-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 rounded-sm"
       >
         {area.details.length > 0 ? (
           <div className="space-y-4">
