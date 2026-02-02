@@ -20,7 +20,7 @@ export const AnalyticsEvent = {
   GUIDE_PDF_DOWNLOAD: 'guide_pdf_download',
   GUIDE_EXTERNAL_LINK: 'guide_external_link',
   GUIDE_FEEDBACK_SUBMIT: 'guide_feedback_submit',
-  GUIDE_FEEDBACK_TEXT: 'guide_feedback_text',
+  // GUIDE_FEEDBACK_TEXT removed - text feedback now goes to Firestore only
 
   // Auth Events
   AUTH_LOGIN_ATTEMPT: 'auth_login_attempt',
@@ -95,10 +95,7 @@ export interface GuideFeedbackParams {
   feedback: 'up' | 'down'
 }
 
-export interface GuideFeedbackTextParams {
-  venue_slug: string
-  feedback_text: string // max 100 chars
-}
+// GuideFeedbackTextParams removed - text feedback now goes to Firestore only
 
 export interface AuthLoginParams {
   method: 'email' | 'google'
@@ -149,7 +146,6 @@ export type AnalyticsEventParams =
   | GuidePdfDownloadParams
   | GuideExternalLinkParams
   | GuideFeedbackParams
-  | GuideFeedbackTextParams
   | AuthLoginParams
   | AuthLoginFailureParams
   | AdminTabSwitchParams

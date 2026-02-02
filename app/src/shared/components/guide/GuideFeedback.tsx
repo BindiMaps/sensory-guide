@@ -9,6 +9,31 @@ interface GuideFeedbackProps {
 
 const MAX_FEEDBACK_LENGTH = 100
 
+// Endpoint URL based on environment
+const FEEDBACK_ENDPOINT =
+  import.meta.env.DEV && import.meta.env.VITE_USE_EMULATORS === 'true'
+    ? 'http://localhost:5001/sensory-guide/us-central1/submitGuideFeedback'
+    : 'https://us-central1-sensory-guide.cloudfunctions.net/submitGuideFeedback'
+
+async function submitFeedbackToServer(
+  venueSlug: string,
+  feedback: 'up' | 'down',
+  comment?: string
+): Promise<boolean> {
+  try {
+    const response = await fetch(FEEDBACK_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ venueSlug, feedback, comment }),
+    })
+    return response.ok
+  } catch {
+    // Fail silently - we still want to show "thanks" to the user
+    console.error('Failed to submit feedback to server')
+    return false
+  }
+}
+
 export function GuideFeedback({ venueSlug }: GuideFeedbackProps) {
   const [feedback, setFeedback] = useState<'up' | 'down' | null>(null)
   const [showTextInput, setShowTextInput] = useState(false)
@@ -16,38 +41,28 @@ export function GuideFeedback({ venueSlug }: GuideFeedbackProps) {
   const [submitted, setSubmitted] = useState(false)
   const { track } = useAnalytics({ useGtag: true })
 
-  const handleThumbsUp = () => {
+  const handleThumbClick = (type: 'up' | 'down') => {
     if (submitted) return
-    setFeedback('up')
-    setSubmitted(true)
-    track(AnalyticsEvent.GUIDE_FEEDBACK_SUBMIT, {
-      venue_slug: venueSlug,
-      feedback: 'up',
-    })
-  }
-
-  const handleThumbsDown = () => {
-    if (submitted) return
-    setFeedback('down')
+    setFeedback(type)
     setShowTextInput(true)
+
+    // Track in GA
     track(AnalyticsEvent.GUIDE_FEEDBACK_SUBMIT, {
       venue_slug: venueSlug,
-      feedback: 'down',
+      feedback: type,
     })
   }
 
-  const handleSubmitFeedback = () => {
+  const handleSubmitFeedback = async () => {
+    if (!feedback) return
     setSubmitted(true)
-    if (feedbackText.trim()) {
-      track(AnalyticsEvent.GUIDE_FEEDBACK_TEXT, {
-        venue_slug: venueSlug,
-        feedback_text: feedbackText.trim(),
-      })
-    }
+    await submitFeedbackToServer(venueSlug, feedback, feedbackText.trim() || undefined)
   }
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
+    if (!feedback) return
     setSubmitted(true)
+    await submitFeedbackToServer(venueSlug, feedback)
   }
 
   if (submitted) {
@@ -58,12 +73,12 @@ export function GuideFeedback({ venueSlug }: GuideFeedbackProps) {
     )
   }
 
-  if (showTextInput && feedback === 'down') {
+  if (showTextInput && feedback) {
     return (
       <div className="max-w-[720px] mx-auto py-8 mt-4 border-t border-[#E8E8E5]">
         <div className="max-w-md mx-auto">
           <label htmlFor="feedback-text" className="block text-[#595959] text-sm mb-2 text-center">
-            What could be improved? (optional)
+            {feedback === 'up' ? 'What did you find helpful? (optional)' : 'What could be improved? (optional)'}
           </label>
           <textarea
             id="feedback-text"
@@ -104,7 +119,7 @@ export function GuideFeedback({ venueSlug }: GuideFeedbackProps) {
         <p className="text-[#595959] text-sm mb-3">Was this guide helpful?</p>
         <div className="flex justify-center gap-3">
           <button
-            onClick={handleThumbsUp}
+            onClick={() => handleThumbClick('up')}
             aria-label="Yes, helpful"
             className="inline-flex items-center justify-center gap-2 px-4 py-2 border border-[#DDDDD9] text-[#3D3D3D] rounded hover:bg-[#F8F8F6] font-medium text-sm min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-[#B8510D] focus:ring-offset-2"
           >
@@ -123,7 +138,7 @@ export function GuideFeedback({ venueSlug }: GuideFeedbackProps) {
             Yes
           </button>
           <button
-            onClick={handleThumbsDown}
+            onClick={() => handleThumbClick('down')}
             aria-label="No, not helpful"
             className="inline-flex items-center justify-center gap-2 px-4 py-2 border border-[#DDDDD9] text-[#3D3D3D] rounded hover:bg-[#F8F8F6] font-medium text-sm min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-[#B8510D] focus:ring-offset-2"
           >

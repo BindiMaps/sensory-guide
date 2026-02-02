@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { httpsCallable } from 'firebase/functions'
-import { Loader2, ChevronDown, ChevronUp, Pencil } from 'lucide-react'
+import { Loader2, ChevronDown, ChevronUp, Pencil, MessageSquare } from 'lucide-react'
 import { trackEvent, AnalyticsEvent } from '@/lib/analytics'
 import { useVenue } from '@/shared/hooks/useVenue'
 import { useAuthStore } from '@/stores/authStore'
@@ -25,6 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog'
+import { VenueFeedbackModal } from './VenueFeedbackModal'
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -290,6 +291,9 @@ export function VenueDetail() {
   const [nameError, setNameError] = useState('')
   const [nameSaving, setNameSaving] = useState(false)
   const [nameSuccess, setNameSuccess] = useState(false)
+
+  // Feedback modal
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false)
 
   // Derive initial guide state from Firestore venueState (only when not actively uploading/transforming)
   useEffect(() => {
@@ -693,15 +697,25 @@ export function VenueDetail() {
           )}
           <p className="text-muted-foreground">/venue/{venue.slug}</p>
         </div>
-        <span
-          className={`text-xs px-2 py-1 rounded-full ${
-            venue.status === 'published'
-              ? 'bg-green-100 text-green-800'
-              : 'bg-yellow-100 text-yellow-800'
-          }`}
-        >
-          {venue.status}
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowFeedbackModal(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm border rounded-md hover:bg-accent"
+            title="View feedback"
+          >
+            <MessageSquare className="h-4 w-4" />
+            Feedback
+          </button>
+          <span
+            className={`text-xs px-2 py-1 rounded-full ${
+              venue.status === 'published'
+                ? 'bg-green-100 text-green-800'
+                : 'bg-yellow-100 text-yellow-800'
+            }`}
+          >
+            {venue.status}
+          </span>
+        </div>
       </div>
 
       {/* Editor Management */}
@@ -981,6 +995,14 @@ export function VenueDetail() {
           )}
         </section>
       )}
+
+      {/* Feedback Modal */}
+      <VenueFeedbackModal
+        open={showFeedbackModal}
+        onOpenChange={setShowFeedbackModal}
+        venueId={id!}
+        venueName={venue.name}
+      />
     </div>
   )
 }
