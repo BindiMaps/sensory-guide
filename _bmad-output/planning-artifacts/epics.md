@@ -95,6 +95,34 @@ This document provides the complete epic and story breakdown for Sensory Guide, 
 **Index Page:**
 - FR42: User can view BindiMaps information on landing page
 
+**Future Data Integration (CONTRACT REQUIREMENT):**
+> ⚠️ **Contract Flagged:** These requirements are part of the contractual deliverables. Data availability depends on third-party APIs (TfNSW, Adelaide Rail, etc.) and may be optional if data sources are unavailable or private.
+
+- FR50: Real-time alerts based on available data feeds (e.g. cleaning schedules, live crowding data) [CONTRACT]
+- FR51: Personalisation settings allowing users to adjust thresholds and preferences [CONTRACT]
+- FR52: Pre-journey route previews showing sensory information [CONTRACT]
+- FR53: Live crowding data from transit APIs (e.g. TfNSW, Adelaide Rail) [CONTRACT - data dependent]
+- FR54: Maintenance or cleaning schedules integration [CONTRACT - data dependent]
+- FR55: IoT sensor data integration (e.g. sound levels) [CONTRACT - OPTIONAL, contingent on data availability; report should note this was collected manually by ASPECT audit]
+
+**Pilot & Evaluation (CONTRACT REQUIREMENT - Stage 5 & 6):**
+> ⚠️ **Contract Flagged:** Adelaide Rail is the designated pilot site (existing BindiMaps customer with mapping/location data available). Pilot runs 7 weeks with 10 recruited users.
+
+- FR56: Static sensory map layer at pilot site [CONTRACT - MVP]
+- FR57: At least one dynamic input integration [CONTRACT - MVP]
+- FR58: In-app survey/feedback collection mechanism [CONTRACT - Stage 5]
+- FR59: Interaction data capture for user testing [CONTRACT - Stage 5]
+- FR60: "Sensory Awareness Mode" engagement tracking [CONTRACT - Stage 6 metric]
+- FR61: User-reported stress/confidence measurement [CONTRACT - Stage 6 metric]
+- FR62: Alerts triggered/acted upon tracking [CONTRACT - Stage 6 metric]
+- FR63: Satisfaction feedback collection from sensory-sensitive users [CONTRACT - Stage 6 metric]
+
+**Growth & Reporting (CONTRACT SUPPORT):**
+> For contract deliverable documentation - surfaces GA analytics in usable format for stakeholder reports
+
+- FR64: Super admin GA reporting dashboard for contract deliverables [GROWTH]
+- FR65: Exportable usage statistics for documentation/reports [GROWTH]
+
 ### NonFunctional Requirements
 
 **Accessibility (Critical):**
@@ -184,8 +212,11 @@ This document provides the complete epic and story breakdown for Sensory Guide, 
 | FR40-41 | Epic 6 | Super Admin (Support Access) |
 | FR46-49 | Epic 6 | Super Admin Venue & User Administration |
 | FR42 | Epic 4 | Index Page |
+| FR50-55 | Epic 9 (Backlog) | Future Data Integration [CONTRACT] |
+| FR56-63 | Epic 10 (Backlog) | Pilot Deployment & Evaluation [CONTRACT] |
+| FR64-65 | Epic 11 (Backlog) | Growth & Reporting [GROWTH] |
 
-**Coverage:** 48 FRs mapped ✅ (FR20a-b added for versioned publishing, FR46-49 for super admin administration)
+**Coverage:** 64 FRs mapped ✅ (FR20a-b added for versioned publishing, FR46-49 for super admin administration, FR50-55 for contract data integration, FR56-63 for pilot/evaluation, FR64-65 for growth/reporting)
 
 ---
 
@@ -2390,10 +2421,492 @@ So that **I can develop and review components in isolation**.
 
 ---
 
+---
+
+## Epic 9: Future Data Integration (Backlog) [CONTRACT REQUIREMENT]
+
+> ⚠️ **Contract Flagged:** This epic contains contractual deliverables. Implementation is dependent on third-party API availability. Per contract note: "The use of these data sources depends on third parties and whether these parties have appropriate APIs and are prepared to share them with BindiMaps."
+
+**Goal:** Enhance guides with real-time and dynamic data from external sources
+
+**User Outcome:** Users get current, contextual information about venue conditions to plan visits more effectively
+
+**FRs covered:** FR50-55
+
+**Key Deliverables:**
+- Real-time alerts system for available data feeds
+- User personalisation settings for sensory thresholds
+- Pre-journey route preview with sensory overlay
+- Transit API integration (TfNSW, Adelaide Rail where available)
+- Maintenance/cleaning schedule display
+- IoT sensor data integration (optional - fallback to manual ASPECT audit data)
+
+**Data Source Dependencies:**
+| Data Type | Potential Source | Status | Notes |
+|-----------|------------------|--------|-------|
+| Crowding data | TfNSW Open Data, Adelaide Rail APIs | Research needed | Public APIs exist |
+| Cleaning schedules | Venue operators | Research needed | May be private |
+| Sound levels | IoT sensors | Optional | Manual ASPECT audit as fallback |
+
+---
+
+### Story 9.1: User Personalisation Settings [CONTRACT]
+
+As an **end user**,
+I want **to set my personal sensory thresholds and preferences**,
+So that **alerts and information are relevant to my specific sensitivities**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing a guide
+**When** I access personalisation settings
+**Then** I can set thresholds for:
+  - Sound sensitivity (low/medium/high)
+  - Crowd tolerance (quiet/moderate/busy)
+  - Light sensitivity (low/medium/high)
+**And** my preferences persist across sessions (localStorage)
+
+**Given** I have set preferences
+**When** I view a guide
+**Then** warnings are filtered/highlighted based on my thresholds
+**And** I see personalised alerts relevant to my sensitivities
+
+---
+
+### Story 9.2: Pre-Journey Route Preview [CONTRACT]
+
+As an **end user**,
+I want **to preview my journey through a venue before visiting**,
+So that **I can mentally prepare for sensory experiences along my route**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing a guide for a venue with multiple areas
+**When** I select "Preview Journey"
+**Then** I see a sequential walkthrough of areas (Entry → Main → etc.)
+**And** each area shows its sensory summary
+**And** I can navigate forward/back through the journey
+
+**Given** the venue has a map
+**When** I view the journey preview
+**Then** my route is highlighted on the map (if available)
+
+---
+
+### Story 9.3: Real-Time Alerts Framework [CONTRACT]
+
+As an **end user**,
+I want **to receive alerts about current conditions at a venue**,
+So that **I'm aware of unexpected sensory situations before they affect me**.
+
+**Acceptance Criteria:**
+
+**Given** real-time data is available for a venue
+**When** I view the guide
+**Then** I see an "Alerts" section showing current conditions
+**And** alerts are timestamped ("Updated 5 min ago")
+**And** alerts include: crowding levels, active events, maintenance
+
+**Given** no real-time data is available
+**When** I view the guide
+**Then** alerts section is hidden (graceful degradation)
+**And** static guide content displays normally
+
+**Given** an alert exceeds my personalised thresholds
+**When** viewing the guide
+**Then** the alert is visually prominent (highlighted, icon)
+
+---
+
+### Story 9.4: Transit Crowding Data Integration [CONTRACT - DATA DEPENDENT]
+
+As an **end user visiting a train station**,
+I want **to see how crowded the venue currently is**,
+So that **I can time my visit for quieter periods**.
+
+**Acceptance Criteria:**
+
+**Given** the venue is a train station with TfNSW/Adelaide Rail API access
+**When** I view the guide
+**Then** I see current crowding level (Low/Medium/High)
+**And** I see a simple forecast ("Usually quieter after 10am")
+
+**Given** the API is unavailable
+**When** I view the guide
+**Then** crowding section shows "Real-time data unavailable"
+**And** static crowding notes from audit are shown as fallback
+
+**Technical Notes:**
+- TfNSW Open Data: https://opendata.transport.nsw.gov.au/
+- Adelaide Metro: https://www.adelaidemetro.com.au/about/open-data
+- Implement with graceful degradation for unavailable APIs
+
+---
+
+### Story 9.5: Cleaning/Maintenance Schedule Display [CONTRACT - DATA DEPENDENT]
+
+As an **end user**,
+I want **to know when cleaning or maintenance is scheduled**,
+So that **I can avoid noisy/disruptive periods**.
+
+**Acceptance Criteria:**
+
+**Given** cleaning schedule data is available for a venue
+**When** I view the guide
+**Then** I see "Scheduled Activities" showing:
+  - Time windows for cleaning
+  - Maintenance periods
+  - Events that may affect sensory environment
+
+**Given** no schedule data is available
+**When** I view the guide
+**Then** the section is hidden or shows "No schedule data available"
+
+---
+
+### Story 9.6: IoT Sensor Data Integration [CONTRACT - OPTIONAL]
+
+As an **end user**,
+I want **to see real-time sound levels in different areas**,
+So that **I know the current noise situation before entering**.
+
+> **Note:** This story is contingent on IoT sensor data being available. Per contract, this data was collected manually by the ASPECT audit and may not have a live feed. Implementation should prioritise graceful fallback to static audit data.
+
+**Acceptance Criteria:**
+
+**Given** IoT sensor data is available for a venue
+**When** I view an area section
+**Then** I see current decibel reading with visual indicator
+**And** readings update periodically (every 30s-1min)
+
+**Given** IoT data is NOT available
+**When** I view an area section
+**Then** static sound level data from ASPECT audit is shown
+**And** the display indicates "Based on audit data" not real-time
+
+**Given** sensors go offline
+**When** I view the guide
+**Then** system falls back to last known reading with timestamp
+**Or** falls back to static audit data with explanation
+
+**Technical Notes:**
+- Report should document: "Sound level data was collected manually by the ASPECT audit team"
+- IoT integration is enhancement, not baseline requirement
+- Design for offline-first with graceful enhancement
+
+---
+
+## Epic 10: Pilot Deployment & Evaluation (Backlog) [CONTRACT REQUIREMENT - Stage 5 & 6]
+
+> ⚠️ **Contract Flagged:** This epic covers contractual Stage 5 (MVP at pilot site) and Stage 6 (evaluation). Adelaide Rail is the designated pilot site - existing BindiMaps customer with mapping/location data already available. In-principle agreement received from Adelaide Rail.
+
+**Goal:** Deploy MVP at Adelaide Rail pilot site and evaluate effectiveness through defined metrics
+
+**User Outcome:** Real-world validation of Sensory Guide features with sensory-sensitive users at an actual transit venue
+
+**FRs covered:** FR56-63
+
+**Pilot Parameters (from contract):**
+- **Site:** Adelaide Rail (public spaces, no access restrictions)
+- **Duration:** 7 weeks
+- **Users:** 10 recruited from focus/survey groups + ASPECT + direct marketing
+- **Cycles:** 1-2 week testing periods → internal review → refinement → redeploy
+- **Testing:** 2-3 users per cycle
+
+**Key Deliverables:**
+- Static sensory map layer deployed at Adelaide Rail
+- At least one dynamic input integrated (crowding, schedules, or sensor data)
+- In-app feedback/survey mechanism
+- Interaction data capture for analysis
+- Success metrics dashboard
+
+**Success Metrics (Stage 6):**
+| Metric | Description | Collection Method |
+|--------|-------------|-------------------|
+| Engagement rates | Usage of "Sensory Awareness Mode" | Analytics |
+| Stress/confidence | User-reported levels before/after | Survey |
+| Alert effectiveness | Alerts triggered and acted upon | Analytics |
+| Satisfaction | Overall user satisfaction scores | Survey + feedback |
+
+---
+
+### Story 10.1: Adelaide Rail Venue Configuration [CONTRACT]
+
+As a **pilot administrator**,
+I want **Adelaide Rail configured as a venue with existing BindiMaps data**,
+So that **the pilot can leverage existing mapping infrastructure**.
+
+**Acceptance Criteria:**
+
+**Given** Adelaide Rail mapping data exists in BindiMaps
+**When** I create the Sensory Guide venue
+**Then** the venue is linked to existing BindiMaps location data
+**And** existing maps can be referenced from the guide
+
+**Given** the venue is configured
+**When** I view it
+**Then** I see Adelaide Rail-specific areas (stations, platforms, concourses)
+
+---
+
+### Story 10.2: Static Sensory Map Layer [CONTRACT - MVP]
+
+As an **end user at Adelaide Rail**,
+I want **to see sensory information overlaid on the venue map**,
+So that **I can visually understand sensory conditions across areas**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing the Adelaide Rail guide
+**When** I access the map view
+**Then** I see sensory zones colour-coded by intensity
+**And** I can tap zones to see sensory details
+**And** the map integrates with existing BindiMaps mapping
+
+**Given** areas have been audited
+**When** I view the map
+**Then** audited areas show sensory indicators (sound, light, crowds)
+**And** unaudited areas are marked as "no data"
+
+---
+
+### Story 10.3: Dynamic Input Integration [CONTRACT - MVP]
+
+As an **end user**,
+I want **at least one source of live/dynamic data in the guide**,
+So that **I see current conditions not just static audit data**.
+
+> **Note:** Contract requires "at least one dynamic input". Prioritise based on data availability - likely candidates: Adelaide Rail crowding API, cleaning schedules, or event calendar.
+
+**Acceptance Criteria:**
+
+**Given** a dynamic data source is available
+**When** I view the guide
+**Then** I see real-time or near-real-time information
+**And** the data is timestamped ("Updated X mins ago")
+**And** fallback to static data if API unavailable
+
+**Given** the dynamic source is crowding data
+**When** I view the relevant area
+**Then** I see current crowding level with visual indicator
+
+---
+
+### Story 10.4: In-App Survey/Feedback Collection [CONTRACT]
+
+As a **pilot tester**,
+I want **to provide feedback directly within the app**,
+So that **my experience can inform development iterations**.
+
+**Acceptance Criteria:**
+
+**Given** I am a pilot tester using the guide
+**When** I complete a session
+**Then** I see an optional feedback prompt
+**And** I can rate my experience (1-5 stars)
+**And** I can provide free-text comments
+
+**Given** I want to report an issue mid-session
+**When** I tap the feedback button
+**Then** I can submit quick feedback without leaving the guide
+
+**Given** feedback is submitted
+**When** it's stored
+**Then** it includes: timestamp, user ID (anonymised), session context, venue area
+
+---
+
+### Story 10.5: Interaction Data Capture [CONTRACT]
+
+As a **researcher/product owner**,
+I want **detailed interaction data from pilot testers**,
+So that **I can analyse usage patterns and inform development**.
+
+**Acceptance Criteria:**
+
+**Given** a pilot tester uses the guide
+**When** they interact with features
+**Then** the following events are captured:
+  - Section expansions/collapses
+  - Map interactions
+  - Alert views and actions taken
+  - Time spent per area
+  - Navigation patterns (journey through venue)
+
+**Given** data is captured
+**When** I access the analytics
+**Then** data is anonymised but linkable per session
+**And** I can filter by date range, user cohort, feature
+
+---
+
+### Story 10.6: Success Metrics Dashboard [CONTRACT - Stage 6]
+
+As a **researcher/stakeholder**,
+I want **a dashboard showing Stage 6 success metrics**,
+So that **I can evaluate pilot effectiveness against contract criteria**.
+
+**Acceptance Criteria:**
+
+**Given** the pilot has generated data
+**When** I access the metrics dashboard
+**Then** I see:
+  - **Engagement:** "Sensory Awareness Mode" usage stats
+  - **Wellbeing:** Aggregated stress/confidence survey responses
+  - **Alerts:** Count of alerts triggered, % acted upon
+  - **Satisfaction:** Average ratings, NPS-style score
+
+**Given** metrics are displayed
+**When** I view trends
+**Then** I can see changes across testing cycles (week over week)
+**And** data can be exported for reporting
+
+**Given** I need to report to stakeholders
+**When** I export data
+**Then** I get a formatted report suitable for contract deliverables
+
+---
+
+### Story 10.7: Stress/Confidence Survey Instrument [CONTRACT]
+
+As a **pilot tester**,
+I want **to report my stress and confidence levels**,
+So that **researchers can measure if the guide helps**.
+
+**Acceptance Criteria:**
+
+**Given** I start a pilot testing session
+**When** I begin
+**Then** I see a brief pre-survey:
+  - "How confident do you feel about this visit?" (1-5)
+  - "Current stress level?" (1-5)
+
+**Given** I complete my visit
+**When** I finish the session
+**Then** I see a post-survey:
+  - Same questions as pre-survey
+  - "Did alerts help you prepare?" (yes/no/N/A)
+  - "Would you use this again?" (yes/no)
+
+**Given** surveys are completed
+**When** data is analysed
+**Then** pre/post comparisons show impact on stress/confidence
+
+---
+
+## Epic 11: Growth & Reporting (Backlog) [GROWTH STAGE]
+
+> 📊 **Growth Stage:** Post-pilot features to support ongoing operations, stakeholder reporting, and contract documentation needs. Surfaces GA data in actionable format.
+
+**Goal:** Provide super admins with reporting tools to generate documentation and stakeholder reports from GA analytics
+
+**User Outcome:** Stakeholders receive professional reports with real usage data to demonstrate product value and fulfil contract deliverables
+
+**FRs covered:** FR64-65
+
+**Key Deliverables:**
+- GA4 data surfaced in admin dashboard
+- Exportable reports for contract documentation
+- Usage trend visualisations
+
+---
+
+### Story 11.1: Super Admin GA Reporting Dashboard [GROWTH]
+
+As a **super admin**,
+I want **a reporting page that displays Google Analytics data**,
+So that **I can see usage stats and generate reports for stakeholders**.
+
+**Acceptance Criteria:**
+
+**Given** I am a super admin
+**When** I navigate to "Reports" section
+**Then** I see a dashboard with GA4 data including:
+  - Total guide views (all time, last 30 days, last 7 days)
+  - Unique users
+  - Top venues by views
+  - Section expansion rates (which sections users engage with most)
+  - Print button usage
+  - Thumbs up/down ratios by venue
+  - Geographic distribution of users
+
+**Given** the dashboard loads
+**When** I view metrics
+**Then** data is pulled from GA4 API (or GA4 embed)
+**And** I can filter by date range
+**And** I can filter by specific venue(s)
+
+**Given** GA4 data is unavailable
+**When** the dashboard loads
+**Then** I see a clear error with troubleshooting steps
+**And** cached/last-known data shown if available
+
+---
+
+### Story 11.2: Contract Report Generator [GROWTH]
+
+As a **super admin preparing contract deliverables**,
+I want **to export usage statistics in a report-ready format**,
+So that **I can include real data in documentation for stakeholders**.
+
+**Acceptance Criteria:**
+
+**Given** I am on the reporting dashboard
+**When** I click "Generate Report"
+**Then** I can select:
+  - Report period (custom date range)
+  - Venues to include (all or specific)
+  - Metrics to include (checklist)
+
+**Given** I configure and generate a report
+**When** export completes
+**Then** I receive a PDF/CSV with:
+  - Executive summary with key figures
+  - Usage trends (charts if PDF)
+  - Per-venue breakdown
+  - User engagement metrics
+  - Feedback summary (thumbs up/down, survey responses)
+
+**Given** I need data for contract Stage 6 metrics
+**When** I generate a report
+**Then** it includes specific sections for:
+  - "Sensory Awareness Mode" engagement rates
+  - Alert effectiveness (triggered vs acted upon)
+  - User satisfaction scores
+  - Stress/confidence improvements (from survey data)
+
+---
+
+### Story 11.3: Usage Trend Visualisations [GROWTH]
+
+As a **super admin**,
+I want **visual charts showing usage trends over time**,
+So that **I can demonstrate growth and identify patterns**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing the reports dashboard
+**When** I look at trends
+**Then** I see line charts showing:
+  - Daily/weekly active users over time
+  - Guide views trend
+  - New vs returning users
+
+**Given** a pilot is running
+**When** I view pilot-specific metrics
+**Then** I can see week-over-week comparison for testing cycles
+**And** overlay markers for iteration deployments
+
+**Given** I want to share a chart
+**When** I click export on a visualisation
+**Then** I can download as PNG/SVG for reports
+
+---
+
 ## Summary
 
-**Total Epics:** 8
-**Total Stories:** 57
+**Total Epics:** 11
+**Total Stories:** 73
 
 | Epic | Stories | Theme |
 |------|---------|-------|
@@ -2405,4 +2918,7 @@ So that **I can develop and review components in isolation**.
 | Epic 6: Management & Super Admin | 11 | Ongoing management (incl. 6.0 lifecycle dashboard, super admin administration) |
 | Epic 7: Polish & Quality | 8 | UX refinement |
 | Epic 8: Testing & Docs | 6 | Quality assurance |
+| Epic 9: Future Data Integration | 6 | Real-time data & personalisation [CONTRACT - Backlog] |
+| Epic 10: Pilot & Evaluation | 7 | Adelaide Rail MVP + success metrics [CONTRACT - Backlog] |
+| Epic 11: Growth & Reporting | 3 | GA stats dashboard + contract reports [GROWTH - Backlog] |
 
