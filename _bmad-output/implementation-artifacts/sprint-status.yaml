@@ -89,10 +89,9 @@ development_status:
 
   # Epic 5: Print & Feedback
   epic-5: in-progress
-  5-1-print-optimised-view: done
-  5-2-print-preview: backlog
-  5-3-thumbs-up-down-feedback: backlog
-  5-4-analytics-events: backlog
+  5-1-print-optimised-view: done  # PDF generation with Print + Save buttons
+  5-2-thumbs-up-down-feedback: backlog
+  5-3-analytics-events: backlog
   epic-5-retrospective: optional
 
   # Epic 6: Guide Management & Super Admin

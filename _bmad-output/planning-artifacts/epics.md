@@ -323,10 +323,9 @@ This enables continuous deployment and reduces integration risk.
 **FRs covered:** FR10-12, FR32-35 (Print + Analytics)
 
 **Key Deliverables:**
-- Print-optimised CSS
-- Print preview
-- All sections expanded in print
+- PDF generation with Print + Save buttons
 - Thumbs up/down feedback (GA events)
+- Analytics tracking
 - Page view tracking (GA)
 - Section expansion tracking (GA)
 - Print usage tracking (GA)
@@ -917,53 +916,7 @@ So that **I can have a physical copy for my visit**.
 
 ---
 
-### Story 5.2: Print Preview
-
-As an **end user**,
-I want **to preview what will print before printing**,
-So that **I can check it looks right**.
-
-**Acceptance Criteria:**
-
-**Given** I am viewing a guide
-**When** I click "Print Preview"
-**Then** I see a preview of the print layout
-**And** all sections are expanded
-**And** I can scroll through the full preview
-
-**Given** I am in print preview
-**When** I click "Print"
-**Then** the browser print dialog opens
-
-**Given** I am in print preview
-**When** I click "Back" or press Escape
-**Then** I return to the normal guide view
-
----
-
-### Story 5.3: Thumbs Up/Down Feedback
-
-As an **end user**,
-I want **to give quick feedback on the guide**,
-So that **creators know if it's helpful**.
-
-**Acceptance Criteria:**
-
-**Given** I am viewing a guide
-**When** I scroll to the bottom (or see a fixed feedback prompt)
-**Then** I see "Was this guide helpful?" with thumbs up/down buttons
-
-**Given** I click thumbs up or thumbs down
-**When** I submit feedback
-**Then** a GA event is fired with: venue slug, feedback value (up/down)
-**And** I see a "Thanks for your feedback" message
-**And** the buttons disable to prevent multiple submissions
-
-**And** no data is written to Firestore (GA only)
-
----
-
-### Story 5.4: Analytics Events
+### Story 5.2: Analytics Events
 
 As a **product owner**,
 I want **to track how guides are used**,
@@ -1000,6 +953,28 @@ So that **I can understand user behaviour and improve the product**.
 **Then** an `admin_editor_change` event fires with action (add/remove)
 
 **And** all events are viewable in GA4 dashboard
+
+---
+
+### Story 5.3: Thumbs Up/Down Feedback
+
+As an **end user**,
+I want **to give quick feedback on the guide**,
+So that **creators know if it's helpful**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing a guide
+**When** I scroll to the bottom (or see a fixed feedback prompt)
+**Then** I see "Was this guide helpful?" with thumbs up/down buttons
+
+**Given** I click thumbs up or thumbs down
+**When** I submit feedback
+**Then** a GA event is fired with: venue slug, feedback value (up/down)
+**And** I see a "Thanks for your feedback" message
+**And** the buttons disable to prevent multiple submissions
+
+**And** no data is written to Firestore (GA only)
 
 ---
 
