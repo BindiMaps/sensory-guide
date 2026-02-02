@@ -132,3 +132,23 @@ All UI implementations MUST match the approved design system exactly. When imple
    - Uppercase badge text with tracking-wide
 
 **Validation**: Before marking UI stories complete, verify implementation matches v5 design doc exactly.
+
+## Firebase Configuration
+
+**Project**: `sensory-guide`
+
+**Config location**: `app/src/lib/firebase.ts` (hardcoded)
+
+Firebase web SDK config is **intentionally hardcoded** in the source. This is safe because:
+- Firebase web API keys are designed to be public (embedded in client bundles)
+- Security is enforced via Firebase Security Rules, not by hiding config
+- Avoids CI/CD complexity with environment variables at build time
+
+**Do NOT**:
+- Move config to environment variables (breaks CI builds)
+- Treat the API key as a secret (it's not)
+- Create separate configs for environments (single project)
+
+**Local development**: Use `.env` with `VITE_USE_EMULATORS=true` to connect to local Firebase emulators.
+
+**Auth providers enabled**: Email/Password, Google Sign-In

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import type { Guide } from '@/lib/schemas/guideSchema'
-import { GuideContent, GuidePdfActions } from '@/shared/components/guide'
+import { GuideContent, GuidePdfActions, GuideFeedback } from '@/shared/components/guide'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { AnalyticsEvent } from '@/lib/analytics'
 
@@ -228,6 +228,9 @@ export function GuidePage() {
       <main id="main-content">
         <GuideContent guide={guide} venueSlug={slug} />
       </main>
+
+      {/* Feedback prompt */}
+      <GuideFeedback venueSlug={slug!} venueName={guide.venue.name} />
 
       {/* Footer */}
       <footer className="max-w-[720px] mx-auto pt-6 border-t border-[#E8E8E5] text-center text-sm text-[#595959]">

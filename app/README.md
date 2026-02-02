@@ -131,11 +131,21 @@ functions/          # Firebase Cloud Functions
 
 ## Environment
 
-Firebase config is loaded from environment variables. See `.env.example` for required vars.
+### Firebase SDK Config (Hardcoded)
+
+Firebase web SDK config is **hardcoded** in `src/lib/firebase.ts`. This is intentional and safe:
+
+- Firebase web API keys are designed to be public (they're in your client JS bundle)
+- Security is enforced via Firebase Security Rules, not by hiding the config
+- Simplifies CI/CD - no env var injection needed at build time
+
+**Do NOT** move the config to environment variables - it breaks CI builds and provides no security benefit.
+
+### Runtime Environment Variables
 
 | Variable | Description |
 |----------|-------------|
-| `VITE_USE_EMULATORS` | Set to `true` to connect to local Functions emulator |
+| `VITE_USE_EMULATORS` | Set to `true` in `.env` to connect to local Firebase emulators |
 
 ### Gemini API Key
 
@@ -210,23 +220,11 @@ firebase login
 # Select your project
 firebase use your-project-id
 
-# Copy environment template
-cp .env.example .env
-
-# Edit .env with your Firebase config
-# Get these values from Firebase Console → Project Settings → Web app
+# Create .env for local emulator support
+echo 'VITE_USE_EMULATORS=true' > .env
 ```
 
-**Required .env values:**
-```
-VITE_FIREBASE_API_KEY=your-api-key
-VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your-project-id
-VITE_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
-VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-VITE_FIREBASE_APP_ID=your-app-id
-VITE_USE_EMULATORS=true
-```
+**Note:** Firebase SDK config is hardcoded in `src/lib/firebase.ts` for the `sensory-guide` project. If setting up a different Firebase project, update those values directly in the source file.
 
 ### Step 4: Create Service Account Key (for local Functions)
 
@@ -387,7 +385,7 @@ await parser.destroy()
 | Firestore created | ✓ | ✓ |
 | Storage bucket created | ✓ | ✓ |
 | Blaze plan enabled | ✓ | ✓ |
-| .env configured | ✓ | N/A |
+| Firebase config in firebase.ts | ✓ (hardcoded) | ✓ (hardcoded) |
 | Service account key | ✓ | N/A (auto) |
 | CORS configured | ✓ | ✓ |
 | Gemini API key set | .secret.local | Firebase secret |

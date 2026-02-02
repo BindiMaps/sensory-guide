@@ -4,14 +4,18 @@ import { getFirestore, type Firestore } from 'firebase/firestore'
 import { getStorage, type FirebaseStorage } from 'firebase/storage'
 import { getFunctions, connectFunctionsEmulator, type Functions } from 'firebase/functions'
 
+// Firebase web SDK config - intentionally hardcoded.
+// These values are public by design (visible in client JS bundle).
+// Security is enforced via Firebase Security Rules, not by hiding config.
+// Do NOT move to env vars - it breaks CI builds and provides no security benefit.
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  apiKey: 'AIzaSyDbdvQc9Ci_LELGcsgfZVKuntRSETDLpPI',
+  authDomain: 'sensory-guide.firebaseapp.com',
+  projectId: 'sensory-guide',
+  storageBucket: 'sensory-guide.firebasestorage.app',
+  messagingSenderId: '541697155712',
+  appId: '1:541697155712:web:142cd0b5dc3c0f8223fc65',
+  measurementId: 'G-FVW6R81ZNC',
 }
 
 // Check if Firebase is configured
