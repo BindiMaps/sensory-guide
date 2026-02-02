@@ -89,7 +89,7 @@ development_status:
 
   # Epic 5: Print & Feedback
   epic-5: in-progress
-  5-1-print-optimised-view: ready-for-dev
+  5-1-print-optimised-view: done
   5-2-print-preview: backlog
   5-3-thumbs-up-down-feedback: backlog
   5-4-analytics-events: backlog

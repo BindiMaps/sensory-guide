@@ -1,6 +1,6 @@
 # Story 5.1: Print-Optimised View
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -172,10 +172,39 @@ This avoids JavaScript complexity with beforeprint/afterprint events and keeps s
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.5
 
 ### Debug Log References
 
+N/A
+
 ### Completion Notes List
 
+**Pivoted from CSS print approach to PDF generation:**
+- Initial CSS `@media print` approach was rejected as "looking bad"
+- Implemented `@react-pdf/renderer` for proper PDF generation
+- PDF is lazy-loaded (1.5MB) to keep main bundle small (~960KB)
+
+**Final Implementation:**
+- Two buttons: "Print" (opens print dialog directly via iframe) and "Save" (downloads PDF)
+- Uses Helvetica font (built-in) - CDN fonts caused DataView errors
+- PDF includes: venue header, category badges, areas with sensory details, facilities, sensory key
+- Design System v5 colours applied throughout
+
+**Issues Resolved:**
+- Buffer polyfill for Vite/browser compatibility
+- Font italic variant error (removed italic styling)
+- DataView error with CDN fonts (switched to Helvetica)
+
 ### File List
+
+**Created:**
+- `app/src/shared/components/guide/GuidePdf.tsx` - PDF document component
+- `app/src/shared/components/guide/DownloadPdfButton.tsx` - GuidePdfActions component with Print + Save buttons
+- `app/src/shared/components/guide/DownloadPdfButton.test.tsx` - Unit tests
+
+**Modified:**
+- `app/src/shared/components/guide/index.ts` - Export GuidePdfActions
+- `app/src/features/public/guide/GuidePage.tsx` - Added GuidePdfActions to header
+- `app/vite.config.ts` - Buffer polyfill for react-pdf
+- `app/package.json` - Added @react-pdf/renderer, buffer dependencies
