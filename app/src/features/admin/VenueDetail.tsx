@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { httpsCallable } from 'firebase/functions'
-import { Loader2, ChevronDown, ChevronUp } from 'lucide-react'
+import { Loader2, ChevronDown, ChevronUp, Pencil } from 'lucide-react'
 import { useVenue } from '@/shared/hooks/useVenue'
 import { useAuthStore } from '@/stores/authStore'
 import { functions } from '@/lib/firebase'
@@ -247,7 +247,7 @@ function PublishedStateWrapper({
 export function VenueDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { venue, loading, error, addEditor, removeEditor, deleteVenue } = useVenue(id)
+  const { venue, loading, error, addEditor, removeEditor, deleteVenue, updateName } = useVenue(id)
   const { user } = useAuthStore()
 
   // Venue lifecycle state (persisted in Firestore)
@@ -278,6 +278,13 @@ export function VenueDetail() {
   // Version history expansion
   const [showVersionHistory, setShowVersionHistory] = useState(false)
   const [makingLiveError, setMakingLiveError] = useState<string | null>(null)
+
+  // Venue name editing
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [editedName, setEditedName] = useState('')
+  const [nameError, setNameError] = useState('')
+  const [nameSaving, setNameSaving] = useState(false)
+  const [nameSuccess, setNameSuccess] = useState(false)
 
   // Derive initial guide state from Firestore venueState (only when not actively uploading/transforming)
   useEffect(() => {
@@ -569,6 +576,41 @@ export function VenueDetail() {
     }
   }
 
+  const handleStartEditName = () => {
+    setEditedName(venue?.name || '')
+    setNameError('')
+    setNameSuccess(false)
+    setIsEditingName(true)
+  }
+
+  const handleCancelEditName = () => {
+    setIsEditingName(false)
+    setEditedName('')
+    setNameError('')
+  }
+
+  const handleSaveName = async () => {
+    const trimmed = editedName.trim()
+    if (!trimmed) {
+      setNameError('Venue name is required')
+      return
+    }
+
+    setNameSaving(true)
+    setNameError('')
+
+    try {
+      await updateName(trimmed)
+      setIsEditingName(false)
+      setNameSuccess(true)
+      setTimeout(() => setNameSuccess(false), 2500)
+    } catch (err) {
+      setNameError(err instanceof Error ? err.message : 'Failed to update name')
+    } finally {
+      setNameSaving(false)
+    }
+  }
+
   return (
     <div className="max-w-2xl">
       <Link
@@ -580,7 +622,55 @@ export function VenueDetail() {
 
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h1 className="text-3xl font-bold">{venue.name}</h1>
+          {isEditingName ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  className="text-2xl font-bold px-2 py-1 border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  autoFocus
+                  disabled={nameSaving}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSaveName()
+                    if (e.key === 'Escape') handleCancelEditName()
+                  }}
+                />
+                <button
+                  onClick={handleSaveName}
+                  disabled={nameSaving}
+                  className="px-3 py-1.5 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 text-sm"
+                >
+                  {nameSaving ? 'Saving...' : 'Save'}
+                </button>
+                <button
+                  onClick={handleCancelEditName}
+                  disabled={nameSaving}
+                  className="px-3 py-1.5 border rounded-md hover:bg-accent text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+              {nameError && (
+                <p className="text-sm text-red-600">{nameError}</p>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <h1 className="text-3xl font-bold">{venue.name}</h1>
+              <button
+                onClick={handleStartEditName}
+                className="p-1 text-muted-foreground hover:text-foreground rounded"
+                title="Edit venue name"
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
+              {nameSuccess && (
+                <span className="text-sm text-green-600">Name updated</span>
+              )}
+            </div>
+          )}
           <p className="text-muted-foreground">/venue/{venue.slug}</p>
         </div>
         <span

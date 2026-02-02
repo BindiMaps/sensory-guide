@@ -78,5 +78,17 @@ export function useVenue(venueId: string | undefined) {
     await deleteDoc(venueRef)
   }, [venueId])
 
-  return { venue, loading, error, addEditor, removeEditor, deleteVenue }
+  const updateName = useCallback(async (newName: string) => {
+    if (!venueId || !db) throw new Error('No venue loaded')
+    const trimmed = newName.trim()
+    if (!trimmed) throw new Error('Venue name is required')
+
+    const venueRef = doc(db, 'venues', venueId)
+    await updateDoc(venueRef, {
+      name: trimmed,
+      updatedAt: serverTimestamp(),
+    })
+  }, [venueId])
+
+  return { venue, loading, error, addEditor, removeEditor, deleteVenue, updateName }
 }

@@ -56,6 +56,7 @@ describe('VenueDetail - Editor Removal Safeguards', () => {
   const mockRemoveEditor = vi.fn()
   const mockAddEditor = vi.fn()
   const mockDeleteVenue = vi.fn()
+  const mockUpdateName = vi.fn()
 
   const baseVenue = {
     id: 'test-venue-id',
@@ -77,6 +78,7 @@ describe('VenueDetail - Editor Removal Safeguards', () => {
       addEditor: mockAddEditor,
       removeEditor: mockRemoveEditor,
       deleteVenue: mockDeleteVenue,
+      updateName: mockUpdateName,
     })
   })
 
@@ -271,6 +273,7 @@ describe('VenueDetail - Editor Removal Safeguards', () => {
         addEditor: mockAddEditor,
         removeEditor: mockRemoveEditor,
         deleteVenue: mockDeleteVenue,
+        updateName: mockUpdateName,
       })
 
       mockUseAuthStore.mockReturnValue({
