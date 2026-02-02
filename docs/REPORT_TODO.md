@@ -50,8 +50,8 @@
 
 **Quality metrics (from CI)**:
 - [ ] Lighthouse scores (performance, accessibility, best practices, SEO)
-- [ ] Pa11y WCAG compliance results
-- [ ] Security audit results (no high-severity vulnerabilities)
+- [x] Pa11y WCAG compliance results - see `docs/accessibility-audit-v1.md`
+- [x] Security audit results (no high-severity vulnerabilities) - see `docs/security-audit-v1.md`
 - [ ] Test coverage statistics
 
 ### 5. Recommendations for Broader Deployment
@@ -76,11 +76,15 @@
 - [ ] BindiWeb integration deep-link format
 
 ### Accessibility & Security Assurance Section
-- [ ] Automated WCAG testing on every deployment
-- [ ] Dependency security scanning
+- [x] Automated WCAG testing on every deployment
+- [x] Dependency security scanning
 - [ ] Why this matters for the target user group
 - [ ] Screenshots of passing audits
 - [ ] Commitment to ongoing accessibility compliance
+
+**Completed Audit Documents:**
+- `docs/security-audit-v1.md` - Full security audit with sign-off (2026-02-02)
+- `docs/accessibility-audit-v1.md` - WCAG 2.1 AA compliance audit with sign-off (2026-02-02)
 
 ### Partnership Acknowledgements
 - [ ] iMove CRC funding acknowledgement (required per contract clause 16)

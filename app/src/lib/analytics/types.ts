@@ -54,6 +54,9 @@ export const AnalyticsEvent = {
   VENUE_VERSION_PREVIEW: 'venue_version_preview',
   VENUE_VERSION_MAKE_LIVE: 'venue_version_make_live',
   VENUE_DELETE: 'venue_delete',
+
+  // Super Admin Events
+  SUPER_ADMIN_ANALYTICS_VIEW: 'super_admin_analytics_view',
 } as const
 
 export type AnalyticsEventName = (typeof AnalyticsEvent)[keyof typeof AnalyticsEvent]

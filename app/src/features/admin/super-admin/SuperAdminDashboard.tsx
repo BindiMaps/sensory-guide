@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { AllowListManager } from './AllowListManager'
+import { GlobalAnalytics } from './GlobalAnalytics'
 
 export function SuperAdminDashboard() {
   useEffect(() => {
@@ -20,6 +21,12 @@ export function SuperAdminDashboard() {
 
       <section className="border rounded-lg p-4 mb-6">
         <AllowListManager />
+      </section>
+
+      <hr className="my-6 border-border" />
+
+      <section className="border rounded-lg p-4 mb-6">
+        <GlobalAnalytics />
       </section>
     </div>
   )
