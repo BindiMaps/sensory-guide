@@ -8,4 +8,5 @@ export { SensoryDetail } from './SensoryDetail'
 export { SensoryKey } from './SensoryKey'
 export { GuidePdfActions, DownloadPdfButton } from './DownloadPdfButton'
 export { GuideFeedback } from './GuideFeedback'
+export { PoweredByBindiMaps } from './PoweredByBindiMaps'
 // GuidePdf is lazy-loaded by DownloadPdfButton - not exported statically to keep bundle small

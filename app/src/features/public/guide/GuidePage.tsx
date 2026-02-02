@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import type { Guide } from '@/lib/schemas/guideSchema'
-import { GuideContent, GuidePdfActions, GuideFeedback } from '@/shared/components/guide'
+import { GuideContent, GuidePdfActions, GuideFeedback, PoweredByBindiMaps } from '@/shared/components/guide'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { AnalyticsEvent } from '@/lib/analytics'
 
@@ -234,11 +234,12 @@ export function GuidePage() {
 
       {/* Footer */}
       <footer className="max-w-[720px] mx-auto pb-4 text-center text-sm text-[#595959]">
-        <p className="mb-2">
+        <p className="mb-3">
           <a href="/" className="text-[#B8510D] hover:underline font-medium">
             Sensory Guide
           </a>
         </p>
+        <PoweredByBindiMaps />
       </footer>
     </div>
   )

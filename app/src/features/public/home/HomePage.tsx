@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 import bindiIcon from '@/assets/BindiMaps-Icon.png'
-import bindiLogo from '@/assets/BindiMaps-logo.png'
+import { PoweredByBindiMaps } from '@/shared/components/guide'
 
 /**
  * Public landing page for Sensory Guide.
@@ -83,24 +83,7 @@ export function HomePage() {
         </div>
 
         {/* Footer Attribution */}
-        <a
-          href="https://bindimaps.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 rounded-sm"
-        >
-          <span
-            className="text-xs"
-            style={{ color: '#595959' }}
-          >
-            Powered by
-          </span>
-          <img
-            src={bindiLogo}
-            alt="BindiMaps"
-            className="h-6 w-auto"
-          />
-        </a>
+        <PoweredByBindiMaps />
       </div>
     </main>
   )
