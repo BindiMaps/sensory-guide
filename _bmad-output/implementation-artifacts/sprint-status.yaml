@@ -104,6 +104,7 @@ development_status:
   epic-6-retrospective: optional
 
   # Epic 7: Final Audits & Polish (Pre-Release)
-  epic-7: in-progress
+  epic-7: done
   7-1-security-accessibility-audit: done  # Comprehensive security + a11y review before release
+  7-2-venue-feedback-dashboard: done  # Admin modal showing thumbs counts + comments from Firestore
   epic-7-retrospective: optional
