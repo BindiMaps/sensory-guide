@@ -39,11 +39,12 @@ describe('GuideFeedback', () => {
     expect(yesButton.className).toContain('focus:ring-[#B8510D]')
   })
 
-  it('shows thank you message after clicking thumbs up', () => {
+  it('shows text input after clicking thumbs up', () => {
     render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
     const yesButton = screen.getByRole('button', { name: /yes/i })
     fireEvent.click(yesButton)
-    expect(screen.getByText('Thanks for your feedback!')).toBeInTheDocument()
+    expect(screen.getByText('What did you find helpful? (optional)')).toBeInTheDocument()
+    expect(screen.getByRole('textbox')).toBeInTheDocument()
     expect(screen.queryByText('Was this guide helpful?')).not.toBeInTheDocument()
   })
 
@@ -107,17 +108,15 @@ describe('GuideFeedback', () => {
       expect(screen.getByText('5/100')).toBeInTheDocument()
     })
 
-    it('Submit button sends separate feedback_text event', () => {
+    it('Submit button does not send additional analytics event', () => {
       render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
       fireEvent.click(screen.getByRole('button', { name: /no/i }))
       mockTrack.mockClear() // Clear the initial down feedback call
       const textarea = screen.getByRole('textbox')
       fireEvent.change(textarea, { target: { value: 'Needs more details' } })
       fireEvent.click(screen.getByRole('button', { name: /submit/i }))
-      expect(mockTrack).toHaveBeenCalledWith('guide_feedback_text', {
-        venue_slug: 'test-venue',
-        feedback_text: 'Needs more details',
-      })
+      // Feedback text is submitted to server, not tracked via analytics
+      expect(mockTrack).not.toHaveBeenCalled()
     })
 
     it('Skip does not send additional event', () => {
