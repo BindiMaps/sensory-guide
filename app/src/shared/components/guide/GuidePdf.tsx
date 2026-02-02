@@ -1,24 +1,22 @@
 import { Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/renderer'
-import type { Guide, SensoryLevel } from '@/lib/schemas/guideSchema'
+import type { Guide } from '@/lib/schemas/guideSchema'
+import { formatDate } from '@/shared/utils/formatDate'
+import {
+  getCategoryColoursFuzzy,
+  getLevelColour as getSharedLevelColour,
+  getLevelLabel,
+  LEVEL_COLOURS,
+} from '@/shared/utils/colours'
+import { getOverallLevel } from '@/shared/utils/sensory'
 
-// Design system colours (using Helvetica - built-in font for reliability)
-const colours = {
+// PDF-specific colours (non-sensory)
+const pdfColours = {
   text: '#1A1A1A',
   textSecondary: '#3D3D3D',
   textMuted: '#595959',
   accent: '#B8510D',
   border: '#DDDDD9',
   surface: '#F8F8F6',
-  sensoryLow: '#2A6339',
-  sensoryMedium: '#8A5F08',
-  sensoryHigh: '#9E3322',
-  // Badge colours
-  badge: {
-    sound: { bg: '#E3ECF0', text: '#264854' },
-    light: { bg: '#F4EBDA', text: '#4D3F14' },
-    crowds: { bg: '#EDE6E0', text: '#3F352C' },
-    smells: { bg: '#E6EEE7', text: '#263D29' },
-  },
 }
 
 const styles = StyleSheet.create({
@@ -28,7 +26,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingBottom: 60,
     paddingHorizontal: 40,
-    color: colours.text,
+    color: pdfColours.text,
   },
   header: {
     marginBottom: 20,
@@ -40,17 +38,17 @@ const styles = StyleSheet.create({
   },
   meta: {
     fontSize: 9,
-    color: colours.textMuted,
+    color: pdfColours.textMuted,
     marginBottom: 8,
   },
   disclaimer: {
     fontSize: 9,
-    color: colours.textMuted,
+    color: pdfColours.textMuted,
   },
   introCard: {
-    backgroundColor: colours.surface,
+    backgroundColor: pdfColours.surface,
     borderLeftWidth: 3,
-    borderLeftColor: colours.accent,
+    borderLeftColor: pdfColours.accent,
     padding: 12,
     marginBottom: 20,
   },
@@ -61,7 +59,7 @@ const styles = StyleSheet.create({
   },
   introText: {
     fontSize: 10,
-    color: colours.textSecondary,
+    color: pdfColours.textSecondary,
     lineHeight: 1.5,
   },
   section: {
@@ -119,7 +117,7 @@ const styles = StyleSheet.create({
   },
   detailDescription: {
     fontSize: 10,
-    color: colours.textSecondary,
+    color: pdfColours.textSecondary,
     lineHeight: 1.5,
   },
   imageRow: {
@@ -152,14 +150,14 @@ const styles = StyleSheet.create({
   },
   facilityItem: {
     fontSize: 10,
-    color: colours.textSecondary,
+    color: pdfColours.textSecondary,
     marginBottom: 2,
     paddingLeft: 8,
   },
   sensoryKey: {
     marginTop: 20,
     padding: 12,
-    backgroundColor: colours.surface,
+    backgroundColor: pdfColours.surface,
     borderRadius: 4,
   },
   sensoryKeyTitle: {
@@ -168,7 +166,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 8,
-    color: colours.textMuted,
+    color: pdfColours.textMuted,
   },
   sensoryKeyItem: {
     flexDirection: 'row',
@@ -182,7 +180,7 @@ const styles = StyleSheet.create({
   },
   sensoryKeyText: {
     fontSize: 9,
-    color: colours.textSecondary,
+    color: pdfColours.textSecondary,
   },
   footer: {
     position: 'absolute',
@@ -191,62 +189,16 @@ const styles = StyleSheet.create({
     right: 40,
     textAlign: 'center',
     fontSize: 8,
-    color: colours.textMuted,
+    color: pdfColours.textMuted,
   },
   pageNumber: {
     position: 'absolute',
     bottom: 30,
     right: 40,
     fontSize: 8,
-    color: colours.textMuted,
+    color: pdfColours.textMuted,
   },
 })
-
-function getLevelColour(level: SensoryLevel): string {
-  switch (level) {
-    case 'low':
-      return colours.sensoryLow
-    case 'medium':
-      return colours.sensoryMedium
-    case 'high':
-      return colours.sensoryHigh
-    default:
-      return colours.textMuted
-  }
-}
-
-function getLevelLabel(level: SensoryLevel): string {
-  switch (level) {
-    case 'low':
-      return 'Low'
-    case 'medium':
-      return 'Medium'
-    case 'high':
-      return 'High'
-    default:
-      return level
-  }
-}
-
-function getBadgeColours(category: string): { bg: string; text: string } {
-  const lowerCat = category.toLowerCase()
-  if (lowerCat.includes('sound') || lowerCat.includes('noise')) return colours.badge.sound
-  if (lowerCat.includes('light') || lowerCat.includes('visual')) return colours.badge.light
-  if (lowerCat.includes('crowd') || lowerCat.includes('busy')) return colours.badge.crowds
-  if (lowerCat.includes('smell') || lowerCat.includes('scent')) return colours.badge.smells
-  return { bg: '#E8E8E5', text: '#3D3D3D' }
-}
-
-function formatDate(isoString: string): string {
-  try {
-    return new Date(isoString).toLocaleDateString('en-AU', {
-      year: 'numeric',
-      month: 'long',
-    })
-  } catch {
-    return isoString
-  }
-}
 
 interface GuidePdfProps {
   guide: Guide
@@ -284,7 +236,7 @@ export function GuidePdf({ guide }: GuidePdfProps) {
         {categories && categories.length > 0 && (
           <View style={styles.badgeRow}>
             {categories.map((cat) => {
-              const badgeColours = getBadgeColours(cat)
+              const badgeColours = getCategoryColoursFuzzy(cat)
               return (
                 <Text
                   key={cat}
@@ -311,14 +263,7 @@ export function GuidePdf({ guide }: GuidePdfProps) {
 
         {/* Areas */}
         {sortedAreas.map((area) => {
-          // Derive overall level from details
-          const getOverallLevel = (): SensoryLevel => {
-            const levels = area.details.map((d) => d.level)
-            if (levels.includes('high')) return 'high'
-            if (levels.includes('medium')) return 'medium'
-            return 'low'
-          }
-          const overallLevel = getOverallLevel()
+          const overallLevel = getOverallLevel(area.details.map((d) => d.level))
 
           return (
             <View key={area.id} style={styles.section} wrap={false}>
@@ -328,10 +273,10 @@ export function GuidePdf({ guide }: GuidePdfProps) {
                   <View
                     style={[
                       styles.levelSquare,
-                      { backgroundColor: getLevelColour(overallLevel) },
+                      { backgroundColor: getSharedLevelColour(overallLevel) },
                     ]}
                   />
-                  <Text style={[styles.levelText, { color: getLevelColour(overallLevel) }]}>
+                  <Text style={[styles.levelText, { color: getSharedLevelColour(overallLevel) }]}>
                     {getLevelLabel(overallLevel)}
                   </Text>
                 </View>
@@ -341,7 +286,7 @@ export function GuidePdf({ guide }: GuidePdfProps) {
               {area.badges && area.badges.length > 0 && (
                 <View style={styles.badgeRow}>
                   {area.badges.map((badge) => {
-                    const badgeColours = getBadgeColours(badge)
+                    const badgeColours = getCategoryColoursFuzzy(badge)
                     return (
                       <Text
                         key={badge}
@@ -372,7 +317,7 @@ export function GuidePdf({ guide }: GuidePdfProps) {
                   <Text style={styles.detailCategory}>
                     {detail.category}
                     {' '}
-                    <Text style={{ color: getLevelColour(detail.level), fontWeight: 500 }}>
+                    <Text style={{ color: getSharedLevelColour(detail.level), fontWeight: 500 }}>
                       ({getLevelLabel(detail.level)})
                     </Text>
                   </Text>
@@ -427,15 +372,15 @@ export function GuidePdf({ guide }: GuidePdfProps) {
         <View style={styles.sensoryKey} wrap={false}>
           <Text style={styles.sensoryKeyTitle}>Sensory Level Key</Text>
           <View style={styles.sensoryKeyItem}>
-            <View style={[styles.sensoryKeySquare, { backgroundColor: colours.sensoryLow }]} />
+            <View style={[styles.sensoryKeySquare, { backgroundColor: LEVEL_COLOURS.low }]} />
             <Text style={styles.sensoryKeyText}>Low - Generally calm</Text>
           </View>
           <View style={styles.sensoryKeyItem}>
-            <View style={[styles.sensoryKeySquare, { backgroundColor: colours.sensoryMedium }]} />
+            <View style={[styles.sensoryKeySquare, { backgroundColor: LEVEL_COLOURS.medium }]} />
             <Text style={styles.sensoryKeyText}>Medium - Some activity</Text>
           </View>
           <View style={styles.sensoryKeyItem}>
-            <View style={[styles.sensoryKeySquare, { backgroundColor: colours.sensoryHigh }]} />
+            <View style={[styles.sensoryKeySquare, { backgroundColor: LEVEL_COLOURS.high }]} />
             <Text style={styles.sensoryKeyText}>High - May be overwhelming</Text>
           </View>
         </View>

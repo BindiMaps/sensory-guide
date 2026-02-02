@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { logout } from '@/lib/auth'
+import { initAnalytics, trackEvent, AnalyticsEvent } from '@/lib/analytics'
 import { ApprovalProvider } from './ApprovalContext'
 import { useApproval } from './useApproval'
 
@@ -9,6 +10,15 @@ function AdminLayoutInner() {
   const { user, loading, initialised } = useAuthStore()
   const { isSuperAdmin, loading: approvalLoading } = useApproval()
   const navigate = useNavigate()
+  const analyticsInitialised = useRef(false)
+
+  // Initialise Firebase Analytics once for admin routes
+  useEffect(() => {
+    if (!analyticsInitialised.current) {
+      initAnalytics()
+      analyticsInitialised.current = true
+    }
+  }, [])
 
   useEffect(() => {
     if (initialised && !user) {
@@ -17,6 +27,7 @@ function AdminLayoutInner() {
   }, [user, initialised, navigate])
 
   const handleLogout = async () => {
+    trackEvent(AnalyticsEvent.AUTH_LOGOUT)
     await logout()
     navigate('/admin/login', { replace: true })
   }

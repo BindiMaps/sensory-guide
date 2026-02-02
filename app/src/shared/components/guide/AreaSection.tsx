@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import type { Area, SensoryLevel } from '@/lib/schemas/guideSchema'
+import type { Area } from '@/lib/schemas/guideSchema'
 import { useGuideStore } from '@/stores/guideStore'
+import { useReducedMotion } from '@/shared/hooks/useReducedMotion'
+import { getOverallLevel } from '@/shared/utils/sensory'
 import { CategoryBadge, LevelBadge } from './CategoryBadge'
 import { SensoryDetail } from './SensoryDetail'
 import { ClickableImage } from './ImageLightbox'
+import { useAnalytics } from '@/hooks/useAnalytics'
+import { AnalyticsEvent } from '@/lib/analytics'
 
 interface AreaSectionProps {
   area: Area
@@ -14,10 +18,6 @@ interface AreaSectionProps {
   /** Controlled toggle handler (used when no venueSlug) */
   onToggle?: () => void
 }
-
-// Initialize from media query synchronously to avoid animation flash on mount
-const getInitialReducedMotion = () =>
-  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 // Normalise embedUrls - handles both old (embedUrl: string) and new (embedUrls: string[]) formats
 function getEmbedUrls(area: Area): string[] {
@@ -41,6 +41,8 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
   // Use Zustand for persistence if venueSlug provided, controlled props if given, otherwise local state
   const store = useGuideStore()
   const [localExpanded, setLocalExpanded] = useState(false)
+  // Only use gtag for public pages (when venueSlug is provided)
+  const { track } = useAnalytics({ useGtag: !!venueSlug })
 
   // Normalise embed URLs (handles legacy embedUrl string format)
   const embedUrls = getEmbedUrls(area)
@@ -53,6 +55,19 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
       : localExpanded
 
   const toggleExpanded = () => {
+    // Track section expand/collapse (only for public pages)
+    if (venueSlug) {
+      const willBeExpanded = !isExpanded
+      track(
+        willBeExpanded ? AnalyticsEvent.GUIDE_SECTION_EXPAND : AnalyticsEvent.GUIDE_SECTION_COLLAPSE,
+        {
+          venue_slug: venueSlug,
+          section_name: area.name,
+          section_id: area.id,
+        }
+      )
+    }
+
     if (venueSlug) {
       store.toggleSection(venueSlug, area.id)
     } else if (onToggle) {
@@ -62,15 +77,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
     }
   }
 
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(getInitialReducedMotion)
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    // Only subscribe to changes, initial value already set synchronously
-    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
-  }, [])
+  const prefersReducedMotion = useReducedMotion()
 
   // Carousel scroll state
   const carouselRef = useRef<HTMLDivElement>(null)
@@ -82,13 +89,6 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
     if (!el) return
     const canLeft = el.scrollLeft > 0
     const canRight = el.scrollLeft < el.scrollWidth - el.clientWidth - 1
-    console.log('Carousel debug:', {
-      scrollLeft: el.scrollLeft,
-      scrollWidth: el.scrollWidth,
-      clientWidth: el.clientWidth,
-      canScrollLeft: canLeft,
-      canScrollRight: canRight,
-    })
     setCanScrollLeft(canLeft)
     setCanScrollRight(canRight)
   }, [])
@@ -146,12 +146,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
   const panelId = `section-${area.id}`
 
   // Derive overall level from details (highest level present)
-  const getOverallLevel = (): SensoryLevel => {
-    const levels = area.details.map((d) => d.level)
-    if (levels.includes('high')) return 'high'
-    if (levels.includes('medium')) return 'medium'
-    return 'low'
-  }
+  const overallLevel = getOverallLevel(area.details.map((d) => d.level))
 
   // Get preview text: prefer LLM-generated summary, fallback to first detail for legacy
   const getPreviewText = (): string | null => {
@@ -232,7 +227,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
 
         {/* Sensory level */}
         <span className="flex-shrink-0 pt-0.5 pl-2">
-          <LevelBadge level={getOverallLevel()} />
+          <LevelBadge level={overallLevel} />
         </span>
       </button>
 

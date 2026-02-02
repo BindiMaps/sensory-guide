@@ -18,11 +18,12 @@ export function FacilitiesSection({ facilities }: FacilitiesSectionProps) {
 
   return (
     <section className="mb-10">
-      <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">
-        Key Facilities
-      </h2>
+      <div className="bg-[#F8F8F6] rounded-sm p-4 sm:px-5">
+        <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">
+          Key Facilities
+        </h2>
 
-      <div className="space-y-4">
+        <div className="space-y-4">
         {facilities.exits.length > 0 && (
           <div>
             <h3 className="font-semibold text-sm text-[#1A1A1A] mb-1.5">
@@ -98,6 +99,7 @@ export function FacilitiesSection({ facilities }: FacilitiesSectionProps) {
             </ul>
           </div>
         )}
+        </div>
       </div>
     </section>
   )

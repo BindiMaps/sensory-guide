@@ -5,6 +5,7 @@ import { SuggestionsPanel } from './SuggestionsPanel'
 import { ImageAssignmentEditor } from './components/ImageAssignmentEditor'
 import { EmbedEditor } from './EmbedEditor'
 import { useEmbeddings, type Embeddings } from './useEmbeddings'
+import { trackEvent, AnalyticsEvent } from '@/lib/analytics'
 
 /**
  * Merge embeddings into guide areas.
@@ -64,14 +65,31 @@ export function GuidePreview({
   // Check if guide has any images to edit
   const hasImages = guide.areas.some((area) => area.images && area.images.length > 0)
 
+  const handleOpenEmbedEditor = () => {
+    if (venueId) {
+      trackEvent(AnalyticsEvent.VENUE_EMBED_EDITOR_OPEN, { venue_id: venueId })
+    }
+    setIsEmbedEditorOpen(true)
+  }
+
   const handleSaveEmbeds = async (newEmbeddings: Embeddings) => {
     setIsSavingEmbeds(true)
     try {
       await saveEmbeddings(newEmbeddings)
+      if (venueId) {
+        trackEvent(AnalyticsEvent.VENUE_EMBED_EDITOR_SAVE, { venue_id: venueId })
+      }
       setIsEmbedEditorOpen(false)
     } finally {
       setIsSavingEmbeds(false)
     }
+  }
+
+  const handleOpenImageEditor = () => {
+    if (venueId) {
+      trackEvent(AnalyticsEvent.VENUE_IMAGE_EDITOR_OPEN, { venue_id: venueId })
+    }
+    setIsImageEditorOpen(true)
   }
 
   const handleSaveImages = async (updatedAreas: Area[]) => {
@@ -101,6 +119,7 @@ export function GuidePreview({
       }))
 
       await updateGuideImages({ venueId, outputPath, updates })
+      trackEvent(AnalyticsEvent.VENUE_IMAGE_EDITOR_SAVE, { venue_id: venueId })
 
       // Trigger refetch of guide data
       onImagesSaved?.()
@@ -126,7 +145,7 @@ export function GuidePreview({
           {hasImages && outputPath && venueId && (
             <button
               type="button"
-              onClick={() => setIsImageEditorOpen(true)}
+              onClick={handleOpenImageEditor}
               disabled={isPublishing || isSavingImages}
               className="px-5 py-2.5 border border-[#DDDDD9] text-[#3D3D3D] rounded hover:bg-[#F8F8F6] disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm min-h-[44px] transition-colors"
             >
@@ -137,7 +156,7 @@ export function GuidePreview({
           {venueId && (
             <button
               type="button"
-              onClick={() => setIsEmbedEditorOpen(true)}
+              onClick={handleOpenEmbedEditor}
               disabled={isPublishing || isSavingEmbeds}
               className="px-5 py-2.5 border border-[#DDDDD9] text-[#3D3D3D] rounded hover:bg-[#F8F8F6] disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm min-h-[44px] transition-colors"
             >

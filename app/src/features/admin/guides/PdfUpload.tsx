@@ -4,6 +4,7 @@ import { Upload, FileText, X, AlertCircle, CheckCircle } from 'lucide-react'
 
 import { functions } from '@/lib/firebase'
 import { validatePdfFile, type SignedUploadUrlResponse } from '@/lib/schemas/uploadSchema'
+import { trackEvent, AnalyticsEvent } from '@/lib/analytics'
 
 interface PdfUploadProps {
   venueId: string
@@ -40,6 +41,7 @@ export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploa
     const file = event.target.files?.[0]
     if (!file) return
 
+    trackEvent(AnalyticsEvent.VENUE_PDF_UPLOAD_START, { venue_id: venueId })
     setState({ mode: 'validating', file })
 
     // Validate file
@@ -78,9 +80,11 @@ export function PdfUpload({ venueId, onUploadComplete, onUploadError }: PdfUploa
       await uploadWithProgress(file, uploadUrl, abortControllerRef.current.signal)
 
       setState({ mode: 'complete', file, usageInfo: { today: usageToday, limit: usageLimit } })
+      trackEvent(AnalyticsEvent.VENUE_PDF_UPLOAD_COMPLETE, { venue_id: venueId })
       onUploadComplete?.(logId, destinationPath)
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Upload failed'
+      trackEvent(AnalyticsEvent.VENUE_PDF_UPLOAD_ERROR, { venue_id: venueId, error_message: errorMessage })
       setState({ mode: 'error', error: errorMessage, file })
       onUploadError?.(errorMessage)
     }

@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react'
 import { Buffer } from 'buffer'
 import type { Guide } from '@/lib/schemas/guideSchema'
+import { useAnalytics } from '@/hooks/useAnalytics'
+import { AnalyticsEvent } from '@/lib/analytics'
 
 // Polyfill Buffer for @react-pdf/renderer in browser
 if (typeof (globalThis as unknown as { Buffer?: typeof Buffer }).Buffer === 'undefined') {
@@ -9,6 +11,8 @@ if (typeof (globalThis as unknown as { Buffer?: typeof Buffer }).Buffer === 'und
 
 interface GuidePdfActionsProps {
   guide: Guide
+  /** Venue slug for analytics tracking (public pages only) */
+  venueSlug?: string
 }
 
 const buttonClass =
@@ -18,9 +22,11 @@ const buttonClass =
  * Print and Download PDF buttons for public guide pages - Design System v5
  * Lazy-loads @react-pdf/renderer only when user clicks.
  */
-export function GuidePdfActions({ guide }: GuidePdfActionsProps) {
+export function GuidePdfActions({ guide, venueSlug }: GuidePdfActionsProps) {
   const [isPrinting, setIsPrinting] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
+  // Only use gtag for public pages (when venueSlug is provided)
+  const { track } = useAnalytics({ useGtag: !!venueSlug })
 
   const generatePdf = useCallback(async () => {
     const [{ pdf }, { GuidePdf }] = await Promise.all([
@@ -32,6 +38,13 @@ export function GuidePdfActions({ guide }: GuidePdfActionsProps) {
 
   const handlePrint = useCallback(async () => {
     setIsPrinting(true)
+    // Track PDF download (print)
+    if (venueSlug) {
+      track(AnalyticsEvent.GUIDE_PDF_DOWNLOAD, {
+        venue_slug: venueSlug,
+        venue_name: guide.venue.name,
+      })
+    }
     try {
       const blob = await generatePdf()
       const url = URL.createObjectURL(blob)
@@ -52,10 +65,17 @@ export function GuidePdfActions({ guide }: GuidePdfActionsProps) {
     } finally {
       setIsPrinting(false)
     }
-  }, [generatePdf])
+  }, [generatePdf, venueSlug, track, guide.venue.name])
 
   const handleDownload = useCallback(async () => {
     setIsDownloading(true)
+    // Track PDF download
+    if (venueSlug) {
+      track(AnalyticsEvent.GUIDE_PDF_DOWNLOAD, {
+        venue_slug: venueSlug,
+        venue_name: guide.venue.name,
+      })
+    }
     try {
       const blob = await generatePdf()
       const url = URL.createObjectURL(blob)
@@ -71,7 +91,7 @@ export function GuidePdfActions({ guide }: GuidePdfActionsProps) {
     } finally {
       setIsDownloading(false)
     }
-  }, [generatePdf, guide.venue.name])
+  }, [generatePdf, guide.venue.name, venueSlug, track])
 
   const isDisabled = isPrinting || isDownloading
 

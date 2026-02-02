@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useVenues } from '@/shared/hooks/useVenues'
 import { useApproval } from './useApproval'
 import { AccessSetup } from './AccessSetup'
 import { AllVenuesList } from './super-admin/AllVenuesList'
+import { trackEvent, AnalyticsEvent } from '@/lib/analytics'
 
 type ViewTab = 'my-venues' | 'all-venues'
 
@@ -11,10 +12,19 @@ export function AdminDashboard() {
   const { venues, loading, error } = useVenues()
   const { approved, isSuperAdmin, needsSetup, refetch } = useApproval()
   const [activeTab, setActiveTab] = useState<ViewTab>('my-venues')
+  const viewTracked = useRef(false)
 
   useEffect(() => {
     document.title = 'Dashboard - Sensory Guide Admin'
   }, [])
+
+  // Track dashboard view once
+  useEffect(() => {
+    if (!loading && !viewTracked.current) {
+      trackEvent(AnalyticsEvent.ADMIN_DASHBOARD_VIEW)
+      viewTracked.current = true
+    }
+  }, [loading])
 
   if (loading) {
     return (
@@ -58,6 +68,7 @@ export function AdminDashboard() {
               <p className="text-muted-foreground mb-4">No venues yet</p>
               <Link
                 to="/admin/venues/new"
+                onClick={() => trackEvent(AnalyticsEvent.ADMIN_CREATE_VENUE_CLICK)}
                 className="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
               >
                 Create New Venue
@@ -75,6 +86,7 @@ export function AdminDashboard() {
             <Link
               key={venue.id}
               to={`/admin/venues/${venue.id}`}
+              onClick={() => trackEvent(AnalyticsEvent.ADMIN_VENUE_CLICK, { venue_id: venue.id, venue_name: venue.name })}
               className="block p-4 border rounded-lg hover:border-primary transition-colors"
             >
               <div className="flex justify-between items-start">
@@ -110,6 +122,7 @@ export function AdminDashboard() {
         {activeTab === 'my-venues' && venues.length > 0 && approved && (
           <Link
             to="/admin/venues/new"
+            onClick={() => trackEvent(AnalyticsEvent.ADMIN_CREATE_VENUE_CLICK)}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
           >
             Create New Venue
@@ -124,7 +137,12 @@ export function AdminDashboard() {
             role="tab"
             aria-selected={activeTab === 'my-venues'}
             aria-controls="my-venues-panel"
-            onClick={() => setActiveTab('my-venues')}
+            onClick={() => {
+              if (activeTab !== 'my-venues') {
+                trackEvent(AnalyticsEvent.ADMIN_TAB_SWITCH, { from_tab: activeTab, to_tab: 'my-venues' })
+                setActiveTab('my-venues')
+              }
+            }}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
               activeTab === 'my-venues'
                 ? 'border-primary text-primary'
@@ -137,7 +155,12 @@ export function AdminDashboard() {
             role="tab"
             aria-selected={activeTab === 'all-venues'}
             aria-controls="all-venues-panel"
-            onClick={() => setActiveTab('all-venues')}
+            onClick={() => {
+              if (activeTab !== 'all-venues') {
+                trackEvent(AnalyticsEvent.ADMIN_TAB_SWITCH, { from_tab: activeTab, to_tab: 'all-venues' })
+                setActiveTab('all-venues')
+              }
+            }}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
               activeTab === 'all-venues'
                 ? 'border-primary text-primary'

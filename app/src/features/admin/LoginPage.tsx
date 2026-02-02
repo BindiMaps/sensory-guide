@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loginWithEmail, loginWithGoogle } from '@/lib/auth'
 import { useAuthStore } from '@/stores/authStore'
+import { initAnalytics, trackEvent, AnalyticsEvent } from '@/lib/analytics'
 
 export function LoginPage() {
   const [email, setEmail] = useState('')
@@ -10,6 +11,15 @@ export function LoginPage() {
   const [submitting, setSubmitting] = useState(false)
   const navigate = useNavigate()
   const { user, initialised } = useAuthStore()
+  const analyticsInitialised = useRef(false)
+
+  // Initialise analytics for login page (before AdminLayout loads)
+  useEffect(() => {
+    if (!analyticsInitialised.current) {
+      initAnalytics()
+      analyticsInitialised.current = true
+    }
+  }, [])
 
   useEffect(() => {
     document.title = 'Login - Sensory Guide Admin'
@@ -25,21 +35,28 @@ export function LoginPage() {
     e.preventDefault()
     setError('')
     setSubmitting(true)
+    trackEvent(AnalyticsEvent.AUTH_LOGIN_ATTEMPT, { method: 'email' })
 
     try {
       await loginWithEmail(email, password)
+      trackEvent(AnalyticsEvent.AUTH_LOGIN_SUCCESS, { method: 'email' })
       navigate('/admin', { replace: true })
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed'
+      let errorCode = 'unknown'
       if (message.includes('invalid-credential') || message.includes('wrong-password')) {
         setError('Invalid email or password')
+        errorCode = 'invalid-credential'
       } else if (message.includes('user-disabled')) {
         setError('Account disabled. Contact support.')
+        errorCode = 'user-disabled'
       } else if (message.includes('network')) {
         setError('Network error. Check your connection.')
+        errorCode = 'network'
       } else {
         setError('Login failed. Please try again.')
       }
+      trackEvent(AnalyticsEvent.AUTH_LOGIN_FAILURE, { method: 'email', error_code: errorCode })
     } finally {
       setSubmitting(false)
     }
@@ -48,17 +65,22 @@ export function LoginPage() {
   const handleGoogleLogin = async () => {
     setError('')
     setSubmitting(true)
+    trackEvent(AnalyticsEvent.AUTH_LOGIN_ATTEMPT, { method: 'google' })
 
     try {
       await loginWithGoogle()
+      trackEvent(AnalyticsEvent.AUTH_LOGIN_SUCCESS, { method: 'google' })
       navigate('/admin', { replace: true })
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed'
+      let errorCode = 'unknown'
       if (message.includes('popup-closed')) {
         setError('Sign-in cancelled')
+        errorCode = 'popup-closed'
       } else {
         setError('Google sign-in failed. Please try again.')
       }
+      trackEvent(AnalyticsEvent.AUTH_LOGIN_FAILURE, { method: 'google', error_code: errorCode })
     } finally {
       setSubmitting(false)
     }

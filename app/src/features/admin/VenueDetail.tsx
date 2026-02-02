@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { httpsCallable } from 'firebase/functions'
 import { Loader2, ChevronDown, ChevronUp, Pencil } from 'lucide-react'
+import { trackEvent, AnalyticsEvent } from '@/lib/analytics'
 import { useVenue } from '@/shared/hooks/useVenue'
 import { useAuthStore } from '@/stores/authStore'
 import { functions } from '@/lib/firebase'
@@ -72,6 +73,7 @@ function GuidePreviewWrapper({
   const [publishResult, setPublishResult] = useState<PublishResult | null>(null)
 
   const handlePublishClick = () => {
+    trackEvent(AnalyticsEvent.VENUE_PUBLISH_CLICK, { venue_id: venueId, venue_slug: venueSlug })
     resetPublishError()
     setPublishState('confirming')
   }
@@ -81,14 +83,17 @@ function GuidePreviewWrapper({
   }
 
   const handlePublishConfirm = async () => {
+    trackEvent(AnalyticsEvent.VENUE_PUBLISH_CONFIRM, { venue_id: venueId, venue_slug: venueSlug })
     setPublishState('publishing')
     const result = await publish(venueId, outputPath)
 
     if (result) {
+      trackEvent(AnalyticsEvent.VENUE_PUBLISH_SUCCESS, { venue_id: venueId, venue_slug: result.slug })
       setPublishResult({ publicUrl: result.publicUrl, slug: result.slug })
       setPublishState('success')
       onPublishSuccess()
     } else {
+      trackEvent(AnalyticsEvent.VENUE_PUBLISH_ERROR, { venue_id: venueId })
       // Error is set by the hook
       setPublishState('idle')
     }
@@ -313,6 +318,7 @@ export function VenueDetail() {
 
   // Handle upload complete - trigger transform
   const handleUploadComplete = async (logId: string, uploadPath: string) => {
+    trackEvent(AnalyticsEvent.VENUE_TRANSFORM_START, { venue_id: id! })
     startTransform(logId)
 
     if (!functions) {
@@ -328,6 +334,7 @@ export function VenueDetail() {
 
       const result = await transformPdf({ venueId: id!, uploadPath, logId })
 
+      trackEvent(AnalyticsEvent.VENUE_TRANSFORM_COMPLETE, { venue_id: id! })
       setUsageInfo({ today: result.data.usageToday, limit: result.data.usageLimit, isUnlimited: result.data.isUnlimited })
       completeTransform(result.data.outputPath)
       refetchVersions()
@@ -336,17 +343,24 @@ export function VenueDetail() {
 
       // Human-friendly error messages
       let friendlyMessage = 'Something went wrong. Please try again.'
+      let errorCode = 'unknown'
       if (error.code === 'deadline-exceeded' || error.message?.includes('deadline')) {
         friendlyMessage = 'The transformation is taking longer than expected. Please try again with a smaller PDF.'
+        errorCode = 'deadline-exceeded'
       } else if (error.code === 'resource-exhausted' || error.message?.includes('limit')) {
         friendlyMessage = 'Daily limit reached. Come back tomorrow to create more guides.'
+        errorCode = 'resource-exhausted'
       } else if (error.message?.includes('not-found')) {
         friendlyMessage = 'Could not find the uploaded PDF. Please try uploading again.'
+        errorCode = 'not-found'
       } else if (error.message?.includes('permission')) {
         friendlyMessage = 'You don\'t have permission to transform guides for this venue.'
+        errorCode = 'permission-denied'
       } else if (error.message) {
         friendlyMessage = error.message
       }
+
+      trackEvent(AnalyticsEvent.VENUE_TRANSFORM_ERROR, { venue_id: id!, error_code: errorCode })
 
       // Extract usage info from error if rate limit exceeded
       if (error.details?.usageToday !== undefined) {
@@ -371,6 +385,7 @@ export function VenueDetail() {
     if (!functions || !id) return
 
     setMakingLiveError(null)
+    trackEvent(AnalyticsEvent.VENUE_VERSION_MAKE_LIVE, { venue_id: id, version_timestamp: timestamp })
     try {
       const setLiveVersion = httpsCallable<
         { venueId: string; timestamp: string },
@@ -411,6 +426,7 @@ export function VenueDetail() {
 
   // Handle preview from version history
   const handleVersionPreview = (version: { previewUrl: string; timestamp: string }) => {
+    trackEvent(AnalyticsEvent.VENUE_VERSION_PREVIEW, { venue_id: id!, version_timestamp: version.timestamp })
     // Format timestamp for display
     const date = new Date(version.timestamp).toLocaleString('en-AU', {
       day: 'numeric',
@@ -456,6 +472,7 @@ export function VenueDetail() {
 
     try {
       await addEditor(email)
+      trackEvent(AnalyticsEvent.VENUE_EDITOR_ADD, { venue_id: id!, editor_email: email, action: 'add' })
       setNewEditorEmail('')
     } catch (err) {
       setEditorError(err instanceof Error ? err.message : 'Failed to add editor')
@@ -475,6 +492,7 @@ export function VenueDetail() {
     setRemovingEditor(true)
     try {
       await removeEditor(email)
+      trackEvent(AnalyticsEvent.VENUE_EDITOR_REMOVE, { venue_id: id!, editor_email: email, action: 'remove' })
       if (isSelf) {
         navigate('/admin', { replace: true })
       }
@@ -492,6 +510,7 @@ export function VenueDetail() {
     }
 
     setDeleting(true)
+    trackEvent(AnalyticsEvent.VENUE_DELETE, { venue_id: id!, venue_slug: venue?.slug })
 
     try {
       await deleteVenue()
@@ -568,6 +587,7 @@ export function VenueDetail() {
     setRemovingEditor(true)
     try {
       await removeEditor(editorToRemove)
+      trackEvent(AnalyticsEvent.VENUE_EDITOR_REMOVE, { venue_id: id!, editor_email: editorToRemove, action: 'remove' })
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to remove editor')
     } finally {

@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import type { Guide } from '@/lib/schemas/guideSchema'
 import { GuideContent, GuidePdfActions } from '@/shared/components/guide'
+import { useAnalytics } from '@/hooks/useAnalytics'
+import { AnalyticsEvent } from '@/lib/analytics'
 
 const STORAGE_BUCKET = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET
 
@@ -51,6 +53,8 @@ type PageState =
 export function GuidePage() {
   const { slug } = useParams<{ slug: string }>()
   const [state, setState] = useState<PageState>({ status: 'loading' })
+  const { track } = useAnalytics({ useGtag: true })
+  const viewTracked = useRef(false)
 
   useEffect(() => {
     if (!slug) {
@@ -76,6 +80,15 @@ export function GuidePage() {
 
       document.title = `${guideData.venue.name} - Sensory Guide`
       setState({ status: 'ready', guide: guideData })
+
+      // Track guide view (only once per page load)
+      if (!viewTracked.current) {
+        track(AnalyticsEvent.GUIDE_VIEW, {
+          venue_slug: slug!,
+          venue_name: guideData.venue.name,
+        })
+        viewTracked.current = true
+      }
     }
 
     loadGuide()
@@ -83,7 +96,7 @@ export function GuidePage() {
     return () => {
       cancelled = true
     }
-  }, [slug])
+  }, [slug, track])
 
   // Derive values for render
   const loading = state.status === 'loading'
@@ -209,7 +222,7 @@ export function GuidePage() {
 
       {/* Download PDF button */}
       <div className="max-w-[720px] mx-auto mb-4 flex justify-end">
-        <GuidePdfActions guide={guide} />
+        <GuidePdfActions guide={guide} venueSlug={slug} />
       </div>
 
       <main id="main-content">

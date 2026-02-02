@@ -117,6 +117,27 @@ if (request.data.orgId !== orgId && !superAdmin) throw new HttpsError('permissio
 - **Lighthouse CI gates:** a11y ≥95, perf ≥80
 - **yarn audit:** No high/critical vulnerabilities
 
+### Analytics (CRITICAL)
+
+**Every user interaction MUST be tracked via GA events.**
+
+| Context | Import | Notes |
+|---------|--------|-------|
+| Admin pages | `import { trackEvent, AnalyticsEvent } from '@/lib/analytics'` | Firebase Analytics |
+| Public pages | `const { track } = useAnalytics({ useGtag: true })` | Raw gtag, no Firebase |
+
+**Event naming:** `{domain}_{action}_{target}` (e.g., `venue_publish_confirm`)
+
+Domains: `guide_`, `admin_`, `auth_`, `venue_`
+
+**Required events for new features:**
+- Page/view load
+- Primary action (clicks, submits)
+- Success/failure states
+- Error conditions with codes
+
+**New events:** Add to `lib/analytics/types.ts` first (type-safe event names).
+
 ---
 
 ## Anti-Patterns (DO NOT DO)
@@ -131,6 +152,9 @@ if (request.data.orgId !== orgId && !superAdmin) throw new HttpsError('permissio
 - **DO NOT** import Firebase SDK in public bundle
 - **DO NOT** write feedback to Firestore (use GA)
 - **DO NOT** add dependencies without checking bundle size impact
+- **DO NOT** add interactive features without GA event tracking
+- **DO NOT** use raw gtag in admin (use analyticsService)
+- **DO NOT** use Firebase Analytics in public bundle (use gtagService)
 
 ---
 

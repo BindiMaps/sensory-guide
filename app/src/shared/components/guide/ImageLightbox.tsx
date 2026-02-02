@@ -7,24 +7,23 @@ import {
   type LightboxImage,
   type ImageLightboxContextValue,
 } from './useImageLightbox'
+import { useReducedMotion } from '@/shared/hooks/useReducedMotion'
 
 interface ImageLightboxProviderProps {
   children: ReactNode
+  /** Callback when an image is opened (for analytics) */
+  onImageOpen?: (image: LightboxImage, index: number) => void
 }
-
-// Check reduced motion preference
-const getInitialReducedMotion = () =>
-  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /**
  * Provider for image lightbox functionality
  * Wrap around GuideContent to enable clickable images with navigation
  */
-export function ImageLightboxProvider({ children }: ImageLightboxProviderProps) {
+export function ImageLightboxProvider({ children, onImageOpen }: ImageLightboxProviderProps) {
   const [images, setImages] = useState<LightboxImage[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(getInitialReducedMotion)
+  const prefersReducedMotion = useReducedMotion()
 
   // Ref to access current images without causing re-renders
   const imagesRef = useRef(images)
@@ -32,12 +31,11 @@ export function ImageLightboxProvider({ children }: ImageLightboxProviderProps) 
     imagesRef.current = images
   }, [images])
 
+  // Ref for onImageOpen callback
+  const onImageOpenRef = useRef(onImageOpen)
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
-  }, [])
+    onImageOpenRef.current = onImageOpen
+  }, [onImageOpen])
 
   const registerImage = useCallback((image: LightboxImage) => {
     setImages((prev) => {
@@ -56,6 +54,11 @@ export function ImageLightboxProvider({ children }: ImageLightboxProviderProps) 
     if (idx !== -1) {
       setCurrentIndex(idx)
       setIsOpen(true)
+      // Call analytics callback
+      const image = imagesRef.current[idx]
+      if (onImageOpenRef.current && image) {
+        onImageOpenRef.current(image, idx)
+      }
     }
   }, [])
 

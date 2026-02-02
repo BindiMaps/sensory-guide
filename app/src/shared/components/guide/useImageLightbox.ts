@@ -20,6 +20,8 @@ export interface ImageLightboxContextValue {
   isOpen: boolean
   /** Current image index */
   currentIndex: number
+  /** Callback when an image is opened (for analytics) */
+  onImageOpen?: (image: LightboxImage, index: number) => void
 }
 
 export const ImageLightboxContext = createContext<ImageLightboxContextValue | null>(null)

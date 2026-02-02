@@ -1,30 +1,19 @@
 import { useState, useCallback } from 'react'
 import type { Guide } from '@/lib/schemas/guideSchema'
 import { useGuideStore } from '@/stores/guideStore'
+import { formatDate } from '@/shared/utils/formatDate'
 import { AreaSection } from './AreaSection'
 import { CategoryBadge } from './CategoryBadge'
 import { FacilitiesSection } from './FacilitiesSection'
 import { ImageLightboxProvider } from './ImageLightbox'
 import { SensoryKey } from './SensoryKey'
+import { useAnalytics } from '@/hooks/useAnalytics'
+import { AnalyticsEvent } from '@/lib/analytics'
 
 interface GuideContentProps {
   guide: Guide
   /** If provided, expansion state persists to localStorage */
   venueSlug?: string
-}
-
-/**
- * Format date for display
- */
-function formatDate(isoString: string) {
-  try {
-    return new Date(isoString).toLocaleDateString('en-AU', {
-      year: 'numeric',
-      month: 'long',
-    })
-  } catch {
-    return isoString
-  }
 }
 
 /**
@@ -86,6 +75,8 @@ function parseContact(contact: string): ContactSegment[] {
 export function GuideContent({ guide, venueSlug }: GuideContentProps) {
   const { venue, areas, facilities, categories } = guide
   const store = useGuideStore()
+  // Only use gtag for public pages (when venueSlug is provided)
+  const { track } = useAnalytics({ useGtag: !!venueSlug })
 
   // Local state for expansion when no venueSlug (no persistence)
   const [localExpanded, setLocalExpanded] = useState<Set<string>>(new Set())
@@ -100,6 +91,14 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
     : areaIds.every((id) => localExpanded.has(id))
 
   const handleExpandCollapseAll = () => {
+    // Track expand/collapse all (only for public pages)
+    if (venueSlug) {
+      track(
+        allExpanded ? AnalyticsEvent.GUIDE_COLLAPSE_ALL : AnalyticsEvent.GUIDE_EXPAND_ALL,
+        { venue_slug: venueSlug }
+      )
+    }
+
     if (venueSlug) {
       if (allExpanded) {
         store.collapseAll(venueSlug)
@@ -129,8 +128,19 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
     })
   }, [])
 
+  // Image view tracking callback
+  const handleImageOpen = useCallback((image: { sectionTitle: string }, index: number) => {
+    if (venueSlug) {
+      track(AnalyticsEvent.GUIDE_IMAGE_VIEW, {
+        venue_slug: venueSlug,
+        section_name: image.sectionTitle,
+        image_index: index,
+      })
+    }
+  }, [venueSlug, track])
+
   return (
-    <ImageLightboxProvider>
+    <ImageLightboxProvider onImageOpen={handleImageOpen}>
       <div
         className="max-w-[720px] mx-auto font-['Inter',system-ui,sans-serif] text-[15px] leading-relaxed text-[#1A1A1A]"
         style={{ WebkitFontSmoothing: 'antialiased' }}
@@ -150,6 +160,10 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-[#B8510D] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-1 rounded-sm"
+                  onClick={() => venueSlug && track(AnalyticsEvent.GUIDE_EXTERNAL_LINK, {
+                    venue_slug: venueSlug,
+                    link_type: 'maps',
+                  })}
                 >
                   {venue.address}
                   <span aria-hidden="true" className="ml-0.5 text-xs">↗</span>
@@ -166,6 +180,10 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
                       key={i}
                       href={segment.href}
                       className="hover:text-[#B8510D] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-1 rounded-sm"
+                      onClick={() => venueSlug && track(AnalyticsEvent.GUIDE_EXTERNAL_LINK, {
+                        venue_slug: venueSlug,
+                        link_type: segment.type,
+                      })}
                     >
                       {segment.display}
                     </a>
@@ -216,10 +234,24 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
               <button
                 type="button"
                 onClick={handleExpandCollapseAll}
-                className="text-sm text-[#595959] hover:text-[#B8510D] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 rounded-sm"
+                className="inline-flex items-center gap-1 text-sm text-[#595959] hover:text-[#B8510D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 rounded-sm"
                 aria-label={allExpanded ? 'Collapse all sections' : 'Expand all sections'}
               >
                 {allExpanded ? 'Collapse all' : 'Expand all'}
+                <svg
+                  viewBox="0 0 24 24"
+                  className={`w-4 h-4 ${allExpanded ? 'rotate-180' : ''}`}
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <polyline
+                    points="6 9 12 15 18 9"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </button>
             </div>
           )}

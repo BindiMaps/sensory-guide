@@ -1,13 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useReducedMotion } from '@/shared/hooks/useReducedMotion'
 
 interface SuggestionsPanelProps {
   suggestions: string[]
   defaultExpanded?: boolean
 }
-
-// Initialize from media query synchronously to avoid animation flash on mount
-const getInitialReducedMotion = () =>
-  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /**
  * Collapsible panel showing content improvement suggestions
@@ -15,15 +12,7 @@ const getInitialReducedMotion = () =>
  */
 export function SuggestionsPanel({ suggestions, defaultExpanded = false }: SuggestionsPanelProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(getInitialReducedMotion)
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    // Only subscribe to changes, initial value already set synchronously
-    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
-  }, [])
+  const prefersReducedMotion = useReducedMotion()
 
   if (suggestions.length === 0) {
     return null
