@@ -99,23 +99,35 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
     let resizeObserver: ResizeObserver | null = null
     let capturedEl: HTMLDivElement | null = null
 
-    // Defer check until after browser paints the unhidden content
+    // Double-RAF: first to exit hidden state, second after layout
     const frameId = requestAnimationFrame(() => {
-      capturedEl = carouselRef.current
-      if (!capturedEl) return
+      requestAnimationFrame(() => {
+        capturedEl = carouselRef.current
+        if (!capturedEl) return
 
-      updateScrollState()
+        updateScrollState()
 
-      capturedEl.addEventListener('scroll', updateScrollState)
+        capturedEl.addEventListener('scroll', updateScrollState)
 
-      resizeObserver = new ResizeObserver(updateScrollState)
-      resizeObserver.observe(capturedEl)
+        resizeObserver = new ResizeObserver(updateScrollState)
+        resizeObserver.observe(capturedEl)
+
+        // Listen for iframe loads (they load async after initial layout)
+        const iframes = capturedEl.querySelectorAll('iframe')
+        iframes.forEach((iframe) => {
+          iframe.addEventListener('load', updateScrollState)
+        })
+      })
     })
 
     return () => {
       cancelAnimationFrame(frameId)
       if (capturedEl) {
         capturedEl.removeEventListener('scroll', updateScrollState)
+        const iframes = capturedEl.querySelectorAll('iframe')
+        iframes.forEach((iframe) => {
+          iframe.removeEventListener('load', updateScrollState)
+        })
       }
       resizeObserver?.disconnect()
     }

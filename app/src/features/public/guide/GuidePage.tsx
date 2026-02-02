@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import type { Guide } from '@/lib/schemas/guideSchema'
-import { GuideContent } from '@/shared/components/guide'
+import { GuideContent, GuidePdfActions } from '@/shared/components/guide'
 
 const STORAGE_BUCKET = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET
 
@@ -206,6 +206,11 @@ export function GuidePage() {
       >
         Skip to content
       </a>
+
+      {/* Download PDF button */}
+      <div className="max-w-[720px] mx-auto mb-4 flex justify-end">
+        <GuidePdfActions guide={guide} />
+      </div>
 
       <main id="main-content">
         <GuideContent guide={guide} venueSlug={slug} />

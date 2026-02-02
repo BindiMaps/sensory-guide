@@ -11,4 +11,11 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  define: {
+    // Polyfill for @react-pdf/renderer which uses Buffer
+    'global.Buffer': 'globalThis.Buffer',
+  },
+  optimizeDeps: {
+    include: ['buffer'],
+  },
 })

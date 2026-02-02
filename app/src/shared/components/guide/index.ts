@@ -6,3 +6,5 @@ export { ImageLightboxProvider, ClickableImage } from './ImageLightbox'
 export { useImageLightbox, useOptionalImageLightbox, type LightboxImage } from './useImageLightbox'
 export { SensoryDetail } from './SensoryDetail'
 export { SensoryKey } from './SensoryKey'
+export { GuidePdfActions, DownloadPdfButton } from './DownloadPdfButton'
+// GuidePdf is lazy-loaded by DownloadPdfButton - not exported statically to keep bundle small
