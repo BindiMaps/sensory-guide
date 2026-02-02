@@ -94,10 +94,50 @@ jobs:
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
+  pa11y:
+    name: Pa11y Accessibility
+    runs-on: ubuntu-latest
+    needs: lint-test-build
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+          cache-dependency-path: './app/yarn.lock'
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: ./app/dist
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: ./app
+
+      - name: Run Pa11y CI
+        run: |
+          npx serve -l 3000 dist &
+          sleep 3
+          yarn test:a11y 2>&1 | tee pa11y-output.txt
+        working-directory: ./app
+
+      - name: Upload Pa11y results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pa11y-results
+          path: ./app/pa11y-output.txt
+          retention-days: 7
+
   deploy:
     name: Deploy to Firebase
     runs-on: ubuntu-latest
-    needs: [lint-test-build, lighthouse]
+    needs: [lint-test-build, lighthouse, pa11y]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     defaults:
       run:

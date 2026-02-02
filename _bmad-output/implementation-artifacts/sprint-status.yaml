@@ -83,6 +83,7 @@ development_status:
 
   # Epic 4: Accessibility Sprint (Sprint 2)
   4-4-accessibility-compliance: backlog
+  4-6-pa11y-ci-integration: done  # Run Pa11y in CI to catch a11y violations
   epic-4-retrospective: optional
 
   # Epic 5: Print & Feedback
