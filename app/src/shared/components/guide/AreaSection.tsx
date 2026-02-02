@@ -97,25 +97,25 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
     if (!isExpanded) return
 
     let resizeObserver: ResizeObserver | null = null
+    let capturedEl: HTMLDivElement | null = null
 
     // Defer check until after browser paints the unhidden content
     const frameId = requestAnimationFrame(() => {
-      const el = carouselRef.current
-      if (!el) return
+      capturedEl = carouselRef.current
+      if (!capturedEl) return
 
       updateScrollState()
 
-      el.addEventListener('scroll', updateScrollState)
+      capturedEl.addEventListener('scroll', updateScrollState)
 
       resizeObserver = new ResizeObserver(updateScrollState)
-      resizeObserver.observe(el)
+      resizeObserver.observe(capturedEl)
     })
 
     return () => {
       cancelAnimationFrame(frameId)
-      const el = carouselRef.current
-      if (el) {
-        el.removeEventListener('scroll', updateScrollState)
+      if (capturedEl) {
+        capturedEl.removeEventListener('scroll', updateScrollState)
       }
       resizeObserver?.disconnect()
     }

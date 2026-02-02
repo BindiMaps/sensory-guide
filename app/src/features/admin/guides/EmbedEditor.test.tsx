@@ -1,7 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { EmbedEditor, isEmbeddableUrl } from './EmbedEditor'
+import { EmbedEditor } from './EmbedEditor'
+import { isEmbeddableUrl } from './embedUrlValidation'
 import type { Area } from '@/lib/schemas/guideSchema'
 
 describe('isEmbeddableUrl', () => {
