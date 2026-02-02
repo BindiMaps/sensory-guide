@@ -47,6 +47,19 @@ validation-rules:
 - [ ] **Code Quality:** Linting and static checks pass when configured in project
 - [ ] **Test Framework Compliance:** Tests use project's testing frameworks and patterns from Dev Notes
 
+## ♿ Accessibility Validation (UI Stories)
+
+_Skip this section if story has no UI changes_
+
+- [ ] **Semantic HTML:** Correct heading hierarchy, landmarks, lists, and form elements used
+- [ ] **Keyboard Navigation:** All interactive elements reachable and operable via keyboard (Tab, Enter, Escape, Arrow keys)
+- [ ] **Focus Management:** Visible focus indicators, logical focus order, focus trapped in modals
+- [ ] **Screen Reader Support:** Meaningful alt text, ARIA labels where needed, live regions for dynamic content
+- [ ] **Colour Contrast:** Text meets WCAG AA (4.5:1 normal, 3:1 large), UI components meet 3:1
+- [ ] **Touch Targets:** Interactive elements ≥44x44px on touch devices
+- [ ] **Motion/Animation:** Respects prefers-reduced-motion, no content-blocking animations
+- [ ] **Automated Checks:** Pa11y/axe-core run with zero violations (or documented exceptions)
+
 ## 📝 Documentation & Tracking
 
 - [ ] **File List Complete:** File List includes EVERY new, modified, or deleted file (paths relative to repo root)

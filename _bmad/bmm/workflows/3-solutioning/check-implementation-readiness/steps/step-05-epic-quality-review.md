@@ -174,6 +174,27 @@ Brownfield projects should have:
 - Integration points with existing systems
 - Migration or compatibility stories
 
+#### C. Accessibility Requirements Validation
+
+**🚨 CRITICAL CHECK for UI-facing stories:**
+
+For every story with UI components, verify:
+
+- [ ] Keyboard navigation requirements specified (Tab, Enter, Escape, Arrow keys)
+- [ ] Screen reader support mentioned (ARIA labels, live regions, alt text)
+- [ ] Colour contrast requirements (WCAG AA = 4.5:1 text, 3:1 UI)
+- [ ] Touch target sizing specified (≥44x44px mobile)
+- [ ] Focus management for modals/overlays
+
+**Red flags (violations):**
+
+- UI story with NO accessibility ACs → 🔴 CRITICAL
+- "Make it accessible" without specifics → 🟠 MAJOR (too vague)
+- Missing keyboard navigation for interactive elements → 🟠 MAJOR
+- No mention of screen reader testing → 🟡 MINOR
+
+**If accessibility gaps found:** Flag as blocking issue. Every UI story MUST include measurable a11y criteria.
+
 ### 6. Best Practices Compliance Checklist
 
 For each epic, verify:
@@ -185,6 +206,7 @@ For each epic, verify:
 - [ ] Database tables created when needed
 - [ ] Clear acceptance criteria
 - [ ] Traceability to FRs maintained
+- [ ] **UI stories include accessibility acceptance criteria** (keyboard nav, screen reader, contrast)
 
 ### 7. Quality Assessment Documentation
 

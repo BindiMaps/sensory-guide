@@ -27,7 +27,16 @@ so that {{benefit}}.
 - [ ] Typography (font, size, weight) matches design system
 - [ ] Component patterns (badges, toggles, cards) match reference implementation
 - [ ] Spacing and layout match design system specifications
-- [ ] Accessibility requirements (contrast, touch targets) verified
+
+**Accessibility Checklist** (for UI stories):
+- [ ] Semantic HTML structure (headings, landmarks, lists, buttons vs links)
+- [ ] Keyboard navigation works (Tab order, Enter/Space activation, Escape to close)
+- [ ] Focus states visible and logical
+- [ ] ARIA labels/roles for non-standard UI (or avoided via semantic HTML)
+- [ ] Colour contrast meets WCAG AA (4.5:1 text, 3:1 UI components)
+- [ ] Touch targets ≥44x44px
+- [ ] No content conveyed by colour alone
+- [ ] Pa11y/axe-core passes with zero critical violations
 
 ## Tasks / Subtasks
 

@@ -99,10 +99,14 @@ Search for and extract:
 
 - Performance requirements (response times, throughput)
 - Security requirements (authentication, encryption, etc.)
-- Usability requirements (accessibility, ease of use)
+- **Accessibility requirements (WCAG compliance level, screen reader support, keyboard navigation, colour contrast, touch targets)** ⚠️ FLAG IF MISSING
+- Usability requirements (ease of use, learnability)
 - Reliability requirements (uptime, error rates)
 - Scalability requirements (concurrent users, data growth)
 - Compliance requirements (standards, regulations)
+
+**🚨 ACCESSIBILITY CHECK:** If no explicit accessibility requirements found in PRD, add this finding to the report:
+> ⚠️ **Missing Accessibility Requirements:** PRD does not specify WCAG compliance level or accessibility standards. This MUST be addressed before implementation - recommend minimum WCAG 2.1 AA compliance.
 
 Format findings as:
 
