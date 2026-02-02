@@ -47,13 +47,6 @@ describe('GuideFeedback', () => {
     expect(screen.queryByText('Was this guide helpful?')).not.toBeInTheDocument()
   })
 
-  it('shows thank you message after clicking thumbs down', () => {
-    render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
-    const noButton = screen.getByRole('button', { name: /no/i })
-    fireEvent.click(noButton)
-    expect(screen.getByText('Thanks for your feedback!')).toBeInTheDocument()
-  })
-
   it('tracks analytics event with venue_slug and feedback value on thumbs up', () => {
     render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
     const yesButton = screen.getByRole('button', { name: /yes/i })
@@ -61,16 +54,6 @@ describe('GuideFeedback', () => {
     expect(mockTrack).toHaveBeenCalledWith('guide_feedback_submit', {
       venue_slug: 'test-venue',
       feedback: 'up',
-    })
-  })
-
-  it('tracks analytics event with feedback=down on thumbs down', () => {
-    render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
-    const noButton = screen.getByRole('button', { name: /no/i })
-    fireEvent.click(noButton)
-    expect(mockTrack).toHaveBeenCalledWith('guide_feedback_submit', {
-      venue_slug: 'test-venue',
-      feedback: 'down',
     })
   })
 
@@ -87,5 +70,94 @@ describe('GuideFeedback', () => {
     // After first click, component re-renders with thank you message
     // The buttons are gone, so we verify track was called once
     expect(mockTrack).toHaveBeenCalledTimes(1)
+  })
+
+  describe('text feedback flow (thumbs down)', () => {
+    it('clicking No sends feedback event immediately and shows textarea', () => {
+      render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
+      const noButton = screen.getByRole('button', { name: /no/i })
+      fireEvent.click(noButton)
+      expect(mockTrack).toHaveBeenCalledWith('guide_feedback_submit', {
+        venue_slug: 'test-venue',
+        feedback: 'down',
+      })
+      expect(screen.getByText('What could be improved? (optional)')).toBeInTheDocument()
+      expect(screen.getByRole('textbox')).toBeInTheDocument()
+      expect(screen.queryByText('Thanks for your feedback!')).not.toBeInTheDocument()
+    })
+
+    it('textarea has maxLength of 100', () => {
+      render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
+      fireEvent.click(screen.getByRole('button', { name: /no/i }))
+      const textarea = screen.getByRole('textbox')
+      expect(textarea).toHaveAttribute('maxLength', '100')
+    })
+
+    it('displays character counter', () => {
+      render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
+      fireEvent.click(screen.getByRole('button', { name: /no/i }))
+      expect(screen.getByText('0/100')).toBeInTheDocument()
+    })
+
+    it('character counter updates as user types', () => {
+      render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
+      fireEvent.click(screen.getByRole('button', { name: /no/i }))
+      const textarea = screen.getByRole('textbox')
+      fireEvent.change(textarea, { target: { value: 'hello' } })
+      expect(screen.getByText('5/100')).toBeInTheDocument()
+    })
+
+    it('Submit button sends separate feedback_text event', () => {
+      render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
+      fireEvent.click(screen.getByRole('button', { name: /no/i }))
+      mockTrack.mockClear() // Clear the initial down feedback call
+      const textarea = screen.getByRole('textbox')
+      fireEvent.change(textarea, { target: { value: 'Needs more details' } })
+      fireEvent.click(screen.getByRole('button', { name: /submit/i }))
+      expect(mockTrack).toHaveBeenCalledWith('guide_feedback_text', {
+        venue_slug: 'test-venue',
+        feedback_text: 'Needs more details',
+      })
+    })
+
+    it('Skip does not send additional event', () => {
+      render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
+      fireEvent.click(screen.getByRole('button', { name: /no/i }))
+      mockTrack.mockClear() // Clear the initial down feedback call
+      fireEvent.click(screen.getByText('Skip'))
+      expect(mockTrack).not.toHaveBeenCalled()
+    })
+
+    it('shows thank you after Submit', () => {
+      render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
+      fireEvent.click(screen.getByRole('button', { name: /no/i }))
+      fireEvent.click(screen.getByRole('button', { name: /submit/i }))
+      expect(screen.getByText('Thanks for your feedback!')).toBeInTheDocument()
+    })
+
+    it('shows thank you after Skip', () => {
+      render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
+      fireEvent.click(screen.getByRole('button', { name: /no/i }))
+      fireEvent.click(screen.getByText('Skip'))
+      expect(screen.getByText('Thanks for your feedback!')).toBeInTheDocument()
+    })
+
+    it('does not send feedback_text event if textarea is empty', () => {
+      render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
+      fireEvent.click(screen.getByRole('button', { name: /no/i }))
+      mockTrack.mockClear()
+      fireEvent.click(screen.getByRole('button', { name: /submit/i }))
+      expect(mockTrack).not.toHaveBeenCalled()
+    })
+
+    it('does not send feedback_text event if textarea is only whitespace', () => {
+      render(<GuideFeedback venueSlug="test-venue" venueName="Test Venue" />)
+      fireEvent.click(screen.getByRole('button', { name: /no/i }))
+      mockTrack.mockClear()
+      const textarea = screen.getByRole('textbox')
+      fireEvent.change(textarea, { target: { value: '   ' } })
+      fireEvent.click(screen.getByRole('button', { name: /submit/i }))
+      expect(mockTrack).not.toHaveBeenCalled()
+    })
   })
 })

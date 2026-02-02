@@ -233,7 +233,7 @@ export function GuidePage() {
       <GuideFeedback venueSlug={slug!} venueName={guide.venue.name} />
 
       {/* Footer */}
-      <footer className="max-w-[720px] mx-auto pt-6 border-t border-[#E8E8E5] text-center text-sm text-[#595959]">
+      <footer className="max-w-[720px] mx-auto pb-4 text-center text-sm text-[#595959]">
         <p className="mb-2">
           <a href="/" className="text-[#B8510D] hover:underline font-medium">
             Sensory Guide
