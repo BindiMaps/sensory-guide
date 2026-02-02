@@ -82,7 +82,8 @@ development_status:
   epic-4-sprint-1-retrospective: optional
 
   # Epic 4: Accessibility Sprint (Sprint 2)
-  4-4-accessibility-compliance: backlog
+  # NOTE: Shift-left approach adopted - all new stories include a11y criteria via workflow templates
+  4-4-accessibility-compliance: backlog  # Audit & remediate existing UI (4-1 to 4-5) against new a11y standards
   4-6-pa11y-ci-integration: done  # Run Pa11y in CI to catch a11y violations
   epic-4-retrospective: optional
 
@@ -97,7 +98,7 @@ development_status:
   # Epic 6: Guide Management & Super Admin
   # NOTE: 6-0 and 6-2 moved to Epic 2 as 2-13 and 2-14
   epic-6: in-progress
-  6-1-guide-update-via-re-upload: backlog
+  6-1-guide-update-via-re-upload: done  # Re-upload flow already implemented in VenueDetail
   6-3-super-admin-view-all-venues: backlog
   6-4-super-admin-global-analytics-dashboard: backlog
   6-5-section-embed-urls: done  # Embed maps/videos per section, persist across re-uploads

@@ -835,37 +835,40 @@ So that **I know exactly what to expect and where things are**.
 
 ---
 
-### Story 4.4: Accessibility Compliance
+### Story 4.4: Accessibility Audit & Remediation
 
-As an **end user with accessibility needs**,
-I want **the guide to be fully accessible**,
-So that **I can use it regardless of my abilities**.
+> **Note:** With shift-left a11y approach, all new stories now include accessibility criteria via updated workflow templates. This story audits existing work built before those gates were in place.
+
+As a **product owner**,
+I want **to audit and remediate accessibility gaps in existing UI**,
+So that **all previously-built features meet WCAG 2.1 AA standards**.
 
 **Acceptance Criteria:**
 
-**Given** I am using keyboard only
-**When** I navigate the guide
-**Then** I can reach all interactive elements with Tab
-**And** I can expand/collapse sections with Enter or Space
-**And** focus indicators are clearly visible
+**Given** the dev-story workflow now includes a11y validation
+**When** I audit stories completed before this change (4-1, 4-2, 4-3, 4-5)
+**Then** I identify any a11y gaps against the new checklist
 
-**Given** I am using a screen reader
-**When** I navigate the guide
-**Then** all content is announced correctly
-**And** sections have appropriate ARIA labels (expanded/collapsed state)
-**And** images have descriptive alt text
-**And** the page has semantic HTML structure (headings, landmarks)
+**Given** gaps are identified
+**When** I remediate each issue
+**Then** the following are verified for all public guide pages:
+  - Keyboard navigation: all interactive elements reachable via Tab, Enter/Space to activate
+  - Focus indicators: clearly visible on all focusable elements
+  - Screen reader: semantic HTML, ARIA labels on expandable sections, alt text on images
+  - Colour contrast: WCAG AA (4.5:1 text, 3:1 UI components)
+  - Touch targets: ≥44x44px on mobile
+  - Reduced motion: animations respect prefers-reduced-motion
 
-**Given** I have reduced-motion enabled
-**When** animations would normally play
-**Then** they are disabled or reduced
-
-**Given** the guide uses colour coding
-**When** I view category badges or sections
-**Then** icons and text accompany all colour indicators
-**And** the guide is usable in greyscale
+**Given** remediation is complete
+**When** I run Pa11y/axe-core on public pages
+**Then** zero critical/serious violations reported
 
 **And** Lighthouse accessibility score is ≥95
+
+**Technical Notes:**
+- This is a remediation story, not greenfield a11y work
+- Future stories include a11y criteria by default (via create-story template)
+- Pa11y CI integration handled separately in Story 4-6
 
 ---
 
