@@ -149,7 +149,7 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
                   href={getMapsUrl(venue.address)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-[#B8510D] hover:underline"
+                  className="hover:text-[#B8510D] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-1 rounded-sm"
                 >
                   {venue.address}
                   <span aria-hidden="true" className="ml-0.5 text-xs">↗</span>
@@ -165,7 +165,7 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
                     <a
                       key={i}
                       href={segment.href}
-                      className="hover:text-[#B8510D] hover:underline"
+                      className="hover:text-[#B8510D] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-1 rounded-sm"
                     >
                       {segment.display}
                     </a>

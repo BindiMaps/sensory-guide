@@ -87,7 +87,7 @@ export function HomePage() {
           href="https://bindimaps.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          className="inline-flex items-center gap-2 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 rounded-sm"
         >
           <span
             className="text-xs"

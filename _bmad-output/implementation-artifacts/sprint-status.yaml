@@ -74,7 +74,7 @@ development_status:
   epic-3-retrospective: optional
 
   # Epic 4: Public Guide Experience (Sprint 1)
-  epic-4: in-progress
+  epic-4: done
   4-1-public-guide-page-layout: done
   4-2-progressive-disclosure-sections: done
   4-3-images-and-facilities: done
@@ -83,7 +83,7 @@ development_status:
 
   # Epic 4: Accessibility Sprint (Sprint 2)
   # NOTE: Shift-left approach adopted - all new stories include a11y criteria via workflow templates
-  4-4-accessibility-compliance: backlog  # Audit & remediate existing UI (4-1 to 4-5) against new a11y standards
+  4-4-accessibility-compliance: done  # Audit & remediate existing UI (4-1 to 4-5) against new a11y standards
   4-6-pa11y-ci-integration: done  # Run Pa11y in CI to catch a11y violations
   epic-4-retrospective: optional
 

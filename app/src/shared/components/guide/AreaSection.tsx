@@ -159,10 +159,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
   const previewText = getPreviewText()
 
   return (
-    <article
-      className="border-b border-[#E8E8E5] last:border-b-0"
-      aria-expanded={isExpanded}
-    >
+    <article className="border-b border-[#E8E8E5] last:border-b-0">
       <button
         type="button"
         aria-expanded={isExpanded}
@@ -231,8 +228,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
       <div
         id={panelId}
         hidden={!isExpanded}
-        tabIndex={isExpanded ? 0 : -1}
-        className="pb-5 pl-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 rounded-sm"
+        className="pb-5 pl-10"
       >
         {/* Media carousel - fixed height, embeds square, images scale to fit */}
         {((embedUrls && embedUrls.length > 0) || (area.images && area.images.length > 0)) && (
