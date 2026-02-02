@@ -317,6 +317,25 @@ firebase functions:log
 firebase functions:secrets:access GOOGLE_AI_API_KEY
 ```
 
+### Adding a Custom Domain
+
+If you connect a custom domain to Firebase Hosting, you must add it to the API key restrictions or Firebase calls will fail from that domain.
+
+```bash
+# Get the API key ID
+KEY_ID=$(gcloud services api-keys list --project=sensory-guide --format="value(uid)")
+
+# Update restrictions (include ALL domains - existing + new)
+gcloud services api-keys update $KEY_ID \
+  --project=sensory-guide \
+  --allowed-referrers="sensory-guide.web.app/*,sensory-guide.firebaseapp.com/*,localhost:*/*,yourcustomdomain.com/*"
+```
+
+Current allowed domains:
+- `sensory-guide.web.app`
+- `sensory-guide.firebaseapp.com`
+- `localhost` (local dev)
+
 ### Troubleshooting
 
 **"SigningError" when uploading:**

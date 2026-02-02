@@ -152,3 +152,10 @@ Firebase web SDK config is **intentionally hardcoded** in the source. This is sa
 **Local development**: Use `.env` with `VITE_USE_EMULATORS=true` to connect to local Firebase emulators.
 
 **Auth providers enabled**: Email/Password, Google Sign-In
+
+**API key restrictions**: The Firebase API key is restricted to specific domains. When adding a custom domain, update the restrictions:
+```bash
+KEY_ID=$(gcloud services api-keys list --project=sensory-guide --format="value(uid)")
+gcloud services api-keys update $KEY_ID --project=sensory-guide \
+  --allowed-referrers="sensory-guide.web.app/*,sensory-guide.firebaseapp.com/*,localhost:*/*,newdomain.com/*"
+```
