@@ -29,6 +29,7 @@ const mockGuide: Guide = {
         },
       ],
       images: [],
+      embedUrls: [],
     },
   ],
   facilities: {
@@ -71,6 +72,7 @@ const mockGuideWithMultipleAreas: Guide = {
       badges: ['Sound'],
       details: [{ category: 'Sound', level: 'medium', description: 'Moderate noise.' }],
       images: [],
+      embedUrls: [],
     },
     {
       id: 'concourse',
@@ -79,6 +81,7 @@ const mockGuideWithMultipleAreas: Guide = {
       badges: ['Light', 'Crowds'],
       details: [{ category: 'Light', level: 'high', description: 'Bright lighting.' }],
       images: [],
+      embedUrls: [],
     },
     {
       id: 'platforms',
@@ -87,6 +90,7 @@ const mockGuideWithMultipleAreas: Guide = {
       badges: ['Sound'],
       details: [{ category: 'Sound', level: 'high', description: 'Train announcements.' }],
       images: [],
+      embedUrls: [],
     },
   ],
 }

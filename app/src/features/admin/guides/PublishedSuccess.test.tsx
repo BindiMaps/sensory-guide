@@ -28,7 +28,7 @@ vi.mock('./useRepublishEmbeddings', () => ({
 
 describe('PublishedSuccess', () => {
   const mockAreas: Area[] = [
-    { id: 'entry', name: 'Entry', order: 0, badges: [], details: [], images: [] },
+    { id: 'entry', name: 'Entry', order: 0, badges: [], details: [], images: [], embedUrls: [] },
   ]
 
   const defaultProps = {

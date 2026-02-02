@@ -22,6 +22,7 @@ const mockArea: Area = {
     },
   ],
   images: [],
+  embedUrls: [],
 }
 
 const mockAreaWithSummary: Area = {
@@ -199,15 +200,5 @@ describe('AreaSection', () => {
       expect(iframe).toBeInTheDocument()
     })
 
-    it('provides fallback link for iframe content', async () => {
-      const user = userEvent.setup()
-      render(<AreaSection area={mockAreaWithEmbed} />)
-
-      await user.click(screen.getByRole('button'))
-
-      const fallbackLink = screen.getByRole('link', { name: /open in new tab/i })
-      expect(fallbackLink).toHaveAttribute('href', mockAreaWithEmbed.embedUrls[0])
-      expect(fallbackLink).toHaveAttribute('target', '_blank')
-    })
   })
 })

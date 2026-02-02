@@ -39,6 +39,7 @@ const mockGuide: Guide = {
         },
       ],
       images: [],
+      embedUrls: [],
     },
     {
       id: 'main',
@@ -53,6 +54,7 @@ const mockGuide: Guide = {
         },
       ],
       images: [],
+      embedUrls: [],
     },
   ],
   facilities: {

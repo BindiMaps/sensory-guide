@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { EmbedEditor, isEmbeddableUrl } from './EmbedEditor'
 import type { Area } from '@/lib/schemas/guideSchema'
@@ -52,9 +52,9 @@ describe('isEmbeddableUrl', () => {
 
 describe('EmbedEditor', () => {
   const mockAreas: Area[] = [
-    { id: 'entry-hall', name: 'Entry Hall', order: 0, badges: [], details: [], images: [] },
-    { id: 'main-concourse', name: 'Main Concourse', order: 1, badges: [], details: [], images: [] },
-    { id: 'platforms', name: 'Platforms', order: 2, badges: [], details: [], images: [] },
+    { id: 'entry-hall', name: 'Entry Hall', order: 0, badges: [], details: [], images: [], embedUrls: [] },
+    { id: 'main-concourse', name: 'Main Concourse', order: 1, badges: [], details: [], images: [], embedUrls: [] },
+    { id: 'platforms', name: 'Platforms', order: 2, badges: [], details: [], images: [], embedUrls: [] },
   ]
 
   const mockEmbeddings = {
