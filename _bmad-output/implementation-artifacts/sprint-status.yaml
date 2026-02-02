@@ -88,8 +88,8 @@ development_status:
   epic-4-retrospective: optional
 
   # Epic 5: Print & Feedback
-  epic-5: backlog
-  5-1-print-optimised-view: backlog
+  epic-5: in-progress
+  5-1-print-optimised-view: ready-for-dev
   5-2-print-preview: backlog
   5-3-thumbs-up-down-feedback: backlog
   5-4-analytics-events: backlog
@@ -99,7 +99,7 @@ development_status:
   # NOTE: 6-0 and 6-2 moved to Epic 2 as 2-13 and 2-14
   epic-6: in-progress
   6-1-guide-update-via-re-upload: done  # Re-upload flow already implemented in VenueDetail
-  6-3-super-admin-view-all-venues: backlog
+  6-3-super-admin-view-all-venues: done
   6-4-super-admin-global-analytics-dashboard: backlog
   6-5-section-embed-urls: done  # Embed maps/videos per section, persist across re-uploads
   epic-6-retrospective: optional

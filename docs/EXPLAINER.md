@@ -192,6 +192,16 @@ We will employ ASPECT again for:
 
 Test with testers before public release - no point spending time and tokens unless it helps UX.
 
+### Quality Assurance (CI/CD)
+
+Every code change undergoes automated audits before deployment:
+
+- **Security**: Dependency vulnerability scanning (`yarn audit --level high`)
+- **Accessibility**: Pa11y WCAG compliance testing + Lighthouse accessibility scoring
+- **Performance**: Lighthouse CI benchmarks
+
+Deployment to Firebase is blocked if any audit fails. See `.github/workflows/ci.yml` for implementation.
+
 ## Sensitivity Categories
 
 Categories are **flexible** - the LLM identifies relevant sensory categories from uploaded audit content rather than constraining to a fixed list. This allows:

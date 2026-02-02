@@ -1928,28 +1928,7 @@ So that **I know if users find them helpful**.
 
 ## Epic 6: Guide Management & Super Admin (Extended)
 
-### Story 6.5: Version Comparison View
-
-As an **admin user**,
-I want **to compare two versions of a guide side-by-side**,
-So that **I can see exactly what changed**.
-
-**Acceptance Criteria:**
-
-**Given** I am viewing version history
-**When** I select two versions
-**Then** I can click "Compare"
-**And** I see a side-by-side or diff view
-
-**Given** the comparison view is open
-**When** I view sections
-**Then** added content is highlighted green
-**And** removed content is highlighted red
-**And** unchanged content is normal
-
----
-
-### Story 6.6: Bulk Venue Actions (Super Admin)
+### Story 6.5: Bulk Venue Actions (Super Admin)
 
 As a **super admin**,
 I want **to perform actions on multiple venues at once**,
@@ -1967,7 +1946,7 @@ So that **I can efficiently manage the platform**.
 
 ---
 
-### Story 6.7: Super Admin Impersonation
+### Story 6.6: Super Admin Impersonation
 
 As a **super admin**,
 I want **to view the admin portal as a specific user**,
@@ -1990,7 +1969,7 @@ So that **I can debug issues they're experiencing**.
 
 ---
 
-### Story 6.8: System Health Dashboard
+### Story 6.7: System Health Dashboard
 
 As a **super admin**,
 I want **to monitor system health at a glance**,
@@ -2012,7 +1991,7 @@ So that **I can spot issues before users report them**.
 
 ---
 
-### Story 6.9: Audit Log Search
+### Story 6.8: Audit Log Search
 
 As a **super admin**,
 I want **to search the audit log for specific events**,
@@ -2036,7 +2015,7 @@ So that **I can investigate issues reported by users**.
 
 ---
 
-### Story 6.10: Super Admin Venue & User Administration
+### Story 6.9: Super Admin Venue & User Administration
 
 As a **super admin**,
 I want **to administer any venue and manage users across the platform**,
@@ -2918,7 +2897,7 @@ So that **I can demonstrate growth and identify patterns**.
 | Epic 3: Guide Creation | 12 | PDF→Guide pipeline |
 | Epic 4: Public Guide | 14 | User-facing guide experience (incl. preview summaries) |
 | Epic 5: Print & Feedback | 9 | Print + analytics |
-| Epic 6: Management & Super Admin | 11 | Ongoing management (incl. 6.0 lifecycle dashboard, super admin administration) |
+| Epic 6: Management & Super Admin | 10 | Ongoing management (incl. 6.0 lifecycle dashboard, super admin administration) |
 | Epic 7: Polish & Quality | 8 | UX refinement |
 | Epic 8: Testing & Docs | 6 | Quality assurance |
 | Epic 9: Future Data Integration | 6 | Real-time data & personalisation [CONTRACT - Backlog] |

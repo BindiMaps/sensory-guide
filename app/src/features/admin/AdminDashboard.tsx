@@ -1,12 +1,16 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useVenues } from '@/shared/hooks/useVenues'
 import { useApproval } from './useApproval'
 import { AccessSetup } from './AccessSetup'
+import { AllVenuesList } from './super-admin/AllVenuesList'
+
+type ViewTab = 'my-venues' | 'all-venues'
 
 export function AdminDashboard() {
   const { venues, loading, error } = useVenues()
-  const { approved, needsSetup, refetch } = useApproval()
+  const { approved, isSuperAdmin, needsSetup, refetch } = useApproval()
+  const [activeTab, setActiveTab] = useState<ViewTab>('my-venues')
 
   useEffect(() => {
     document.title = 'Dashboard - Sensory Guide Admin'
@@ -34,20 +38,9 @@ export function AdminDashboard() {
   // Show pending approval message for non-approved users
   const showPendingApproval = !approved
 
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Your Venues</h1>
-        {venues.length > 0 && approved && (
-          <Link
-            to="/admin/venues/new"
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-          >
-            Create New Venue
-          </Link>
-        )}
-      </div>
-
+  // Render My Venues content
+  const renderMyVenues = () => (
+    <>
       {/* Pending approval notice */}
       {showPendingApproval && (
         <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
@@ -103,6 +96,67 @@ export function AdminDashboard() {
               </div>
             </Link>
           ))}
+        </div>
+      )}
+    </>
+  )
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">
+          {activeTab === 'all-venues' ? 'All Venues' : 'Your Venues'}
+        </h1>
+        {activeTab === 'my-venues' && venues.length > 0 && approved && (
+          <Link
+            to="/admin/venues/new"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Create New Venue
+          </Link>
+        )}
+      </div>
+
+      {/* Tab navigation for super admins */}
+      {isSuperAdmin && (
+        <div className="mb-6 border-b" role="tablist" aria-label="Venue views">
+          <button
+            role="tab"
+            aria-selected={activeTab === 'my-venues'}
+            aria-controls="my-venues-panel"
+            onClick={() => setActiveTab('my-venues')}
+            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              activeTab === 'my-venues'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            My Venues
+          </button>
+          <button
+            role="tab"
+            aria-selected={activeTab === 'all-venues'}
+            aria-controls="all-venues-panel"
+            onClick={() => setActiveTab('all-venues')}
+            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              activeTab === 'all-venues'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            All Venues
+          </button>
+        </div>
+      )}
+
+      {/* Tab content */}
+      {activeTab === 'all-venues' && isSuperAdmin ? (
+        <div id="all-venues-panel" role="tabpanel" aria-labelledby="all-venues-tab">
+          <AllVenuesList />
+        </div>
+      ) : (
+        <div id="my-venues-panel" role="tabpanel" aria-labelledby="my-venues-tab">
+          {renderMyVenues()}
         </div>
       )}
     </div>
