@@ -164,6 +164,9 @@ jobs:
           name: dist
           path: ./app/dist
 
+      - name: Install Functions dependencies
+        run: cd functions && yarn install --frozen-lockfile
+
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
