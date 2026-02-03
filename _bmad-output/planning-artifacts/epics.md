@@ -2261,9 +2261,248 @@ So that **I don't lose work**.
 
 ---
 
-## Epic 8: Testing & Documentation (New Epic)
+## Epic 8: Sensory Profile & Personalised Filtering
 
-### Story 8.1: Unit Test Foundation
+> 🎯 **Active Development:** Pulled forward from Epic 9 backlog. Implements FR53 (Personalisation Settings) and FR54 (Profile-based Filtering/Highlighting).
+
+**Goal:** Users set their sensory sensitivities once; every guide automatically highlights relevant content based on their profile.
+
+**User Outcome:** People with sensory sensitivities see personalised guides that emphasise their specific concerns without hiding other content. Preferences persist across sessions via localStorage.
+
+**FRs covered:** FR53, FR54
+
+**Key Deliverables:**
+- Zustand store with localStorage persistence for sensory profile
+- Inline FilterBar with toggleable category badges
+- Section highlighting based on active filters
+- Threshold settings (All / Medium+High / High only)
+- First-visit onboarding prompt
+- Smart PDF generation (highlighted OR filtered-only options)
+- Analytics events for filter usage
+
+**Implementation Note:** Stories 8-1 through 8-7 are designed to be built as a single unified effort.
+
+---
+
+### Story 8-1: Sensory Profile Store with Persistence
+
+As a **user with sensory sensitivities**,
+I want **my sensitivity preferences saved automatically**,
+So that **I don't have to re-configure every visit**.
+
+**Acceptance Criteria:**
+
+**Given** I toggle a sensitivity filter
+**When** I close the browser and return later
+**Then** my filter preferences are still active
+
+**And** Zustand store created at `src/stores/sensoryProfileStore.ts`
+**And** Store includes `activeCategories: Set<SensoryCategory>` and `thresholds: Record<SensoryCategory, Threshold>`
+**And** Threshold type: `'all' | 'medium-high' | 'high-only'`
+**And** localStorage persistence via zustand persist middleware (key: `sensory-profile`)
+**And** Actions: `toggleCategory`, `setThreshold`, `clearProfile`
+**And** Hook: `useSensoryProfile()` exported for components
+
+**Technical Notes:**
+- No UI in this story - pure state foundation
+- Default state: empty activeCategories, all thresholds = 'all'
+- SensoryCategory type should match existing badge categories in guide schema
+
+---
+
+### Story 8-2: Filter Bar Component
+
+As a **user viewing a guide**,
+I want **to see toggleable category badges at the top of the guide**,
+So that **I can quickly filter to my sensitivities**.
+
+**Acceptance Criteria:**
+
+**Given** I am viewing a published guide
+**When** the page loads
+**Then** I see a FilterBar above the first section with category badges
+
+**Given** the guide has Sound and Crowds warnings but no Light warnings
+**When** I view the FilterBar
+**Then** I only see Sound and Crowds badges (dynamic based on guide content)
+
+**Given** I tap a category badge
+**When** it toggles
+**Then** it visually changes (filled vs outlined) to show active state
+**And** the filter is applied to section display
+
+**And** `FilterBar` component at `src/components/guide/FilterBar.tsx`
+**And** Accessible: proper button roles, `aria-pressed` state
+**And** Matches existing badge styling from AreaSection
+
+**Technical Notes:**
+- Derive available categories from guide's areas/sections at render time
+- Read/write via `useSensoryProfile()` hook
+
+---
+
+### Story 8-3: Section Highlighting Based on Profile
+
+As a **user with active filters**,
+I want **matching content visually emphasised**,
+So that **I can quickly scan for relevant warnings**.
+
+**Acceptance Criteria:**
+
+**Given** I have "Sound" filter active
+**When** I view collapsed sections
+**Then** only Sound badges are visible on collapsed headers (other badges hidden)
+
+**Given** I expand a section with Sound warnings
+**When** I view the content
+**Then** Sound-related badges/content have highlight treatment (e.g., `ring-2 ring-amber-400`)
+**And** non-matching content remains visible but visually secondary
+
+**Given** I have no filters active
+**When** I view sections
+**Then** all badges display normally with no highlighting (default behaviour)
+
+**And** `AreaSection` reads from `useSensoryProfile()`
+**And** Uses `data-highlighted` attribute pattern for Tailwind styling
+
+**Technical Notes:**
+- Highlight, don't hide - users might discover new sensitivities
+- Consider colour-blind safe highlight colours
+
+---
+
+### Story 8-4: Threshold Settings UI
+
+As a **user who wants fine-grained control**,
+I want **to set sensitivity thresholds per category**,
+So that **only relevant severity levels are highlighted**.
+
+**Acceptance Criteria:**
+
+**Given** I tap a gear icon on the FilterBar
+**When** the settings panel opens
+**Then** I see each active category with a threshold selector
+
+**Given** I view threshold options
+**When** I select for a category
+**Then** options are: "All levels", "Medium & High only", "High only"
+**And** selection updates store via `setThreshold`
+
+**Given** I set Sound to "High only"
+**When** I view sections with low/medium sound warnings
+**Then** those are not highlighted (only high severity Sound warnings highlighted)
+
+**And** Panel dismissible (tap outside or X button)
+**And** Accessible: focus trap when open, Escape to close
+
+**Technical Notes:**
+- Threshold logic compares against section's sensory level indicator (low/medium/high)
+- Could be dropdown per badge OR unified settings panel - UX preference
+
+---
+
+### Story 8-5: First-Visit Onboarding Prompt
+
+As a **first-time user**,
+I want **a gentle prompt explaining personalisation**,
+So that **I discover the feature without hunting for settings**.
+
+**Acceptance Criteria:**
+
+**Given** I visit a guide for the first time (no profile set)
+**When** the page loads
+**Then** I see a subtle banner above FilterBar: "Tap categories that matter to you"
+
+**Given** I toggle any filter
+**When** the filter activates
+**Then** the onboarding banner dismisses permanently
+
+**Given** I explicitly dismiss the banner (X button)
+**When** I return later
+**Then** the banner does not reappear
+
+**And** Dismissal state persisted in localStorage
+**And** Banner is non-intrusive: doesn't block content, subtle styling
+
+**Technical Notes:**
+- Track `hasSeenOnboarding: boolean` in profile store or separate localStorage key
+- Consider pulse animation on FilterBar to draw attention on first visit
+
+---
+
+### Story 8-6: Smart PDF Generation with Filter Options
+
+As a **user printing a guide**,
+I want **to choose between a highlighted PDF or a filtered-only PDF**,
+So that **I get exactly the personalised output I need**.
+
+**Acceptance Criteria:**
+
+**Given** I have filters active and click Print/Save
+**When** the print dialog appears
+**Then** I see two options: "Full guide (highlighted)" and "My sensitivities only"
+
+**Given** I select "Full guide (highlighted)"
+**When** PDF generates
+**Then** all content included with matching sections highlighted
+**And** header shows "Highlighted for: Sound, Crowds"
+
+**Given** I select "My sensitivities only"
+**When** PDF generates
+**Then** only sections containing my active categories are included
+**And** header shows "Filtered for: Sound, Crowds"
+**And** sections without any matching categories are omitted entirely
+
+**Given** I have no filters active
+**When** I click Print/Save
+**Then** standard full guide prints (no filter UI shown)
+
+**And** Print CSS handles highlight styling appropriately (greyscale safe)
+**And** Extends existing print-optimised view from Story 5-1
+**And** Default selection remembers user's last choice (localStorage)
+
+**Technical Notes:**
+- "My sensitivities only" creates a shorter, focused PDF
+- Journey structure preserved (area headings remain even if some sections filtered)
+- Consider page break logic when sections are omitted
+
+---
+
+### Story 8-7: Filter Analytics Events
+
+As a **product team**,
+I want **to track filter usage**,
+So that **we understand which sensitivities users prioritise**.
+
+**Acceptance Criteria:**
+
+**Given** a user toggles a filter
+**When** the action completes
+**Then** event `filter_toggled` fires with `{ category: string, action: 'on' | 'off' }`
+
+**Given** a user changes a threshold
+**When** saved
+**Then** event `threshold_changed` fires with `{ category: string, from: Threshold, to: Threshold }`
+
+**Given** a user clears their profile
+**When** cleared
+**Then** event `profile_cleared` fires
+
+**And** Events fire via existing analytics util (GA4)
+**And** Dev mode check skips analytics in local dev (per Story 5-3 pattern)
+
+**Technical Notes:**
+- Follow analytics patterns established in Epic 5
+
+---
+
+---
+
+## Epic 12: Testing & Documentation (Backlog)
+
+> 📋 **Backlog:** Infrastructure for comprehensive testing. Not blocking release.
+
+### Story 12-1: Unit Test Foundation
 
 As a **developer**,
 I want **unit testing infrastructure set up**,
@@ -2281,7 +2520,7 @@ So that **I can write tests for components and utilities**.
 
 ---
 
-### Story 8.2: E2E Test Foundation
+### Story 12-2: E2E Test Foundation
 
 As a **developer**,
 I want **E2E testing infrastructure set up**,
@@ -2299,7 +2538,7 @@ So that **I can write user journey tests**.
 
 ---
 
-### Story 8.3: Critical Path E2E Tests
+### Story 12-3: Critical Path E2E Tests
 
 As a **developer**,
 I want **E2E tests for critical user journeys**,
@@ -2318,7 +2557,7 @@ So that **regressions are caught before deployment**.
 
 ---
 
-### Story 8.4: Accessibility Automated Testing
+### Story 12-4: Accessibility Automated Testing
 
 As a **developer**,
 I want **automated accessibility testing**,
@@ -2339,7 +2578,7 @@ So that **a11y regressions are caught early**.
 
 ---
 
-### Story 8.5: API Documentation
+### Story 12-5: API Documentation
 
 As a **developer**,
 I want **documentation for Firebase Functions API**,
@@ -2360,7 +2599,7 @@ So that **the backend contract is clear**.
 
 ---
 
-### Story 8.6: Component Storybook (Optional)
+### Story 12-6: Component Storybook (Optional)
 
 As a **developer**,
 I want **a component gallery for UI components**,
@@ -2862,8 +3101,8 @@ So that **I can demonstrate growth and identify patterns**.
 
 ## Summary
 
-**Total Epics:** 11
-**Total Stories:** 73
+**Total Epics:** 12
+**Total Stories:** 80
 
 | Epic | Stories | Theme |
 |------|---------|-------|
@@ -2874,8 +3113,9 @@ So that **I can demonstrate growth and identify patterns**.
 | Epic 5: Print & Feedback | 9 | Print + analytics |
 | Epic 6: Management & Super Admin | 10 | Ongoing management (incl. 6.0 lifecycle dashboard, super admin administration) |
 | Epic 7: Polish & Quality | 8 | UX refinement |
-| Epic 8: Testing & Docs | 6 | Quality assurance |
-| Epic 9: Future Data Integration | 6 | Real-time data & personalisation [CONTRACT - Backlog] |
+| Epic 8: Sensory Profile & Filtering | 7 | Personalisation - FR53/FR54 **[ACTIVE]** |
+| Epic 9: Future Data Integration | 6 | Real-time data & alerts [CONTRACT - Backlog] |
 | Epic 10: Pilot & Evaluation | 7 | Adelaide Rail MVP + success metrics [CONTRACT - Backlog] |
 | Epic 11: Growth & Reporting | 3 | GA stats dashboard + contract reports [GROWTH - Backlog] |
+| Epic 12: Testing & Docs | 6 | Quality assurance [Backlog] |
 

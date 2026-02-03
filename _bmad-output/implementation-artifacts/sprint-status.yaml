@@ -1,6 +1,6 @@
 # Sprint Status - Sensory Guide
 # ==============================
-# generated: 2026-02-02
+# generated: 2026-02-03
 # project: bindiMapsActionPlan
 # tracking_system: file-system
 # story_location: _bmad-output/implementation-artifacts
@@ -34,7 +34,7 @@
 # - SM typically creates next story after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
-generated: 2026-02-02
+generated: 2026-02-03
 project: bindiMapsActionPlan
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -108,3 +108,15 @@ development_status:
   7-1-security-accessibility-audit: done  # Comprehensive security + a11y review before release
   7-2-venue-feedback-dashboard: done  # Admin modal showing thumbs counts + comments from Firestore
   epic-7-retrospective: optional
+
+  # Epic 8: Sensory Profile & Personalised Filtering (FR53/FR54)
+  # NOTE: All stories built as single unified effort
+  epic-8: in-progress
+  8-1-sensory-profile-store: review  # Zustand + localStorage persistence
+  8-2-filter-bar-component: ready-for-dev  # Toggleable category badges on guide
+  8-3-section-highlighting: ready-for-dev  # Highlight matching content based on profile
+  8-4-threshold-settings-ui: ready-for-dev  # Fine-grained Low/Medium/High thresholds
+  8-5-first-visit-onboarding: ready-for-dev  # "Tap categories that matter to you" prompt
+  8-6-smart-pdf-generation: ready-for-dev  # Print options: highlighted vs filtered-only
+  8-7-filter-analytics-events: ready-for-dev  # Track filter usage in GA4
+  epic-8-retrospective: optional
