@@ -149,11 +149,16 @@ async function storeGuideJson(
  * Update venue status to draft after successful transform
  * Also sets draftVersion to point to the new version
  */
-async function updateVenueStatus(venueId: string, draftVersion: string): Promise<void> {
+async function updateVenueStatus(
+  venueId: string,
+  draftVersion: string,
+  extractedVenueName: string
+): Promise<void> {
   const db = getFirestore()
   await db.collection('venues').doc(venueId).update({
     status: 'draft',
     draftVersion,
+    extractedVenueName,
     updatedAt: FieldValue.serverTimestamp(),
   })
 }
@@ -285,7 +290,7 @@ export const transformPdf = onCall<TransformPdfRequest>(
       const { outputPath, timestamp } = await storeGuideJson(venueId, result.guide)
 
       // 10. Update venue status to draft with draftVersion pointer
-      await updateVenueStatus(venueId, timestamp)
+      await updateVenueStatus(venueId, timestamp, result.guide.venue.name)
 
       // 11. Mark complete
       await updateProgress(venueId, logId, 'ready', 100, { outputPath })

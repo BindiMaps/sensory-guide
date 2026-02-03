@@ -107,6 +107,99 @@
 
 ---
 
+## Infeasible Contract Requirements (DATA DEPENDENT)
+
+The contract (Section 4.3, Stage 4) explicitly acknowledges data dependency risk:
+> "The use of these data sources depends on third parties and whether these parties have appropriate APIs and are prepared to share them with BindiMaps... some of the data that may be needed to address the user requirements uncovered in the surveys and interviews may not exist or may be private and BindiMaps is unable to access it."
+
+### Summary Table
+
+| Contract Feature | Section | Status | Reason |
+|-----------------|---------|--------|--------|
+| Live crowding data from transit APIs | Stage 4 | ❌ Infeasible | Adelaide Metro GTFS-RT has no OccupancyStatus field |
+| Real-time crowding alerts | Stage 3 | ❌ Infeasible | No live data source available |
+| IoT sensor data (sound levels) | Stage 4 | ❌ Infeasible | No public API for venue sound sensors |
+| Maintenance/cleaning schedules | Stage 4 | ❌ Infeasible | Internal systems, not API-exposed |
+| Static sensory mapping (heatmaps/overlays) | Stage 3 | ⚠️ Pivoted | User research: maps tested poorly, action plans preferred |
+| Google Popular Times (live busyness) | Research | ❌ Infeasible | No official API; scraping violates Google ToS |
+
+### Detailed Analysis
+
+#### 1. Live Transit Crowding (Stage 4)
+**Contract:** "Live crowding data from transit APIs"
+
+**Research findings:**
+- Adelaide Metro publishes GTFS (static) and SIRI (real-time arrivals) only
+- No `OccupancyStatus` field in their GTFS-RT feed
+- TfNSW has crowding data but: (a) NSW only, (b) requires API key, (c) Protocol Buffer parsing complexity
+- No Australian transit agency publishes real-time crowding for Adelaide Rail network
+
+**Mitigation:** Static sensory information captured in action plans (e.g., "This platform is usually busy during peak hours 7-9am")
+
+#### 2. IoT Sensor Data - Sound Levels (Stage 4)
+**Contract:** "IoT sensor data (e.g. sound levels)"
+
+**Research findings:**
+- No public APIs exist for venue sound level monitoring
+- Adelaide Rail does not expose any IoT sensor data
+- Would require hardware installation + custom integration (out of scope)
+
+**Mitigation:** Static noise level categorisation in action plans based on ASPECT auditor observations
+
+#### 3. Maintenance/Cleaning Schedules (Stage 4)
+**Contract:** "Maintenance or cleaning schedules"
+
+**Research findings:**
+- These are typically internal operational systems
+- No public API access
+- Would require direct integration with venue operator systems
+
+**Mitigation:** General time-based advice in action plans (e.g., "Cleaning typically occurs early morning")
+
+#### 4. Google Popular Times (Historical Busyness)
+**Contract:** Not explicitly required but identified as potential crowd data source
+
+**Research findings:**
+- Google Places API does **not** expose Popular Times / busyness data
+- Third-party services (BestTime.app) scrape this data - $60/yr subscription
+- Direct scraping of Google Maps **violates Google Terms of Service**
+- Previous research indicated scraping "ToS risk acceptable for MVP" - **this is incorrect**
+
+**Decision:** Cannot implement Google Popular Times feature without either:
+1. Violating Google ToS (unacceptable risk)
+2. Paying for third-party service (adds ongoing cost)
+3. Google adding this to their official API (unlikely)
+
+**Mitigation:** Rely on static time-based advice from venue audits
+
+#### 5. Static Sensory Mapping with Visual Overlays (Stage 3)
+**Contract:** "Static sensory mapping with visual overlays (e.g. icons or heatmaps for noise, crowding)"
+
+**Research findings:**
+- Phase 2 user testing showed map overlays tested **poorly** with target users
+- Users found busy visual maps overwhelming (ironic for sensory sensitivity tool)
+- Text-based action plans tested **well** - clear, step-by-step, progressive disclosure
+
+**Decision:** Pivoted from map-based visualisation to text-based action plans based on user research. This is a **user-validated design decision**, not a technical limitation.
+
+---
+
+## API Research: Live Crowding Data (FR53)
+
+**Contract requirement:** "Live crowding data" identified as DATA DEPENDENT risk.
+
+| Source | Outcome | Reason |
+|--------|---------|--------|
+| Adelaide Metro GTFS-RT | ❌ Not available | Only static GTFS + SIRI arrivals, no OccupancyStatus field |
+| TfNSW GTFS-RT | ⚠️ NSW only | Requires API key, Protocol Buffer parsing, wrong state |
+| Google Places API | ❌ No Popular Times | Official API doesn't expose busyness/popularity data |
+| BestTime.app | ⚠️ Costs $60/yr | Works but adds ongoing subscription cost |
+| Google scraping | ❌ ToS violation | Violates Google Terms of Service |
+
+**Decision:** Real-time and historical crowding data features are **not feasible** for MVP without either violating third-party ToS or incurring ongoing costs. Static time-based advice from venue audits will be used instead.
+
+---
+
 ## Notes
 
 - Contract requires "images and video" in reports (Section 4.5)

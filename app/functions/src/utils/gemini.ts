@@ -93,6 +93,7 @@ ${getGuideJsonSchemaString()}
 6. **Suggestions**: Generate 3-5 specific, actionable suggestions for improving the guide content. Always include suggestions for:
    - Missing contact information (phone, email, or website) if not found in the document
    - Missing or incomplete venue address if not clearly stated
+   - Missing information about typical busy times or peak hours (important for crowd-sensitive visitors planning their visit)
    - Any sensory categories that seem underrepresented
    - Areas that lack detail or specificity
 

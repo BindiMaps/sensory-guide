@@ -148,6 +148,7 @@ export const publishGuide = onCall<PublishGuideRequest>(
       await venueRef.update({
         liveVersion,
         status: 'published',
+        extractedVenueName: guide.venue.name,
         updatedAt: FieldValue.serverTimestamp(),
       })
 
