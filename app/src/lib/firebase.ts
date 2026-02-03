@@ -43,3 +43,4 @@ if (isConfigured) {
 }
 
 export { app, auth, db, storage, functions, isConfigured }
+export const storageBucket = firebaseConfig.storageBucket

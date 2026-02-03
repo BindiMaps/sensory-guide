@@ -1,6 +1,6 @@
 # Story 8.9: PDF QR Codes for Embeds
 
-Status: review
+Status: done
 
 ---
 

@@ -42,16 +42,6 @@ export function GuidePdfActions({ guide, venueSlug }: GuidePdfActionsProps) {
       generateQRCodesForAreas(guide.areas),
     ])
 
-    // Debug: Log QR code generation results
-    console.log('[PDF Debug] Areas with embedUrls:', guide.areas.filter(a => a.embedUrls?.length).map(a => ({ id: a.id, embedUrls: a.embedUrls })))
-    console.log('[PDF Debug] Generated QR codes:', Object.keys(qrDataUrls).length, 'areas')
-    Object.entries(qrDataUrls).forEach(([areaId, data]) => {
-      console.log(`[PDF Debug] QR for ${areaId}:`, {
-        dataUrl: data.dataUrl.substring(0, 50) + '...',
-        bufferLength: data.buffer?.length || 0,
-        label: data.label.title,
-      })
-    })
     return pdf(
       <GuidePdf
         guide={guide}

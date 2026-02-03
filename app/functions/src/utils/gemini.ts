@@ -29,8 +29,6 @@ function getApiKey(): string {
       'GOOGLE_AI_API_KEY not configured. Run: firebase functions:secrets:set GOOGLE_AI_API_KEY'
     )
   }
-  // Debug: confirm key is loaded (shows first 8 chars only)
-  console.log(`Gemini API key loaded: ${apiKey.substring(0, 8)}...`)
   return apiKey
 }
 

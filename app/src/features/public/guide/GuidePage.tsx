@@ -4,15 +4,14 @@ import type { Guide } from '@/lib/schemas/guideSchema'
 import { GuideContent, GuidePdfActions, GuideFeedback, PoweredByBindiMaps } from '@/shared/components/guide'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { AnalyticsEvent } from '@/lib/analytics'
-
-const STORAGE_BUCKET = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET
+import { storageBucket } from '@/lib/firebase'
 
 /**
  * Fetch guide JSON directly from Cloud Storage using slug-based path.
  * No Firestore lookup needed - publish copies to public/guides/{slug}.json
  */
 async function fetchGuide(slug: string): Promise<Guide | null> {
-  const url = `https://storage.googleapis.com/${STORAGE_BUCKET}/public/guides/${slug}.json`
+  const url = `https://storage.googleapis.com/${storageBucket}/public/guides/${slug}.json`
 
   try {
     const response = await fetch(url, { cache: 'no-store' })

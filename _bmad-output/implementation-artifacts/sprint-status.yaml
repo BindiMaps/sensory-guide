@@ -111,7 +111,7 @@ development_status:
 
   # Epic 8: Sensory Profile & Personalised Filtering (FR53/FR54)
   # NOTE: All stories built as single unified effort
-  epic-8: in-progress
+  epic-8: done
   8-1-sensory-profile-store: done  # Zustand + localStorage persistence
   8-2-filter-bar-component: done  # Toggleable category badges on guide
   8-3-section-highlighting: done  # Highlight matching content based on profile
@@ -120,5 +120,5 @@ development_status:
   8-6-smart-pdf-generation: done  # Print options: highlighted vs filtered-only
   8-7-filter-analytics-events: done  # Track filter usage in GA4
   8-8-personalised-section-level-indicator: done  # Section badge reflects user's selected categories
-  8-9-pdf-qr-codes-for-embeds: review  # QR codes linking to embedded maps in PDF
+  8-9-pdf-qr-codes-for-embeds: done  # QR codes linking to embedded maps in PDF
   epic-8-retrospective: optional
