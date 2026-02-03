@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
-import { Loader2, Plus, X, AlertTriangle, ArrowRight } from 'lucide-react'
+import type { Area } from '@/lib/schemas/guideSchema'
 import {
   Dialog,
   DialogContent,
@@ -8,10 +7,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog'
-import type { Area } from '@/lib/schemas/guideSchema'
-import type { Embeddings } from './useEmbeddings'
+import { AlertTriangle, ArrowRight, Loader2, Plus, X } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
 import type { OrphanedEmbed } from './embedMatcher'
 import { isEmbeddableUrl } from './embedUrlValidation'
+import type { Embeddings } from './useEmbeddings'
 
 interface EmbedEditorProps {
   open: boolean
@@ -163,6 +163,9 @@ export function EmbedEditor({
           <DialogTitle>Edit Section Embeds</DialogTitle>
           <DialogDescription>
             Add embed URLs (BindiWeb maps, YouTube videos, etc.) for each section.
+            <br />
+            <br />
+            Be aware that a lot of embedded webpages (specially maps) can slow things down.
           </DialogDescription>
         </DialogHeader>
 
@@ -245,11 +248,10 @@ export function EmbedEditor({
                         placeholder="Paste embed URL (BindiWeb, YouTube, etc.)"
                         aria-label={`${area.name} embed URL ${index + 1}`}
                         aria-invalid={field.error ? 'true' : 'false'}
-                        className={`w-full px-3 py-2 text-sm border rounded-sm focus:outline-none focus:ring-2 focus:ring-[#B8510D] focus:border-transparent ${
-                          field.error
+                        className={`w-full px-3 py-2 text-sm border rounded-sm focus:outline-none focus:ring-2 focus:ring-[#B8510D] focus:border-transparent ${field.error
                             ? 'border-red-500 focus:ring-red-500'
                             : 'border-[#DDDDD9]'
-                        }`}
+                          }`}
                       />
                       {field.error && (
                         <p className="text-xs text-red-600 mt-1" role="alert">
