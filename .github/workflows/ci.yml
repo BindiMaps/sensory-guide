@@ -150,8 +150,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: './app/functions/package-lock.json'
+          cache: 'yarn'
+          cache-dependency-path: './app/functions/yarn.lock'
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -162,8 +162,8 @@ jobs:
       - name: Build Functions
         run: |
           cd functions
-          npm ci
-          npm run build
+          yarn install --frozen-lockfile
+          yarn build
 
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
