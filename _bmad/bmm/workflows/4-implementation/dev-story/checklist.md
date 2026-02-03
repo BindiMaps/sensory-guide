@@ -68,6 +68,13 @@ _Skip this section if story has no UI changes_
 - [ ] **Review Follow-ups:** All review follow-up tasks (marked [AI-Review]) completed and corresponding review items marked resolved (if applicable)
 - [ ] **Story Structure Compliance:** Only permitted sections of story file were modified
 
+## 🆘 Admin Help Updates (Admin Stories Only)
+
+_Skip this section if story has no admin feature changes_
+
+- [ ] **Help Content Updated:** If new admin features/workflows added, update `AdminHelpPopup.tsx` helpContent array
+- [ ] **Help Accuracy:** Verify existing help items still accurate after changes
+
 ## 🔚 Final Status Verification
 
 - [ ] **Story Status Updated:** Story Status set to "review"

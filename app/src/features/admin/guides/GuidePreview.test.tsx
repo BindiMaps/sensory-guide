@@ -8,9 +8,13 @@ import type { Guide } from '@/lib/schemas/guideSchema'
 vi.mock('./useEmbeddings', () => ({
   useEmbeddings: () => ({
     embeddings: {},
+    embeddingsWithMeta: {},
+    orphaned: [],
     isLoading: false,
     error: null,
     saveEmbeddings: vi.fn(),
+    saveEmbeddingsWithMeta: vi.fn(),
+    resolveOrphan: vi.fn(),
     refetch: vi.fn(),
   }),
 }))

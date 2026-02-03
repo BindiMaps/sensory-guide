@@ -13,7 +13,9 @@ Object.assign(navigator, { clipboard: mockClipboard })
 vi.mock('./useEmbeddings', () => ({
   useEmbeddings: () => ({
     embeddings: {},
+    orphaned: [],
     saveEmbeddings: vi.fn(),
+    resolveOrphan: vi.fn(),
     refetch: vi.fn(),
   }),
 }))

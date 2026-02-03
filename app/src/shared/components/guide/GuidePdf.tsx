@@ -8,6 +8,7 @@ import {
   LEVEL_COLOURS,
 } from '@/shared/utils/colours'
 import { getOverallLevel } from '@/shared/utils/sensory'
+import type { QRCodeData } from '@/shared/utils/qrCode'
 
 // PDF-specific colours (non-sensory)
 const pdfColours = {
@@ -182,6 +183,34 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: pdfColours.textSecondary,
   },
+  qrContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 8,
+    padding: 8,
+    backgroundColor: pdfColours.surface,
+    borderRadius: 4,
+  },
+  qrCode: {
+    width: 60,
+    height: 60,
+  },
+  qrTextContainer: {
+    flex: 1,
+  },
+  qrLabel: {
+    fontSize: 8,
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: 0.3,
+    color: pdfColours.textMuted,
+    marginBottom: 2,
+  },
+  qrHint: {
+    fontSize: 8,
+    color: pdfColours.textSecondary,
+  },
   footer: {
     position: 'absolute',
     bottom: 30,
@@ -208,6 +237,8 @@ interface GuidePdfProps {
   filterMode?: PdfFilterMode
   /** Categories to filter/highlight by */
   activeCategories?: Set<string>
+  /** Pre-generated QR codes with labels, keyed by area ID */
+  qrDataUrls?: Record<string, QRCodeData>
 }
 
 /**
@@ -215,7 +246,7 @@ interface GuidePdfProps {
  * Uses @react-pdf/renderer primitives
  * Supports filtering/highlighting based on user's sensory profile
  */
-export function GuidePdf({ guide, filterMode = 'none', activeCategories = new Set() }: GuidePdfProps) {
+export function GuidePdf({ guide, filterMode = 'none', activeCategories = new Set(), qrDataUrls = {} }: GuidePdfProps) {
   const { venue, areas, facilities, categories } = guide
 
   // Filter areas based on mode
@@ -293,7 +324,7 @@ export function GuidePdf({ guide, filterMode = 'none', activeCategories = new Se
 
         {/* Areas */}
         {displayAreas.map((area) => {
-          const overallLevel = getOverallLevel(area.details.map((d) => d.level))
+          const overallLevel = getOverallLevel(area.details)
 
           return (
             <View key={area.id} style={styles.section} wrap={false}>
@@ -367,6 +398,20 @@ export function GuidePdf({ guide, filterMode = 'none', activeCategories = new Se
                   </View>
                 )
               })}
+
+              {/* QR code for embed - only in PDF */}
+              {qrDataUrls[area.id] && (
+                <View style={styles.qrContainer}>
+                  <Image
+                    src={{ data: qrDataUrls[area.id].buffer, format: 'png' }}
+                    style={styles.qrCode}
+                  />
+                  <View style={styles.qrTextContainer}>
+                    <Text style={styles.qrLabel}>{qrDataUrls[area.id].label.title}</Text>
+                    <Text style={styles.qrHint}>{qrDataUrls[area.id].label.hint}</Text>
+                  </View>
+                </View>
+              )}
             </View>
           )
         })}

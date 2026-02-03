@@ -49,11 +49,6 @@ const mockGuideWithoutContact: Guide = {
   },
 }
 
-const mockGuideWithoutCategories: Guide = {
-  ...mockGuide,
-  categories: [],
-}
-
 const mockGuideWithPhoneAndEmail: Guide = {
   ...mockGuide,
   venue: {

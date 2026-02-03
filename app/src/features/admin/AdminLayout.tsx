@@ -5,6 +5,7 @@ import { logout } from '@/lib/auth'
 import { initAnalytics, trackEvent, AnalyticsEvent } from '@/lib/analytics'
 import { ApprovalProvider } from './ApprovalContext'
 import { useApproval } from './useApproval'
+import { AdminHelpPopup } from './AdminHelpPopup'
 
 function AdminLayoutInner() {
   const { user, loading, initialised } = useAuthStore()
@@ -71,6 +72,7 @@ function AdminLayoutInner() {
             >
               View Public Site
             </Link>
+            <AdminHelpPopup />
             <button
               onClick={handleLogout}
               className="text-sm text-muted-foreground hover:text-foreground"

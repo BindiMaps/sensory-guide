@@ -67,7 +67,9 @@ describe('EmbedEditor', () => {
     onOpenChange: vi.fn(),
     areas: mockAreas,
     embeddings: mockEmbeddings,
+    orphaned: [],
     onSave: vi.fn(),
+    onResolveOrphan: vi.fn(),
     isSaving: false,
   }
 

@@ -89,6 +89,12 @@ if (request.data.orgId !== orgId && !superAdmin) throw new HttpsError('permissio
 - **Co-located tests:** `VenueCard.tsx` + `VenueCard.test.tsx` same folder
 - **Import order:** React → External → Internal absolute → Relative → Types
 
+### Admin Help Documentation
+
+- **Help popup location:** `src/features/admin/AdminHelpPopup.tsx`
+- **When adding admin features:** Update the `helpContent` array with new capability
+- **Keep it simple:** Short bullet points, grouped by section (Dashboard, Venue Management, etc.)
+
 ### Naming Conventions
 
 | Type | Convention | Example |

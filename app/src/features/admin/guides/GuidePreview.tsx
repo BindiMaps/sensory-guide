@@ -53,8 +53,9 @@ export function GuidePreview({
   const [isEmbedEditorOpen, setIsEmbedEditorOpen] = useState(false)
   const [isSavingEmbeds, setIsSavingEmbeds] = useState(false)
 
-  // Fetch embeddings for this venue
-  const { embeddings, saveEmbeddings } = useEmbeddings(venueId)
+  // Fetch embeddings for this venue, with title-based matching
+  const { embeddings, orphaned, saveEmbeddings, resolveOrphan } =
+    useEmbeddings(venueId, guide.areas)
 
   // Merge embeddings into guide for display
   const guideWithEmbeds = useMemo(
@@ -199,7 +200,9 @@ export function GuidePreview({
           onOpenChange={setIsEmbedEditorOpen}
           areas={guide.areas}
           embeddings={embeddings}
+          orphaned={orphaned}
           onSave={handleSaveEmbeds}
+          onResolveOrphan={resolveOrphan}
           isSaving={isSavingEmbeds}
         />
       )}

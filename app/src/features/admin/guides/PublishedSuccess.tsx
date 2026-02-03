@@ -34,7 +34,7 @@ export function PublishedSuccess({
   const [republishSuccess, setRepublishSuccess] = useState(false)
   const [isSavingEmbeddings, setIsSavingEmbeddings] = useState(false)
 
-  const { embeddings, saveEmbeddings, refetch: refetchEmbeddings } = useEmbeddings(venueId)
+  const { embeddings, orphaned, saveEmbeddings, resolveOrphan, refetch: refetchEmbeddings } = useEmbeddings(venueId, areas)
   const { republish, isRepublishing, error: republishError } = useRepublishEmbeddings()
 
   const handleSaveEmbeddings = async (newEmbeddings: Embeddings) => {
@@ -174,7 +174,9 @@ export function PublishedSuccess({
         onOpenChange={setIsEmbedEditorOpen}
         areas={areas}
         embeddings={embeddings}
+        orphaned={orphaned}
         onSave={handleSaveEmbeddings}
+        onResolveOrphan={resolveOrphan}
         isSaving={isSavingEmbeddings || isRepublishing}
       />
 

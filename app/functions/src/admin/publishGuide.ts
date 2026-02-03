@@ -98,11 +98,12 @@ export const publishGuide = onCall<PublishGuideRequest>(
       const embeddingsSnap = await embeddingsRef.get()
 
       if (embeddingsSnap.exists) {
-        const embeddings = embeddingsSnap.data() as Record<string, string[]>
+        // Embeddings format: { "section-id": { urls: string[], title: string } }
+        const rawEmbeddings = embeddingsSnap.data() as Record<string, { urls: string[]; title: string }>
         const guideAreaIds = new Set(guide.areas.map((a) => a.id))
 
         // Check for orphaned embeddings (section IDs that no longer exist in guide)
-        const orphanedEmbeddings = Object.keys(embeddings).filter((id) => !guideAreaIds.has(id))
+        const orphanedEmbeddings = Object.keys(rawEmbeddings).filter((id) => !guideAreaIds.has(id))
         if (orphanedEmbeddings.length > 0) {
           console.warn(
             `Orphaned embeddings detected at publish: venue=${venueId}, orphaned_ids=${orphanedEmbeddings.join(', ')}`
@@ -114,7 +115,7 @@ export const publishGuide = onCall<PublishGuideRequest>(
           ...guide,
           areas: guide.areas.map((area) => ({
             ...area,
-            embedUrls: embeddings[area.id] || area.embedUrls || [],
+            embedUrls: rawEmbeddings[area.id]?.urls || area.embedUrls || [],
           })),
         }
       }

@@ -112,12 +112,13 @@ development_status:
   # Epic 8: Sensory Profile & Personalised Filtering (FR53/FR54)
   # NOTE: All stories built as single unified effort
   epic-8: in-progress
-  8-1-sensory-profile-store: review  # Zustand + localStorage persistence
-  8-2-filter-bar-component: review  # Toggleable category badges on guide
-  8-3-section-highlighting: review  # Highlight matching content based on profile
-  8-4-threshold-settings-ui: review  # Fine-grained Low/Medium/High thresholds
-  8-5-first-visit-onboarding: review  # "Tap categories that matter to you" prompt
-  8-6-smart-pdf-generation: review  # Print options: highlighted vs filtered-only
-  8-7-filter-analytics-events: review  # Track filter usage in GA4
-  8-8-personalised-section-level-indicator: review  # Section badge reflects user's selected categories
+  8-1-sensory-profile-store: done  # Zustand + localStorage persistence
+  8-2-filter-bar-component: done  # Toggleable category badges on guide
+  8-3-section-highlighting: done  # Highlight matching content based on profile
+  8-4-threshold-settings-ui: done  # DESCOPED - threshold feature removed for simplicity
+  8-5-first-visit-onboarding: done  # DESCOPED - replaced with inline "Tap to highlight" label
+  8-6-smart-pdf-generation: done  # Print options: highlighted vs filtered-only
+  8-7-filter-analytics-events: done  # Track filter usage in GA4
+  8-8-personalised-section-level-indicator: done  # Section badge reflects user's selected categories
+  8-9-pdf-qr-codes-for-embeds: review  # QR codes linking to embedded maps in PDF
   epic-8-retrospective: optional
