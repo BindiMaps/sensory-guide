@@ -182,29 +182,6 @@ describe('GuideContent', () => {
     })
   })
 
-  describe('category badges', () => {
-    it('renders top-level category badges when present', () => {
-      render(<GuideContent guide={mockGuide} />)
-      // Categories are rendered as badges (may appear elsewhere too)
-      const badgeContainer = screen.getByRole('list', { name: /sensory categories covered/i })
-      expect(badgeContainer).toBeInTheDocument()
-      // Check that all 3 category badges exist within the container
-      expect(badgeContainer.children).toHaveLength(3)
-    })
-
-    it('does not render category badges container when categories empty', () => {
-      render(<GuideContent guide={mockGuideWithoutCategories} />)
-      const badgeContainer = screen.queryByRole('list', { name: /sensory categories covered/i })
-      expect(badgeContainer).not.toBeInTheDocument()
-    })
-
-    it('category badges container has accessible label', () => {
-      render(<GuideContent guide={mockGuide} />)
-      const badgeContainer = screen.getByRole('list', { name: /sensory categories covered in this guide/i })
-      expect(badgeContainer).toBeInTheDocument()
-    })
-  })
-
   describe('intro card', () => {
     it('renders intro card with summary', () => {
       render(<GuideContent guide={mockGuide} />)

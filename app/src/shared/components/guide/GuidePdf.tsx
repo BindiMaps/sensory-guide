@@ -200,17 +200,38 @@ const styles = StyleSheet.create({
   },
 })
 
+type PdfFilterMode = 'none' | 'highlighted' | 'filtered'
+
 interface GuidePdfProps {
   guide: Guide
+  /** Filter mode: none = standard, highlighted = show all with highlights, filtered = only matching */
+  filterMode?: PdfFilterMode
+  /** Categories to filter/highlight by */
+  activeCategories?: Set<string>
 }
 
 /**
  * PDF document for Sensory Guide - Design System v5
  * Uses @react-pdf/renderer primitives
+ * Supports filtering/highlighting based on user's sensory profile
  */
-export function GuidePdf({ guide }: GuidePdfProps) {
+export function GuidePdf({ guide, filterMode = 'none', activeCategories = new Set() }: GuidePdfProps) {
   const { venue, areas, facilities, categories } = guide
+
+  // Filter areas based on mode
   const sortedAreas = [...areas].sort((a, b) => a.order - b.order)
+  const displayAreas = filterMode === 'filtered'
+    ? sortedAreas.filter(area => area.badges.some(badge => activeCategories.has(badge)))
+    : sortedAreas
+
+  // Helper to check if content should be highlighted
+  const shouldHighlight = (category: string) =>
+    filterMode === 'highlighted' && activeCategories.has(category)
+
+  // Generate filter header text
+  const filterHeaderText = filterMode !== 'none' && activeCategories.size > 0
+    ? `${filterMode === 'highlighted' ? 'Highlighted' : 'Filtered'} for: ${Array.from(activeCategories).join(', ')}`
+    : null
 
   const hasAnyFacilities =
     facilities.exits.length > 0 ||
@@ -252,6 +273,15 @@ export function GuidePdf({ guide }: GuidePdfProps) {
           </View>
         )}
 
+        {/* Filter header - shown when filters are active */}
+        {filterHeaderText && (
+          <View style={{ marginBottom: 12, padding: 8, backgroundColor: '#FEF7F2', borderRadius: 4 }}>
+            <Text style={{ fontSize: 10, color: '#B8510D', fontWeight: 500 }}>
+              {filterHeaderText}
+            </Text>
+          </View>
+        )}
+
         {/* Intro Card */}
         <View style={styles.introCard}>
           <Text style={styles.introTitle}>About this guide</Text>
@@ -262,7 +292,7 @@ export function GuidePdf({ guide }: GuidePdfProps) {
         </View>
 
         {/* Areas */}
-        {sortedAreas.map((area) => {
+        {displayAreas.map((area) => {
           const overallLevel = getOverallLevel(area.details.map((d) => d.level))
 
           return (
@@ -312,18 +342,31 @@ export function GuidePdf({ guide }: GuidePdfProps) {
               )}
 
               {/* Sensory details */}
-              {area.details.map((detail, idx) => (
-                <View key={idx} style={styles.detailBlock}>
-                  <Text style={styles.detailCategory}>
-                    {detail.category}
-                    {' '}
-                    <Text style={{ color: getSharedLevelColour(detail.level), fontWeight: 500 }}>
-                      ({getLevelLabel(detail.level)})
+              {area.details.map((detail, idx) => {
+                const isHighlighted = shouldHighlight(detail.category)
+                const highlightStyle = isHighlighted ? {
+                  backgroundColor: '#FEF7F2',
+                  borderLeftWidth: 2,
+                  borderLeftColor: '#B8510D',
+                  paddingLeft: 10,
+                  marginLeft: 0,
+                } : {}
+                return (
+                  <View
+                    key={idx}
+                    style={[styles.detailBlock, highlightStyle]}
+                  >
+                    <Text style={styles.detailCategory}>
+                      {detail.category}
+                      {' '}
+                      <Text style={{ color: getSharedLevelColour(detail.level), fontWeight: 500 }}>
+                        ({getLevelLabel(detail.level)})
+                      </Text>
                     </Text>
-                  </Text>
-                  <Text style={styles.detailDescription}>{detail.description}</Text>
-                </View>
-              ))}
+                    <Text style={styles.detailDescription}>{detail.description}</Text>
+                  </View>
+                )
+              })}
             </View>
           )
         })}

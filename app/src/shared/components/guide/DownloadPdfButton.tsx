@@ -3,6 +3,8 @@ import { Buffer } from 'buffer'
 import type { Guide } from '@/lib/schemas/guideSchema'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { AnalyticsEvent } from '@/lib/analytics'
+import { useSensoryProfile } from '@/stores/sensoryProfileStore'
+import { PdfOptionsDialog, type PdfFilterMode } from './PdfOptionsDialog'
 
 // Polyfill Buffer for @react-pdf/renderer in browser
 if (typeof (globalThis as unknown as { Buffer?: typeof Buffer }).Buffer === 'undefined') {
@@ -25,18 +27,27 @@ const buttonClass =
 export function GuidePdfActions({ guide, venueSlug }: GuidePdfActionsProps) {
   const [isPrinting, setIsPrinting] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
+  const [showOptionsDialog, setShowOptionsDialog] = useState(false)
+  const [pendingAction, setPendingAction] = useState<'print' | 'download' | null>(null)
   // Only use gtag for public pages (when venueSlug is provided)
   const { track } = useAnalytics({ useGtag: !!venueSlug })
+  const { activeCategories, hasActiveFilters } = useSensoryProfile()
 
-  const generatePdf = useCallback(async () => {
+  const generatePdf = useCallback(async (filterMode: PdfFilterMode = 'none') => {
     const [{ pdf }, { GuidePdf }] = await Promise.all([
       import('@react-pdf/renderer'),
       import('./GuidePdf'),
     ])
-    return pdf(<GuidePdf guide={guide} />).toBlob()
-  }, [guide])
+    return pdf(
+      <GuidePdf
+        guide={guide}
+        filterMode={filterMode}
+        activeCategories={activeCategories}
+      />
+    ).toBlob()
+  }, [guide, activeCategories])
 
-  const handlePrint = useCallback(async () => {
+  const executePrint = useCallback(async (filterMode: PdfFilterMode) => {
     setIsPrinting(true)
     // Track PDF download (print)
     if (venueSlug) {
@@ -46,7 +57,7 @@ export function GuidePdfActions({ guide, venueSlug }: GuidePdfActionsProps) {
       })
     }
     try {
-      const blob = await generatePdf()
+      const blob = await generatePdf(filterMode)
       const url = URL.createObjectURL(blob)
       const iframe = document.createElement('iframe')
       iframe.style.display = 'none'
@@ -67,7 +78,7 @@ export function GuidePdfActions({ guide, venueSlug }: GuidePdfActionsProps) {
     }
   }, [generatePdf, venueSlug, track, guide.venue.name])
 
-  const handleDownload = useCallback(async () => {
+  const executeDownload = useCallback(async (filterMode: PdfFilterMode) => {
     setIsDownloading(true)
     // Track PDF download
     if (venueSlug) {
@@ -77,7 +88,7 @@ export function GuidePdfActions({ guide, venueSlug }: GuidePdfActionsProps) {
       })
     }
     try {
-      const blob = await generatePdf()
+      const blob = await generatePdf(filterMode)
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
@@ -93,10 +104,53 @@ export function GuidePdfActions({ guide, venueSlug }: GuidePdfActionsProps) {
     }
   }, [generatePdf, guide.venue.name, venueSlug, track])
 
+  const handlePrint = useCallback(() => {
+    if (hasActiveFilters()) {
+      setPendingAction('print')
+      setShowOptionsDialog(true)
+    } else {
+      executePrint('none')
+    }
+  }, [hasActiveFilters, executePrint])
+
+  const handleDownload = useCallback(() => {
+    if (hasActiveFilters()) {
+      setPendingAction('download')
+      setShowOptionsDialog(true)
+    } else {
+      executeDownload('none')
+    }
+  }, [hasActiveFilters, executeDownload])
+
+  const handleModeSelect = useCallback((mode: PdfFilterMode) => {
+    setShowOptionsDialog(false)
+    if (pendingAction === 'print') {
+      executePrint(mode)
+    } else if (pendingAction === 'download') {
+      executeDownload(mode)
+    }
+    setPendingAction(null)
+  }, [pendingAction, executePrint, executeDownload])
+
+  const handleCancelDialog = useCallback(() => {
+    setShowOptionsDialog(false)
+    setPendingAction(null)
+  }, [])
+
   const isDisabled = isPrinting || isDownloading
 
   return (
-    <div className="flex gap-2">
+    <>
+      {/* PDF Options Dialog */}
+      {showOptionsDialog && (
+        <PdfOptionsDialog
+          activeCategories={Array.from(activeCategories)}
+          onSelect={handleModeSelect}
+          onCancel={handleCancelDialog}
+        />
+      )}
+
+      <div className="flex gap-2">
       {/* Print button */}
       <button
         type="button"
@@ -128,7 +182,8 @@ export function GuidePdfActions({ guide, venueSlug }: GuidePdfActionsProps) {
         )}
         {isDownloading ? 'Generating...' : 'Save'}
       </button>
-    </div>
+      </div>
+    </>
   )
 }
 

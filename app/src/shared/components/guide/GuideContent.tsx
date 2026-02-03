@@ -4,6 +4,7 @@ import { useGuideStore } from '@/stores/guideStore'
 import { formatDate } from '@/shared/utils/formatDate'
 import { AreaSection } from './AreaSection'
 import { CategoryBadge } from './CategoryBadge'
+import { FilterBar } from './FilterBar'
 import { FacilitiesSection } from './FacilitiesSection'
 import { ImageLightboxProvider } from './ImageLightbox'
 import { SensoryKey } from './SensoryKey'
@@ -199,19 +200,6 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
             </span>
           </p>
 
-          {/* Top-level category badges */}
-          {categories && categories.length > 0 && (
-            <div
-              className="flex flex-wrap gap-2 mb-3"
-              role="list"
-              aria-label="Sensory categories covered in this guide"
-            >
-              {categories.map((cat) => (
-                <CategoryBadge key={cat} category={cat} />
-              ))}
-            </div>
-          )}
-
           {/* Accuracy disclaimer */}
           <p className="text-sm text-[#595959] italic">
             Information may change. Verify details on arrival.
@@ -219,12 +207,17 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
         </header>
 
         {/* Intro Card - v5 styling with terracotta left border */}
-        <div className="bg-[#F8F8F6] rounded p-5 mb-10 border-l-[3px] border-l-[#B8510D]">
+        <div className="bg-[#F8F8F6] rounded p-5 mb-6 border-l-[3px] border-l-[#B8510D]">
           <p className="font-semibold text-[15px] mb-1">About this guide</p>
           <p className="text-[15px] text-[#3D3D3D] leading-relaxed">
             {venue.summary || 'This guide describes what you might see, hear, and experience at each area of the venue. Select a section to view detailed sensory information.'}
           </p>
         </div>
+
+        {/* FilterBar - toggleable category highlights */}
+        {categories && categories.length > 0 && (
+          <FilterBar categories={categories} />
+        )}
 
         {/* Areas - v5 divider-separated sections */}
         <section className="mb-10">

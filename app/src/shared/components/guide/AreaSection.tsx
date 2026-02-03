@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { Area } from '@/lib/schemas/guideSchema'
 import { useGuideStore } from '@/stores/guideStore'
+import { useSensoryProfile } from '@/stores/sensoryProfileStore'
 import { useReducedMotion } from '@/shared/hooks/useReducedMotion'
 import { getOverallLevel } from '@/shared/utils/sensory'
 import { CategoryBadge, LevelBadge } from './CategoryBadge'
@@ -40,7 +41,14 @@ function getEmbedUrls(area: Area): string[] {
 export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, onToggle }: AreaSectionProps) {
   // Use Zustand for persistence if venueSlug provided, controlled props if given, otherwise local state
   const store = useGuideStore()
+  const { activeCategories, hasActiveFilters, isCategoryActive } = useSensoryProfile()
   const [localExpanded, setLocalExpanded] = useState(false)
+
+  // Sensory profile filtering
+  const filtersActive = hasActiveFilters()
+  const filteredBadges = filtersActive
+    ? area.badges.filter((badge) => isCategoryActive(badge))
+    : area.badges
   // Only use gtag for public pages (when venueSlug is provided)
   const { track } = useAnalytics({ useGtag: !!venueSlug })
 
@@ -145,8 +153,11 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
 
   const panelId = `section-${area.id}`
 
-  // Derive overall level from details (highest level present)
-  const overallLevel = getOverallLevel(area.details.map((d) => d.level))
+  // Derive overall level from details (personalised when filters active)
+  const overallLevel = getOverallLevel(
+    area.details,
+    filtersActive ? activeCategories : undefined
+  )
 
   // Get preview text: prefer LLM-generated summary, fallback to first detail for legacy
   const getPreviewText = (): string | null => {
@@ -210,7 +221,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
             </p>
           )}
           <span className="flex flex-wrap gap-1.5 items-center" aria-label="Sensory categories">
-            {area.badges.map((badge) => (
+            {filteredBadges.map((badge) => (
               <CategoryBadge key={badge} category={badge} />
             ))}
             {/* Embed indicator - shows when collapsed and embeds exist */}
@@ -313,9 +324,20 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
 
         {area.details.length > 0 ? (
           <div className="space-y-4">
-            {area.details.map((detail, index) => (
-              <SensoryDetail key={`${detail.category}-${index}`} detail={detail} sectionTitle={area.name} />
-            ))}
+            {area.details.map((detail, index) => {
+              const categoryActive = isCategoryActive(detail.category)
+              const isHighlighted = filtersActive && categoryActive
+              const isMuted = filtersActive && !categoryActive
+              return (
+                <SensoryDetail
+                  key={`${detail.category}-${index}`}
+                  detail={detail}
+                  sectionTitle={area.name}
+                  highlighted={isHighlighted}
+                  muted={isMuted}
+                />
+              )
+            })}
           </div>
         ) : (
           <p className="text-sm text-[#595959]">

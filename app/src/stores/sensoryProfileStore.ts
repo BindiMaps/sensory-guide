@@ -1,22 +1,18 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-// Threshold levels for filtering sensory warnings
-export type Threshold = 'all' | 'medium-high' | 'high-only'
-
 interface SensoryProfileState {
-  // Categories the user has toggled on for filtering (stored as array for JSON compat)
+  // Categories the user has toggled on for filtering
   activeCategories: Set<string>
-  // Per-category threshold settings (defaults to 'all' if not set)
-  thresholds: Record<string, Threshold>
+  // Whether user has seen the onboarding prompt (auto-dismisses on first filter)
+  hasSeenOnboarding: boolean
 
   // Actions
   toggleCategory: (category: string) => void
-  setThreshold: (category: string, threshold: Threshold) => void
   clearProfile: () => void
+  dismissOnboarding: () => void
 
   // Selectors
-  getThreshold: (category: string) => Threshold
   hasActiveFilters: () => boolean
   isCategoryActive: (category: string) => boolean
 }
@@ -24,14 +20,14 @@ interface SensoryProfileState {
 // Internal state shape for JSON serialisation (Set -> array)
 interface PersistedState {
   activeCategories: string[]
-  thresholds: Record<string, Threshold>
+  hasSeenOnboarding: boolean
 }
 
 export const useSensoryProfile = create<SensoryProfileState>()(
   persist(
     (set, get) => ({
       activeCategories: new Set(),
-      thresholds: {},
+      hasSeenOnboarding: false,
 
       toggleCategory: (category) => {
         set((state) => {
@@ -41,28 +37,21 @@ export const useSensoryProfile = create<SensoryProfileState>()(
           } else {
             newCategories.add(category)
           }
-          return { activeCategories: newCategories }
+          // Auto-dismiss onboarding when first filter is toggled on
+          const shouldDismissOnboarding = !state.hasSeenOnboarding && newCategories.size > 0
+          return {
+            activeCategories: newCategories,
+            hasSeenOnboarding: shouldDismissOnboarding ? true : state.hasSeenOnboarding,
+          }
         })
-      },
-
-      setThreshold: (category, threshold) => {
-        set((state) => ({
-          thresholds: {
-            ...state.thresholds,
-            [category]: threshold,
-          },
-        }))
       },
 
       clearProfile: () => {
-        set({
-          activeCategories: new Set(),
-          thresholds: {},
-        })
+        set({ activeCategories: new Set() })
       },
 
-      getThreshold: (category) => {
-        return get().thresholds[category] ?? 'all'
+      dismissOnboarding: () => {
+        set({ hasSeenOnboarding: true })
       },
 
       hasActiveFilters: () => {

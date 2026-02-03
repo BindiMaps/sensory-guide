@@ -22,6 +22,11 @@ export const AnalyticsEvent = {
   GUIDE_FEEDBACK_SUBMIT: 'guide_feedback_submit',
   // GUIDE_FEEDBACK_TEXT removed - text feedback now goes to Firestore only
 
+  // Filter Events (sensory profile)
+  FILTER_TOGGLED: 'filter_toggled',
+  FILTER_THRESHOLD_CHANGED: 'filter_threshold_changed',
+  FILTER_PROFILE_CLEARED: 'filter_profile_cleared',
+
   // Auth Events
   AUTH_LOGIN_ATTEMPT: 'auth_login_attempt',
   AUTH_LOGIN_SUCCESS: 'auth_login_success',
@@ -138,6 +143,18 @@ export interface VenueVersionParams {
   version_timestamp: string
 }
 
+// Filter event params
+export interface FilterToggledParams {
+  category: string
+  action: 'on' | 'off'
+}
+
+export interface FilterThresholdChangedParams {
+  category: string
+  from: string
+  to: string
+}
+
 // Union type for all event params
 export type AnalyticsEventParams =
   | GuideViewParams
@@ -154,4 +171,6 @@ export type AnalyticsEventParams =
   | VenueErrorParams
   | VenueEditorParams
   | VenueVersionParams
+  | FilterToggledParams
+  | FilterThresholdChangedParams
   | Record<string, string | number | boolean | undefined>

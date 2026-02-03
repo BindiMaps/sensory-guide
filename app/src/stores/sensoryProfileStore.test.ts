@@ -6,7 +6,7 @@ describe('sensoryProfileStore', () => {
     // Reset store state before each test
     useSensoryProfile.setState({
       activeCategories: new Set(),
-      thresholds: {},
+      hasSeenOnboarding: false,
     })
     // Clear localStorage to test persistence
     localStorage.removeItem('sensory-profile')
@@ -18,16 +18,9 @@ describe('sensoryProfileStore', () => {
       expect(state.activeCategories.size).toBe(0)
     })
 
-    it('has empty thresholds by default', () => {
+    it('has hasSeenOnboarding false by default', () => {
       const state = useSensoryProfile.getState()
-      expect(Object.keys(state.thresholds)).toHaveLength(0)
-    })
-
-    it('returns "all" as default threshold for any category', () => {
-      const state = useSensoryProfile.getState()
-      expect(state.getThreshold('Sound')).toBe('all')
-      expect(state.getThreshold('Light')).toBe('all')
-      expect(state.getThreshold('AnyCategory')).toBe('all')
+      expect(state.hasSeenOnboarding).toBe(false)
     })
   })
 
@@ -43,7 +36,7 @@ describe('sensoryProfileStore', () => {
     it('removes category when already present', () => {
       useSensoryProfile.setState({
         activeCategories: new Set(['Sound']),
-        thresholds: {},
+        hasSeenOnboarding: false,
       })
 
       const store = useSensoryProfile.getState()
@@ -56,7 +49,7 @@ describe('sensoryProfileStore', () => {
     it('preserves other categories when toggling', () => {
       useSensoryProfile.setState({
         activeCategories: new Set(['Sound', 'Light']),
-        thresholds: {},
+        hasSeenOnboarding: false,
       })
 
       const store = useSensoryProfile.getState()
@@ -80,71 +73,11 @@ describe('sensoryProfileStore', () => {
     })
   })
 
-  describe('setThreshold', () => {
-    it('sets threshold for a category', () => {
-      const store = useSensoryProfile.getState()
-      store.setThreshold('Sound', 'high-only')
-
-      const state = useSensoryProfile.getState()
-      expect(state.thresholds['Sound']).toBe('high-only')
-    })
-
-    it('updates existing threshold', () => {
-      useSensoryProfile.setState({
-        activeCategories: new Set(),
-        thresholds: { Sound: 'all' },
-      })
-
-      const store = useSensoryProfile.getState()
-      store.setThreshold('Sound', 'medium-high')
-
-      const state = useSensoryProfile.getState()
-      expect(state.thresholds['Sound']).toBe('medium-high')
-    })
-
-    it('preserves other thresholds when setting one', () => {
-      useSensoryProfile.setState({
-        activeCategories: new Set(),
-        thresholds: { Sound: 'high-only', Light: 'medium-high' },
-      })
-
-      const store = useSensoryProfile.getState()
-      store.setThreshold('Crowds', 'all')
-
-      const state = useSensoryProfile.getState()
-      expect(state.thresholds['Sound']).toBe('high-only')
-      expect(state.thresholds['Light']).toBe('medium-high')
-      expect(state.thresholds['Crowds']).toBe('all')
-    })
-  })
-
-  describe('getThreshold', () => {
-    it('returns stored threshold when set', () => {
-      useSensoryProfile.setState({
-        activeCategories: new Set(),
-        thresholds: { Sound: 'high-only' },
-      })
-
-      const state = useSensoryProfile.getState()
-      expect(state.getThreshold('Sound')).toBe('high-only')
-    })
-
-    it('returns "all" for categories without explicit threshold', () => {
-      useSensoryProfile.setState({
-        activeCategories: new Set(),
-        thresholds: { Sound: 'high-only' },
-      })
-
-      const state = useSensoryProfile.getState()
-      expect(state.getThreshold('Light')).toBe('all')
-    })
-  })
-
   describe('clearProfile', () => {
     it('resets activeCategories to empty', () => {
       useSensoryProfile.setState({
         activeCategories: new Set(['Sound', 'Light', 'Crowds']),
-        thresholds: { Sound: 'high-only' },
+        hasSeenOnboarding: true,
       })
 
       const store = useSensoryProfile.getState()
@@ -152,19 +85,6 @@ describe('sensoryProfileStore', () => {
 
       const state = useSensoryProfile.getState()
       expect(state.activeCategories.size).toBe(0)
-    })
-
-    it('resets thresholds to empty', () => {
-      useSensoryProfile.setState({
-        activeCategories: new Set(['Sound']),
-        thresholds: { Sound: 'high-only', Light: 'medium-high' },
-      })
-
-      const store = useSensoryProfile.getState()
-      store.clearProfile()
-
-      const state = useSensoryProfile.getState()
-      expect(Object.keys(state.thresholds)).toHaveLength(0)
     })
   })
 
@@ -177,7 +97,7 @@ describe('sensoryProfileStore', () => {
     it('returns true when at least one category is active', () => {
       useSensoryProfile.setState({
         activeCategories: new Set(['Sound']),
-        thresholds: {},
+        hasSeenOnboarding: false,
       })
 
       const state = useSensoryProfile.getState()
@@ -194,7 +114,7 @@ describe('sensoryProfileStore', () => {
     it('returns true for active category', () => {
       useSensoryProfile.setState({
         activeCategories: new Set(['Sound']),
-        thresholds: {},
+        hasSeenOnboarding: false,
       })
 
       const state = useSensoryProfile.getState()
@@ -202,11 +122,48 @@ describe('sensoryProfileStore', () => {
     })
   })
 
+  describe('onboarding', () => {
+    it('hasSeenOnboarding defaults to false', () => {
+      const state = useSensoryProfile.getState()
+      expect(state.hasSeenOnboarding).toBe(false)
+    })
+
+    it('dismissOnboarding sets hasSeenOnboarding to true', () => {
+      const store = useSensoryProfile.getState()
+      store.dismissOnboarding()
+
+      const state = useSensoryProfile.getState()
+      expect(state.hasSeenOnboarding).toBe(true)
+    })
+
+    it('auto-dismisses onboarding when first filter toggled on', () => {
+      const store = useSensoryProfile.getState()
+      expect(store.hasSeenOnboarding).toBe(false)
+
+      store.toggleCategory('Sound')
+
+      const state = useSensoryProfile.getState()
+      expect(state.hasSeenOnboarding).toBe(true)
+    })
+
+    it('does not change hasSeenOnboarding if already true', () => {
+      useSensoryProfile.setState({
+        activeCategories: new Set(['Sound']),
+        hasSeenOnboarding: true,
+      })
+
+      const store = useSensoryProfile.getState()
+      store.toggleCategory('Light')
+
+      const state = useSensoryProfile.getState()
+      expect(state.hasSeenOnboarding).toBe(true)
+    })
+  })
+
   describe('localStorage persistence', () => {
     it('persists state to localStorage', () => {
       const store = useSensoryProfile.getState()
       store.toggleCategory('Sound')
-      store.setThreshold('Sound', 'high-only')
 
       // Force persist (zustand persist is async)
       const persisted = localStorage.getItem('sensory-profile')
@@ -218,15 +175,13 @@ describe('sensoryProfileStore', () => {
       const storedState = {
         state: {
           activeCategories: ['Sound', 'Light'],
-          thresholds: { Sound: 'high-only' },
+          hasSeenOnboarding: true,
         },
         version: 0,
       }
       localStorage.setItem('sensory-profile', JSON.stringify(storedState))
 
-      // Create fresh store instance to trigger rehydration
-      // Note: In real app, this happens on page load
-      // For this test, we verify the custom storage adapter works
+      // Verify the serialised format is correct
       const persisted = localStorage.getItem('sensory-profile')
       const parsed = JSON.parse(persisted!)
       expect(parsed.state.activeCategories).toEqual(['Sound', 'Light'])
