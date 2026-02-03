@@ -18,4 +18,22 @@ export default defineConfig({
   optimizeDeps: {
     include: ['buffer'],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks - split heavy dependencies
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'firebase': [
+            'firebase/app',
+            'firebase/auth',
+            'firebase/firestore',
+            'firebase/functions',
+            'firebase/storage',
+          ],
+          'query': ['@tanstack/react-query'],
+        },
+      },
+    },
+  },
 })

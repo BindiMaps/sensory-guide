@@ -54,6 +54,23 @@
 - [x] Security audit results (no high-severity vulnerabilities) - see `docs/security-audit-v1.md`
 - [ ] Test coverage statistics
 
+**Bundle Size & Load Time Optimisation** (implemented 2026-02-03):
+- [x] Lazy-loaded admin routes - public users don't download admin code
+- [x] Code-split vendor chunks (React, Firebase, React Query)
+- [x] On-demand PDF generation - 1.5MB react-pdf only loads when user clicks Print/Save
+- Initial bundle for public users: **~130 KB gzip** (vs 308 KB before optimisation)
+- Admin routes load on-demand when accessed
+- Firebase SDK (~115 KB gzip) only loads for admin users
+
+| Chunk | Size (gzip) | Loaded |
+|-------|-------------|--------|
+| index (public) | 97 KB | Always |
+| react-vendor | 17 KB | Always |
+| guideSchema | 18 KB | Always |
+| firebase | 115 KB | Admin only |
+| VenueDetail | 45 KB | Admin only |
+| react-pdf | 526 KB | On Print/Save click |
+
 ### 5. Recommendations for Broader Deployment
 - [ ] Technical scalability considerations
 - [ ] Multi-venue deployment strategy

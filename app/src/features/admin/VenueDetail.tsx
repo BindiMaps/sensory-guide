@@ -1,20 +1,20 @@
-import { useState, useEffect } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
-import { httpsCallable } from 'firebase/functions'
-import { ChevronDown, ChevronUp } from 'lucide-react'
-import { trackEvent, AnalyticsEvent } from '@/lib/analytics'
-import { useVenue } from '@/shared/hooks/useVenue'
-import { useAuthStore } from '@/stores/authStore'
-import { functions } from '@/lib/firebase'
 import { useVersionHistory } from '@/features/admin/guides/useVersionHistory'
 import { VersionHistory } from '@/features/admin/guides/VersionHistory'
-import { VenueFeedbackModal } from './VenueFeedbackModal'
+import { AnalyticsEvent, trackEvent } from '@/lib/analytics'
+import { functions } from '@/lib/firebase'
+import { useVenue } from '@/shared/hooks/useVenue'
+import { useAuthStore } from '@/stores/authStore'
+import { httpsCallable } from 'firebase/functions'
+import { ChevronDown, ChevronUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
-  VenueHeader,
+  DeleteVenueSection,
   EditorSection,
   GuideSection,
-  DeleteVenueSection,
+  VenueHeader,
 } from './venue-detail'
+import { VenueFeedbackModal } from './VenueFeedbackModal'
 
 export function VenueDetail() {
   const { id } = useParams()
