@@ -198,13 +198,21 @@ Typical PDF transform: ~2,000-5,000 tokens = ~$0.001 or less
 
 ## Troubleshooting
 
+**Signed URL errors in production (`SigningError` / "Local dev setup required"):**
+
+Cloud Functions v2 run as the Compute Engine default SA (`541697155712-compute@developer.gserviceaccount.com`), NOT the Firebase Admin SDK SA. The compute SA needs `roles/iam.serviceAccountTokenCreator` to sign URLs:
+```bash
+gcloud projects add-iam-policy-binding sensory-guide \
+  --member="serviceAccount:541697155712-compute@developer.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountTokenCreator"
+```
+
 **"IAM Service Account Credentials API has not been used" error:**
 
-The Firebase Admin service account needs Service Usage Consumer role:
+The compute service account needs Service Usage Consumer role:
 ```bash
-PROJECT_ID=your-project-id
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member="serviceAccount:firebase-adminsdk-fbsvc@$PROJECT_ID.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding sensory-guide \
+  --member="serviceAccount:541697155712-compute@developer.gserviceaccount.com" \
   --role="roles/serviceusage.serviceUsageConsumer"
 ```
 

@@ -169,3 +169,25 @@ KEY_ID=$(gcloud services api-keys list --project=sensory-guide --format="value(u
 gcloud services api-keys update $KEY_ID --project=sensory-guide \
   --allowed-referrers="sensory-guide.web.app/*,sensory-guide.firebaseapp.com/*,localhost:*/*,newdomain.com/*"
 ```
+
+### Cloud Functions Service Account (CRITICAL)
+
+Cloud Functions v2 run on Cloud Run using the **Compute Engine default service account**:
+`541697155712-compute@developer.gserviceaccount.com`
+
+This is NOT the App Engine SA (`sensory-guide@appspot.gserviceaccount.com`) or the Firebase Admin SDK SA (`firebase-adminsdk-fbsvc@sensory-guide.iam.gserviceaccount.com`). When granting IAM roles for functions, always target the compute SA.
+
+**Required IAM roles** on the compute SA:
+- `roles/iam.serviceAccountTokenCreator` — needed for `file.getSignedUrl()` (used by `getSignedUploadUrl` and `listVersions`)
+
+**To verify/fix signed URL errors in production:**
+```bash
+# Check which SA functions actually use
+gcloud run services list --project=sensory-guide --region=us-central1 \
+  --format="table(metadata.name,spec.template.spec.serviceAccountName)"
+
+# Grant Token Creator to the compute SA
+gcloud projects add-iam-policy-binding sensory-guide \
+  --member="serviceAccount:541697155712-compute@developer.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountTokenCreator"
+```
