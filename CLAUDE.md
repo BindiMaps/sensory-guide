@@ -15,6 +15,16 @@ This is a **planning and implementation project** for BindiMaps, using two integ
 
 Application code lives in `app/` (React + Vite + Firebase). Planning artifacts are generated in `_bmad-output/`.
 
+## Quality Checks (CRITICAL)
+
+**After any significant code changes**, run these checks before committing to avoid wasted CI time:
+
+```bash
+cd app && yarn lint && yarn test && yarn build
+```
+
+This catches lint errors, test failures, and build issues locally before they fail in CI.
+
 ## Key Workflows
 
 ### Speckit Commands (via `/speckit.*`)

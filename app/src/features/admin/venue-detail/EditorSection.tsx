@@ -49,7 +49,6 @@ export function EditorSection({
   const [editorToRemove, setEditorToRemove] = useState<string | null>(null)
   const [generatingLinkFor, setGeneratingLinkFor] = useState<string | null>(null)
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null)
-  const [lastResetLink, setLastResetLink] = useState<string | null>(null)
 
   const isLastEditor = editors.length === 1
   const currentUserIsEditor = currentUserEmail && editors.map(e => e.toLowerCase()).includes(currentUserEmail.toLowerCase())
@@ -90,7 +89,6 @@ export function EditorSection({
       const inviteText = generateInviteText(result.data.resetLink, false)
 
       await navigator.clipboard.writeText(inviteText)
-      setLastResetLink(result.data.resetLink)
       setCopiedEmail(email)
 
       // Clear copied state after 3s
@@ -151,7 +149,6 @@ export function EditorSection({
 
       const inviteText = generateInviteText(result.resetLink, result.isNewUser)
       await navigator.clipboard.writeText(inviteText)
-      setLastResetLink(result.resetLink)
       setCopiedEmail(result.email)
       setEditorSuccess(`Added ${result.email}. Invite text copied to clipboard!`)
       setTimeout(() => setCopiedEmail(null), 3000)
