@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { functions } from '@/lib/firebase'
+import { generateInviteText } from '@/shared/utils/inviteText'
 import { httpsCallable } from 'firebase/functions'
 import { Loader2 } from 'lucide-react'
-import { functions } from '@/lib/firebase'
+import { useEffect, useState } from 'react'
 
 interface AllowListManagerProps {
   onClose?: () => void
@@ -15,6 +16,7 @@ type ActionState =
   | { type: 'idle' }
   | { type: 'adding' }
   | { type: 'removing'; email: string }
+  | { type: 'generating-link'; email: string }
 
 export function AllowListManager({ onClose }: AllowListManagerProps) {
   const [emails, setEmails] = useState<string[]>([])
@@ -22,10 +24,12 @@ export function AllowListManager({ onClose }: AllowListManagerProps) {
   const [loading, setLoading] = useState(true)
   const [action, setAction] = useState<ActionState>({ type: 'idle' })
   const [error, setError] = useState<string | null>(null)
+  const [copiedEmail, setCopiedEmail] = useState<string | null>(null)
 
   // Derived helpers
   const adding = action.type === 'adding'
   const removing = action.type === 'removing' ? action.email : null
+  const generatingLink = action.type === 'generating-link' ? action.email : null
 
   // Load the current allow-list
   useEffect(() => {
@@ -124,6 +128,34 @@ export function AllowListManager({ onClose }: AllowListManagerProps) {
     }
   }
 
+  const handleGetInviteLink = async (email: string) => {
+    if (!functions) {
+      setError('Functions not configured')
+      return
+    }
+
+    setAction({ type: 'generating-link', email })
+    setError(null)
+
+    try {
+      const generateLinkFn = httpsCallable<
+        { email: string },
+        { success: boolean; email: string; isNewUser: boolean; resetLink: string }
+      >(functions, 'generateUserResetLink')
+      const result = await generateLinkFn({ email })
+
+      const inviteText = generateInviteText(result.data.resetLink, result.data.isNewUser)
+      await navigator.clipboard.writeText(inviteText)
+      setCopiedEmail(email)
+      setTimeout(() => setCopiedEmail(null), 3000)
+    } catch (err) {
+      console.error('Failed to generate invite link:', err)
+      setError('Failed to generate invite link')
+    } finally {
+      setAction({ type: 'idle' })
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -183,21 +215,35 @@ export function AllowListManager({ onClose }: AllowListManagerProps) {
             No approved users yet. Add emails above.
           </div>
         ) : (
-          emails.map((email) => (
-            <div
-              key={email}
-              className="flex justify-between items-center px-4 py-3"
-            >
-              <span className="text-sm">{email}</span>
-              <button
-                onClick={() => handleRemoveEmail(email)}
-                disabled={removing === email}
-                className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50"
+          emails.map((email) => {
+            const isGenerating = generatingLink === email
+            const justCopied = copiedEmail === email
+
+            return (
+              <div
+                key={email}
+                className="flex justify-between items-center px-4 py-3"
               >
-                {removing === email ? 'Removing...' : 'Remove'}
-              </button>
-            </div>
-          ))
+                <span className="text-sm">{email}</span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => handleGetInviteLink(email)}
+                    disabled={isGenerating}
+                    className="text-sm text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                  >
+                    {justCopied ? 'Copied!' : isGenerating ? 'Loading...' : 'Copy invite'}
+                  </button>
+                  <button
+                    onClick={() => handleRemoveEmail(email)}
+                    disabled={removing === email}
+                    className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50"
+                  >
+                    {removing === email ? 'Removing...' : 'Remove'}
+                  </button>
+                </div>
+              </div>
+            )
+          })
         )}
       </div>
 

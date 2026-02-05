@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { trackEvent, AnalyticsEvent } from '@/lib/analytics'
+import { AnalyticsEvent, trackEvent } from '@/lib/analytics'
+import { functions } from '@/lib/firebase'
 import {
   Dialog,
   DialogContent,
@@ -8,9 +8,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog'
+import { generateInviteText } from '@/shared/utils/inviteText'
+import { httpsCallable } from 'firebase/functions'
+import { useState } from 'react'
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+interface InviteEditorResponse {
+  success: boolean
+  email: string
+  isNewUser: boolean
+  resetLink: string
 }
 
 interface EditorSectionProps {
@@ -18,7 +28,7 @@ interface EditorSectionProps {
   editors: string[]
   createdBy: string | undefined
   currentUserEmail: string | undefined
-  onAddEditor: (email: string) => Promise<void>
+  onAddEditor: (email: string) => Promise<InviteEditorResponse>
   onRemoveEditor: (email: string) => Promise<void>
 }
 
@@ -32,10 +42,14 @@ export function EditorSection({
 }: EditorSectionProps) {
   const [newEditorEmail, setNewEditorEmail] = useState('')
   const [editorError, setEditorError] = useState('')
+  const [editorSuccess, setEditorSuccess] = useState('')
   const [addingEditor, setAddingEditor] = useState(false)
   const [showSelfRemoveConfirm, setShowSelfRemoveConfirm] = useState(false)
   const [removingEditor, setRemovingEditor] = useState(false)
   const [editorToRemove, setEditorToRemove] = useState<string | null>(null)
+  const [generatingLinkFor, setGeneratingLinkFor] = useState<string | null>(null)
+  const [copiedEmail, setCopiedEmail] = useState<string | null>(null)
+  const [lastResetLink, setLastResetLink] = useState<string | null>(null)
 
   const isLastEditor = editors.length === 1
   const currentUserIsEditor = currentUserEmail && editors.map(e => e.toLowerCase()).includes(currentUserEmail.toLowerCase())
@@ -60,6 +74,35 @@ export function EditorSection({
     return !!currentUserIsEditor
   }
 
+  const handleGenerateResetLink = async (email: string) => {
+    if (!functions) return
+
+    setGeneratingLinkFor(email)
+    setEditorError('')
+
+    try {
+      const generateResetLinkFn = httpsCallable<
+        { email: string; venueId: string },
+        { success: boolean; email: string; resetLink: string }
+      >(functions, 'generateEditorResetLink')
+
+      const result = await generateResetLinkFn({ email, venueId })
+      const inviteText = generateInviteText(result.data.resetLink, false)
+
+      await navigator.clipboard.writeText(inviteText)
+      setLastResetLink(result.data.resetLink)
+      setCopiedEmail(email)
+
+      // Clear copied state after 3s
+      setTimeout(() => setCopiedEmail(null), 3000)
+    } catch (err) {
+      console.error('Failed to generate reset link:', err)
+      setEditorError('Failed to generate invite link')
+    } finally {
+      setGeneratingLinkFor(null)
+    }
+  }
+
   /**
    * Handles click on remove button.
    * - Self-removal: uses existing inline confirmation flow
@@ -80,6 +123,7 @@ export function EditorSection({
   const handleAddEditor = async (e: React.FormEvent) => {
     e.preventDefault()
     setEditorError('')
+    setEditorSuccess('')
 
     const email = newEditorEmail.trim().toLowerCase()
 
@@ -101,11 +145,34 @@ export function EditorSection({
     setAddingEditor(true)
 
     try {
-      await onAddEditor(email)
-      trackEvent(AnalyticsEvent.VENUE_EDITOR_ADD, { venue_id: venueId, editor_email: email, action: 'add' })
+      const result = await onAddEditor(email)
+      trackEvent(AnalyticsEvent.VENUE_EDITOR_ADD, { venue_id: venueId, editor_email: email, action: 'add', is_new_user: result.isNewUser })
       setNewEditorEmail('')
+
+      const inviteText = generateInviteText(result.resetLink, result.isNewUser)
+      await navigator.clipboard.writeText(inviteText)
+      setLastResetLink(result.resetLink)
+      setCopiedEmail(result.email)
+      setEditorSuccess(`Added ${result.email}. Invite text copied to clipboard!`)
+      setTimeout(() => setCopiedEmail(null), 3000)
+
+      // Auto-clear success message after 5s
+      setTimeout(() => setEditorSuccess(''), 5000)
     } catch (err) {
-      setEditorError(err instanceof Error ? err.message : 'Failed to add editor')
+      const error = err as { code?: string; message?: string }
+
+      // Handle Cloud Function error codes
+      if (error.code === 'functions/already-exists' || error.message?.includes('already an editor')) {
+        setEditorError('This person is already an editor')
+      } else if (error.code === 'functions/failed-precondition' || error.message?.includes('Maximum')) {
+        setEditorError('Maximum 5 editors per venue')
+      } else if (error.code === 'functions/permission-denied') {
+        setEditorError('You do not have permission to add editors')
+      } else if (error.code === 'functions/invalid-argument' || error.message?.includes('Invalid email')) {
+        setEditorError('Invalid email format')
+      } else {
+        setEditorError(err instanceof Error ? err.message : 'Failed to invite editor')
+      }
     } finally {
       setAddingEditor(false)
     }
@@ -148,29 +215,47 @@ export function EditorSection({
       <h2 className="text-lg font-semibold mb-4">Editors</h2>
 
       <ul className="space-y-2 mb-4">
-        {editors.map((email) => (
-          <li key={email} className="flex justify-between items-center py-2 px-3 bg-muted/30 rounded">
-            <span className="text-sm">
-              {email}
-              {email === createdBy && (
-                <span className="text-xs text-muted-foreground ml-2">(owner)</span>
-              )}
-              {email.toLowerCase() === currentUserEmail?.toLowerCase() && (
-                <span className="text-xs text-muted-foreground ml-2">(you)</span>
-              )}
-            </span>
-            {canRemoveEditor(email) && (
-              <button
-                onClick={() => handleRemoveClick(email)}
-                className="text-sm text-red-600 hover:text-red-800"
-                title="Remove editor"
-                disabled={removingEditor}
-              >
-                ✕
-              </button>
-            )}
-          </li>
-        ))}
+        {editors.map((email) => {
+          const isSelf = email.toLowerCase() === currentUserEmail?.toLowerCase()
+          const isGenerating = generatingLinkFor === email
+          const justCopied = copiedEmail === email
+
+          return (
+            <li key={email} className="flex justify-between items-center py-2 px-3 bg-muted/30 rounded">
+              <span className="text-sm">
+                {email}
+                {email === createdBy && (
+                  <span className="text-xs text-muted-foreground ml-2">(owner)</span>
+                )}
+                {isSelf && (
+                  <span className="text-xs text-muted-foreground ml-2">(you)</span>
+                )}
+              </span>
+              <div className="flex items-center gap-2">
+                {!isSelf && (
+                  <button
+                    onClick={() => handleGenerateResetLink(email)}
+                    disabled={isGenerating}
+                    className="text-xs text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                    title="Generate invite link and copy to clipboard"
+                  >
+                    {justCopied ? 'Copied!' : isGenerating ? 'Loading...' : 'Copy invite'}
+                  </button>
+                )}
+                {canRemoveEditor(email) && (
+                  <button
+                    onClick={() => handleRemoveClick(email)}
+                    className="text-sm text-red-600 hover:text-red-800"
+                    title="Remove editor"
+                    disabled={removingEditor}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </li>
+          )
+        })}
       </ul>
 
       {showSelfRemoveConfirm && (
@@ -242,7 +327,7 @@ export function EditorSection({
             disabled={addingEditor || !newEditorEmail.trim()}
             className="px-3 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 text-sm"
           >
-            Add
+            {addingEditor ? 'Inviting...' : 'Add'}
           </button>
         </form>
       )}
@@ -253,6 +338,10 @@ export function EditorSection({
 
       {editorError && (
         <p className="text-sm text-red-600 mt-2">{editorError}</p>
+      )}
+
+      {editorSuccess && (
+        <p className="text-sm text-green-600 mt-2">{editorSuccess}</p>
       )}
     </section>
   )

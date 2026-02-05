@@ -412,3 +412,76 @@
 [debug] [2026-02-03T03:49:14.799Z] >>> [apiv2][body] POST https://logging.googleapis.com/v2/entries:list {"resourceNames":["projects/sensory-guide"],"filter":"resource.type=\"cloud_function\" OR (resource.type=\"cloud_run_revision\" AND labels.\"goog-managed-by\"=\"cloudfunctions\")\n(resource.labels.function_name=\"listVersions\" OR resource.labels.service_name=\"listVersions\" OR resource.labels.function_name=\"republishEmbeddings\" OR resource.labels.service_name=\"republishEmbeddings\")","orderBy":"timestamp desc","pageSize":30}
 [debug] [2026-02-03T03:49:23.424Z] <<< [apiv2][status] POST https://logging.googleapis.com/v2/entries:list 500
 [debug] [2026-02-03T03:49:23.424Z] <<< [apiv2][body] POST https://logging.googleapis.com/v2/entries:list {"error":{"code":500,"message":"Internal error encountered.","status":"INTERNAL"}}
+[debug] [2026-02-04T23:17:16.551Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:17:16.553Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:17:16.553Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:17:16.553Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:17:16.561Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:17:16.561Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:17:16.561Z] Checked if tokens are valid: false, expires at: 1770175410432
+[debug] [2026-02-04T23:17:16.561Z] Checked if tokens are valid: false, expires at: 1770175410432
+[debug] [2026-02-04T23:17:16.561Z] > refreshing access token with scopes: []
+[debug] [2026-02-04T23:17:16.562Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-02-04T23:17:16.562Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-04T23:17:16.596Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:17:16.596Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:17:16.596Z] Checked if tokens are valid: false, expires at: 1770175410432
+[debug] [2026-02-04T23:17:16.596Z] Checked if tokens are valid: false, expires at: 1770175410432
+[debug] [2026-02-04T23:17:16.596Z] > refreshing access token with scopes: []
+[debug] [2026-02-04T23:17:16.596Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-02-04T23:17:16.596Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-04T23:17:16.598Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:17:16.598Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:17:16.598Z] Checked if tokens are valid: false, expires at: 1770175410432
+[debug] [2026-02-04T23:17:16.598Z] Checked if tokens are valid: false, expires at: 1770175410432
+[debug] [2026-02-04T23:17:16.598Z] > refreshing access token with scopes: []
+[debug] [2026-02-04T23:17:16.598Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-02-04T23:17:16.598Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-04T23:17:17.268Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-02-04T23:17:17.268Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-04T23:17:17.283Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo [none]
+[debug] [2026-02-04T23:17:17.287Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-02-04T23:17:17.287Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-04T23:17:17.300Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo [none]
+[debug] [2026-02-04T23:17:17.314Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-02-04T23:17:17.314Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-04T23:17:17.327Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo [none]
+[debug] [2026-02-04T23:17:18.105Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo 200
+[debug] [2026-02-04T23:17:18.105Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo {"name":"projects/sensory-guide/billingInfo","projectId":"sensory-guide","billingAccountName":"billingAccounts/012169-B6A4BD-8D5D5A","billingEnabled":true}
+[debug] [2026-02-04T23:17:18.107Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:17:18.108Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:17:18.217Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo 200
+[debug] [2026-02-04T23:17:18.217Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo {"name":"projects/sensory-guide/billingInfo","projectId":"sensory-guide","billingAccountName":"billingAccounts/012169-B6A4BD-8D5D5A","billingEnabled":true}
+[debug] [2026-02-04T23:17:18.219Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:17:18.219Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:17:18.283Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo 200
+[debug] [2026-02-04T23:17:18.283Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo {"name":"projects/sensory-guide/billingInfo","projectId":"sensory-guide","billingAccountName":"billingAccounts/012169-B6A4BD-8D5D5A","billingEnabled":true}
+[debug] [2026-02-04T23:45:28.462Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:45:28.463Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:45:28.463Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:45:28.463Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:45:28.473Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:45:28.473Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:45:28.473Z] Checked if tokens are valid: true, expires at: 1770250636314
+[debug] [2026-02-04T23:45:28.474Z] Checked if tokens are valid: true, expires at: 1770250636314
+[debug] [2026-02-04T23:45:28.474Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo [none]
+[debug] [2026-02-04T23:45:28.508Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:45:28.508Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:45:28.508Z] Checked if tokens are valid: true, expires at: 1770250636314
+[debug] [2026-02-04T23:45:28.508Z] Checked if tokens are valid: true, expires at: 1770250636314
+[debug] [2026-02-04T23:45:28.508Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo [none]
+[debug] [2026-02-04T23:45:28.510Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:45:28.510Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:45:28.510Z] Checked if tokens are valid: true, expires at: 1770250636314
+[debug] [2026-02-04T23:45:28.510Z] Checked if tokens are valid: true, expires at: 1770250636314
+[debug] [2026-02-04T23:45:28.510Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo [none]
+[debug] [2026-02-04T23:45:29.238Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo 200
+[debug] [2026-02-04T23:45:29.238Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo {"name":"projects/sensory-guide/billingInfo","projectId":"sensory-guide","billingAccountName":"billingAccounts/012169-B6A4BD-8D5D5A","billingEnabled":true}
+[debug] [2026-02-04T23:45:29.239Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:45:29.240Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-04T23:45:29.338Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo 200
+[debug] [2026-02-04T23:45:29.338Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo {"name":"projects/sensory-guide/billingInfo","projectId":"sensory-guide","billingAccountName":"billingAccounts/012169-B6A4BD-8D5D5A","billingEnabled":true}
+[debug] [2026-02-04T23:45:29.342Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo 200
+[debug] [2026-02-04T23:45:29.342Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo {"name":"projects/sensory-guide/billingInfo","projectId":"sensory-guide","billingAccountName":"billingAccounts/012169-B6A4BD-8D5D5A","billingEnabled":true}
+[debug] [2026-02-04T23:45:29.343Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-04T23:45:29.343Z] > authorizing via signed-in user (keith@bindimaps.com)

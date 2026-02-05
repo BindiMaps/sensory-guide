@@ -5,6 +5,9 @@ import { isSuperAdmin } from '../utils/accessControl'
 
 type TimeRange = '1w' | '2w' | '4w' | 'all'
 
+// Max feedback entries to return (prevents unbounded reads for popular venues)
+const MAX_FEEDBACK_ENTRIES = 500
+
 interface GetVenueFeedbackRequest {
   venueId: string
   timeRange: TimeRange
@@ -76,13 +79,14 @@ export const getVenueFeedback = onCall(
       throw new HttpsError('permission-denied', 'Not authorised to view this venue\'s feedback')
     }
 
-    // Build query
+    // Build query (always capped to prevent unbounded reads)
     const startDate = getStartDate(timeRange)
     let query = db
       .collection('venues')
       .doc(venueId)
       .collection('feedback')
       .orderBy('createdAt', 'desc')
+      .limit(MAX_FEEDBACK_ENTRIES)
 
     if (startDate) {
       query = query.where('createdAt', '>=', Timestamp.fromDate(startDate))

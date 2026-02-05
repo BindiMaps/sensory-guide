@@ -1,7 +1,15 @@
 import { useEffect, useState, useCallback } from 'react'
-import { doc, onSnapshot, updateDoc, deleteDoc, arrayUnion, arrayRemove, serverTimestamp } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { doc, onSnapshot, updateDoc, deleteDoc, arrayRemove, serverTimestamp } from 'firebase/firestore'
+import { httpsCallable } from 'firebase/functions'
+import { db, functions } from '@/lib/firebase'
 import type { Venue } from '@/shared/types/venue'
+
+interface InviteEditorResponse {
+  success: boolean
+  email: string
+  isNewUser: boolean
+  resetLink: string
+}
 
 export function useVenue(venueId: string | undefined) {
   const [venue, setVenue] = useState<Venue | null>(null)
@@ -48,16 +56,21 @@ export function useVenue(venueId: string | undefined) {
     return () => unsubscribe()
   }, [venueId])
 
-  const addEditor = useCallback(async (email: string) => {
+  const addEditor = useCallback(async (email: string): Promise<InviteEditorResponse> => {
     if (!venueId || !venue || !db) throw new Error('No venue loaded')
+    if (!functions) throw new Error('Functions not configured')
     if (venue.editors.length >= 5) throw new Error('Maximum 5 editors per venue')
-    if (venue.editors.includes(email)) throw new Error('This person is already an editor')
+    if (venue.editors.map(e => e.toLowerCase()).includes(email.toLowerCase())) {
+      throw new Error('This person is already an editor')
+    }
 
-    const venueRef = doc(db, 'venues', venueId)
-    await updateDoc(venueRef, {
-      editors: arrayUnion(email),
-      updatedAt: serverTimestamp(),
-    })
+    const inviteEditorFn = httpsCallable<
+      { email: string; venueId: string },
+      InviteEditorResponse
+    >(functions, 'inviteEditor')
+
+    const result = await inviteEditorFn({ email, venueId })
+    return result.data
   }, [venueId, venue])
 
   const removeEditor = useCallback(async (email: string) => {

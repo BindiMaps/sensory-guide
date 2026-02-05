@@ -6,6 +6,9 @@ interface ListVersionsRequest {
   venueId: string
 }
 
+// Max versions to return (prevents unbounded storage list operations)
+const MAX_VERSIONS = 50
+
 interface VersionInfo {
   timestamp: string
   previewUrl: string
@@ -36,15 +39,18 @@ export async function listVersionsHandler(
   // 3. Check editor access
   await requireEditorAccess(userEmail, venueId)
 
-  // 4. List files from Cloud Storage
+  // 4. List files from Cloud Storage (capped to prevent unbounded operations)
   const storage = getStorage()
   const bucket = storage.bucket()
   const prefix = `venues/${venueId}/versions/`
 
-  const [files] = await bucket.getFiles({ prefix })
+  // Request extra files since we filter to .json only after
+  const [files] = await bucket.getFiles({ prefix, maxResults: MAX_VERSIONS * 2 })
 
-  // 5. Filter to .json files only and extract metadata
-  const jsonFiles = files.filter((file) => file.name.endsWith('.json'))
+  // 5. Filter to .json files only and cap results
+  const jsonFiles = files
+    .filter((file) => file.name.endsWith('.json'))
+    .slice(0, MAX_VERSIONS)
 
   const versions: VersionInfo[] = await Promise.all(
     jsonFiles.map(async (file) => {

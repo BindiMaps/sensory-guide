@@ -1,17 +1,8 @@
 import { HttpsError, CallableRequest } from 'firebase-functions/v2/https'
 import { getFirestore } from 'firebase-admin/firestore'
-import { isSuperAdmin as isSuperAdminFromConfig } from '../utils/accessControl'
+import { isSuperAdmin } from '../utils/accessControl'
 
-// Legacy sync check (for backwards compatibility in requireEditorAccess)
-// This is a fallback - prefer the async isSuperAdmin from accessControl
-const SUPER_ADMIN_EMAILS_FALLBACK = ['keith@bindimaps.com']
-
-export function isSuperAdminSync(email: string | undefined): boolean {
-  return email !== undefined && SUPER_ADMIN_EMAILS_FALLBACK.includes(email)
-}
-
-// Re-export async version for convenience
-export { isSuperAdminFromConfig as isSuperAdmin }
+export { isSuperAdmin }
 
 export function requireAuth(request: CallableRequest): string {
   if (!request.auth) {
@@ -26,10 +17,21 @@ export function requireAuth(request: CallableRequest): string {
   return email
 }
 
+export async function requireSuperAdmin(userEmail: string): Promise<void> {
+  if (!(await isSuperAdmin(userEmail))) {
+    throw new HttpsError('permission-denied', 'Super admin access required')
+  }
+}
+
 export async function requireEditorAccess(
   userEmail: string,
   venueId: string
 ): Promise<void> {
+  // Super admins bypass editor check
+  if (await isSuperAdmin(userEmail)) {
+    return
+  }
+
   const db = getFirestore()
   const venueDoc = await db.collection('venues').doc(venueId).get()
 
@@ -47,7 +49,7 @@ export async function requireEditorAccess(
   const normalizedEditors = editors.map((e) => e.toLowerCase())
   const normalizedEmail = userEmail.toLowerCase()
 
-  if (!normalizedEditors.includes(normalizedEmail) && !isSuperAdminSync(userEmail)) {
+  if (!normalizedEditors.includes(normalizedEmail)) {
     throw new HttpsError('permission-denied', 'Not an editor of this venue')
   }
 }
