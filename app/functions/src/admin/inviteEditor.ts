@@ -1,5 +1,5 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https'
-import { getFirestore, FieldValue } from 'firebase-admin/firestore'
+import { FieldValue } from 'firebase-admin/firestore'
 import { requireAuth, requireEditorAccess } from '../middleware/auth'
 import { ensureUserWithResetLink } from '../utils/userAuth'
 
@@ -54,18 +54,11 @@ export const inviteEditor = onCall<InviteEditorRequest>(
       throw new HttpsError('invalid-argument', 'Invalid email format')
     }
 
-    // 3. Verify caller has editor access
-    await requireEditorAccess(callerEmail, venueId)
+    // 3. Verify caller has editor access (also returns the venue doc)
+    const venueDoc = await requireEditorAccess(callerEmail, venueId)
 
-    // 4. Get venue and validate constraints
-    const db = getFirestore()
-    const venueRef = db.collection('venues').doc(venueId)
-    const venueDoc = await venueRef.get()
-
-    if (!venueDoc.exists) {
-      throw new HttpsError('not-found', 'Venue not found')
-    }
-
+    // 4. Validate constraints
+    const venueRef = venueDoc.ref
     const venueData = venueDoc.data()!
     const editors = (venueData.editors as string[]) || []
 

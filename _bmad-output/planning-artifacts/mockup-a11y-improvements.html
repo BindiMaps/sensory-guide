@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A11y Improvements — Before / After Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #f0f0ee;
+    color: #1A1A1A;
+    -webkit-font-smoothing: antialiased;
+    padding: 1rem;
+  }
+
+  /* ── Controls ── */
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #1A1A1A;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+  }
+  .controls label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .controls input[type="checkbox"] { accent-color: #B8510D; width: 16px; height: 16px; }
+  .controls select {
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 13px;
+  }
+  .controls h2 { font-size: 14px; font-weight: 600; margin-right: auto; }
+
+  /* ── Layout ── */
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .panel {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .panel-header.current { background: #e8e8e5; color: #595959; }
+  .panel-header.proposed { background: #B8510D; color: white; }
+  .panel-body {
+    padding: 20px;
+    max-width: 720px;
+  }
+
+  /* ── Shared guide styles ── */
+  .guide-wrapper {
+    font-size: 15px;
+    line-height: 1.625;
+    color: #1A1A1A;
+  }
+
+  /* Intro card */
+  .intro-card {
+    background: #F8F8F6;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border-left: 3px solid #B8510D;
+  }
+  .intro-card .title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .intro-card .body { font-size: 15px; color: #3D3D3D; line-height: 1.625; }
+  .intro-card .map-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 12px;
+    color: #B8510D;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  .intro-card .map-link:hover { text-decoration: underline; }
+
+  /* Filter bar */
+  .filter-bar { margin-bottom: 24px; }
+  .filter-label { color: #595959; margin-bottom: 8px; }
+  .filter-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+  .filter-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    border-radius: 2px;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Expand all */
+  .expand-all-row { display: flex; margin-bottom: 16px; }
+  .expand-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .expand-all-btn svg { width: 16px; height: 16px; }
+
+  /* Section row */
+  .section-row {
+    border-bottom: 1px solid #E8E8E5;
+    padding: 16px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .section-row:last-child { border-bottom: none; }
+
+  /* Toggle circle */
+  .toggle-circle {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 50%;
+    border: 1.5px solid #DDDDD9;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .toggle-circle svg { width: 12px; height: 12px; }
+
+  /* Section info */
+  .section-info { flex: 1; min-width: 0; padding-top: 2px; }
+  .section-title { font-size: 16px; font-weight: 600; color: #1A1A1A; margin-bottom: 4px; line-height: 1.3; }
+  .section-preview { font-size: 14px; color: #3D3D3D; line-height: 1.625; margin-bottom: 8px; }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+  /* Category badge */
+  .cat-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    border-radius: 2px;
+  }
+
+  /* Level badge */
+  .level-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .level-square { border-radius: 2px; flex-shrink: 0; }
+  .level-text { font-weight: 600; letter-spacing: 0.05em; }
+
+  /* FAB */
+  .fab-container { position: relative; height: 80px; margin-top: 24px; }
+  .fab {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #B8510D;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(184,81,13,0.35);
+  }
+  .fab svg { width: 16px; height: 16px; }
+
+  /* ── HIGH CONTRAST simulation ── */
+  .hc .section-row { border-bottom-color: #888888; }
+  .hc .toggle-circle { border-color: #888888; }
+  .hc .filter-label { color: #333333; }
+  .hc .section-preview { color: #333333; }
+  .hc .cat-badge { box-shadow: inset 0 0 0 1px currentColor; }
+  .hc .level-square.proposed-size { width: 16px !important; height: 16px !important; }
+
+  /* ── Annotations ── */
+  .anno {
+    display: inline-block;
+    background: #FEF3C7;
+    color: #92400E;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 2px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .anno.new { background: #DCFCE7; color: #166534; }
+
+  /* ── FAB animation ── */
+  @keyframes fab-enter {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fab-animated {
+    opacity: 0;
+    animation: fab-enter 300ms ease-out 1.5s forwards;
+  }
+  .reduced-motion .fab-animated {
+    opacity: 1;
+    animation: none;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .panels { grid-template-columns: 1fr; }
+  }
+
+  .mobile .panels { grid-template-columns: 1fr; }
+  .mobile .panel-body { max-width: 375px; }
+</style>
+</head>
+<body>
+
+<div class="controls" id="controls">
+  <h2>A11y Improvements Mockup</h2>
+  <label>
+    <input type="checkbox" id="hc-toggle">
+    High contrast
+  </label>
+  <label>
+    <input type="checkbox" id="motion-toggle">
+    Reduced motion
+  </label>
+  <label>
+    Viewport:
+    <select id="viewport-select">
+      <option value="desktop">Desktop (side-by-side)</option>
+      <option value="mobile">Mobile (375px, stacked)</option>
+    </select>
+  </label>
+  <label style="font-size:11px;opacity:0.7;margin-left:auto">
+    Changes annotated with coloured tags
+  </label>
+</div>
+
+<div class="panels" id="panels">
+
+  <!-- ═══════ CURRENT ═══════ -->
+  <div class="panel">
+    <div class="panel-header current">Current</div>
+    <div class="panel-body">
+      <div class="guide-wrapper">
+
+        <!-- Intro card (current - no map link) -->
+        <div class="intro-card">
+          <div class="title">About this guide</div>
+          <div class="body">This guide describes what you might see, hear, and experience at each area of the venue. Select a section to view detailed sensory information.</div>
+        </div>
+
+        <!-- Filter bar (current) -->
+        <div class="filter-bar">
+          <div class="filter-label" style="font-size: 11px;">Tap to highlight</div>
+          <div class="filter-buttons">
+            <button class="filter-btn" style="background:#E3ECF0;color:#264854;font-size:11px;text-transform:uppercase;">Sound</button>
+            <button class="filter-btn" style="background:#F4EBDA;color:#4D3F14;font-size:11px;text-transform:uppercase;">Light</button>
+            <button class="filter-btn" style="background:#EDE6E0;color:#3F352C;font-size:11px;text-transform:uppercase;">Crowds</button>
+            <button class="filter-btn" style="background:#E6EEE7;color:#263D29;font-size:11px;text-transform:uppercase;">Smells</button>
+          </div>
+        </div>
+
+        <!-- Expand all (current - right-aligned) -->
+        <div class="expand-all-row" style="justify-content: flex-end;">
+          <button class="expand-all-btn" style="font-size: 14px; color: #595959;">
+            Expand all
+            <svg viewBox="0 0 24 24" fill="none"><polyline points="6 9 12 15 18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <!-- Section rows (current) -->
+        <div>
+          <div class="section-row">
+            <span class="toggle-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#595959" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+            <div class="section-info">
+              <div class="section-title">Main Entrance</div>
+              <div class="section-preview">Automatic glass sliding doors with a sheltered foyer area. Moderate ambient noise from foot traffic.</div>
+              <div class="badge-row">
+                <span class="cat-badge" style="background:#E3ECF0;color:#264854;font-size:11px;text-transform:uppercase;">Sound</span>
+                <span class="cat-badge" style="background:#F4EBDA;color:#4D3F14;font-size:11px;text-transform:uppercase;">Light</span>
+                <span class="cat-badge" style="background:#EDE6E0;color:#3F352C;font-size:11px;text-transform:uppercase;">Crowds</span>
+              </div>
+            </div>
+            <div class="level-badge" style="padding-left: 8px;">
+              <span class="level-square" style="width:12px;height:12px;background:#8A5F08;"></span>
+              <span class="level-text" style="font-size:11px;color:#8A5F08;text-transform:uppercase;">medium</span>
+            </div>
+          </div>
+
+          <div class="section-row">
+            <span class="toggle-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#595959" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+            <div class="section-info">
+              <div class="section-title">Food Court</div>
+              <div class="section-preview">Open plan dining area with multiple food vendors. Can become very busy during peak hours.</div>
+              <div class="badge-row">
+                <span class="cat-badge" style="background:#E3ECF0;color:#264854;font-size:11px;text-transform:uppercase;">Sound</span>
+                <span class="cat-badge" style="background:#EDE6E0;color:#3F352C;font-size:11px;text-transform:uppercase;">Crowds</span>
+                <span class="cat-badge" style="background:#E6EEE7;color:#263D29;font-size:11px;text-transform:uppercase;">Smells</span>
+              </div>
+            </div>
+            <div class="level-badge" style="padding-left: 8px;">
+              <span class="level-square" style="width:12px;height:12px;background:#9E3322;"></span>
+              <span class="level-text" style="font-size:11px;color:#9E3322;text-transform:uppercase;">high</span>
+            </div>
+          </div>
+
+          <div class="section-row">
+            <span class="toggle-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#595959" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+            <div class="section-info">
+              <div class="section-title">Quiet Room</div>
+              <div class="section-preview">Dedicated low-stimulus space with dimmed lighting and soft furnishings.</div>
+              <div class="badge-row">
+                <span class="cat-badge" style="background:#F4EBDA;color:#4D3F14;font-size:11px;text-transform:uppercase;">Light</span>
+                <span class="cat-badge" style="background:#E3ECF0;color:#264854;font-size:11px;text-transform:uppercase;">Sound</span>
+              </div>
+            </div>
+            <div class="level-badge" style="padding-left: 8px;">
+              <span class="level-square" style="width:12px;height:12px;background:#2A6339;"></span>
+              <span class="level-text" style="font-size:11px;color:#2A6339;text-transform:uppercase;">low</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAB (current - instant, no animation) -->
+        <div class="fab-container">
+          <button class="fab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            View Map
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ PROPOSED ═══════ -->
+  <div class="panel">
+    <div class="panel-header proposed">Proposed</div>
+    <div class="panel-body">
+      <div class="guide-wrapper">
+
+        <!-- Intro card (proposed - with map link) -->
+        <div class="intro-card">
+          <div class="title">About this guide</div>
+          <div class="body">This guide describes what you might see, hear, and experience at each area of the venue. Select a section to view detailed sensory information.</div>
+          <a href="#" class="map-link" onclick="event.preventDefault()">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            View venue map
+            <span style="font-size:12px">→</span>
+            <span class="anno new">NEW</span>
+          </a>
+        </div>
+
+        <!-- Filter bar (proposed - 13px, title case) -->
+        <div class="filter-bar">
+          <div class="filter-label" style="font-size: 13px;">
+            Tap to highlight <span class="anno">11→13px</span>
+          </div>
+          <div class="filter-buttons">
+            <button class="filter-btn" style="background:#E3ECF0;color:#264854;font-size:12px;text-transform:none;">Sound <span class="anno">12px title</span></button>
+            <button class="filter-btn" style="background:#F4EBDA;color:#4D3F14;font-size:12px;text-transform:none;">Light</button>
+            <button class="filter-btn" style="background:#EDE6E0;color:#3F352C;font-size:12px;text-transform:none;">Crowds</button>
+            <button class="filter-btn" style="background:#E6EEE7;color:#263D29;font-size:12px;text-transform:none;">Smells</button>
+          </div>
+        </div>
+
+        <!-- Expand all (proposed - left-aligned, bordered, darker) -->
+        <div class="expand-all-row" style="justify-content: flex-start;">
+          <button class="expand-all-btn" style="font-size: 14px; color: #3D3D3D; border: 1px solid #DDDDD9; padding: 6px 12px; border-radius: 4px;">
+            Expand all <span class="anno">bordered, darker, left</span>
+            <svg viewBox="0 0 24 24" fill="none"><polyline points="6 9 12 15 18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <!-- Section rows (proposed) -->
+        <div>
+          <div class="section-row">
+            <span class="toggle-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#595959" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+            <div class="section-info">
+              <div class="section-title">Main Entrance</div>
+              <div class="section-preview">Automatic glass sliding doors with a sheltered foyer area. Moderate ambient noise from foot traffic.</div>
+              <div class="badge-row">
+                <span class="cat-badge" style="background:#E3ECF0;color:#264854;font-size:12px;text-transform:none;">Sound <span class="anno">12px title</span></span>
+                <span class="cat-badge" style="background:#F4EBDA;color:#4D3F14;font-size:12px;text-transform:none;">Light</span>
+                <span class="cat-badge" style="background:#EDE6E0;color:#3F352C;font-size:12px;text-transform:none;">Crowds</span>
+              </div>
+            </div>
+            <!-- Level badge: ml-auto pushes right, 14px square, title case -->
+            <div class="level-badge" style="padding-left: 12px; margin-left: auto;">
+              <span class="level-square proposed-size" style="width:14px;height:14px;background:#8A5F08;"></span>
+              <span class="level-text" style="font-size:12px;color:#8A5F08;text-transform:none;">Medium <span class="anno">12px, 14sq, title, ml-auto</span></span>
+            </div>
+          </div>
+
+          <div class="section-row">
+            <span class="toggle-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#595959" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+            <div class="section-info">
+              <div class="section-title">Food Court</div>
+              <div class="section-preview">Open plan dining area with multiple food vendors. Can become very busy during peak hours.</div>
+              <div class="badge-row">
+                <span class="cat-badge" style="background:#E3ECF0;color:#264854;font-size:12px;text-transform:none;">Sound</span>
+                <span class="cat-badge" style="background:#EDE6E0;color:#3F352C;font-size:12px;text-transform:none;">Crowds</span>
+                <span class="cat-badge" style="background:#E6EEE7;color:#263D29;font-size:12px;text-transform:none;">Smells</span>
+              </div>
+            </div>
+            <div class="level-badge" style="padding-left: 12px; margin-left: auto;">
+              <span class="level-square proposed-size" style="width:14px;height:14px;background:#9E3322;"></span>
+              <span class="level-text" style="font-size:12px;color:#9E3322;text-transform:none;">High</span>
+            </div>
+          </div>
+
+          <div class="section-row">
+            <span class="toggle-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#595959" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+            <div class="section-info">
+              <div class="section-title">Quiet Room</div>
+              <div class="section-preview">Dedicated low-stimulus space with dimmed lighting and soft furnishings.</div>
+              <div class="badge-row">
+                <span class="cat-badge" style="background:#F4EBDA;color:#4D3F14;font-size:12px;text-transform:none;">Light</span>
+                <span class="cat-badge" style="background:#E3ECF0;color:#264854;font-size:12px;text-transform:none;">Sound</span>
+              </div>
+            </div>
+            <div class="level-badge" style="padding-left: 12px; margin-left: auto;">
+              <span class="level-square proposed-size" style="width:14px;height:14px;background:#2A6339;"></span>
+              <span class="level-text" style="font-size:12px;color:#2A6339;text-transform:none;">Low</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAB (proposed - delayed entrance animation) -->
+        <div class="fab-container">
+          <button class="fab fab-animated" id="fab-proposed">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            View Map
+            <span class="anno new" style="color:white;background:rgba(255,255,255,0.3)">delayed entrance</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════ HIGH CONTRAST comparison ═══════ -->
+<div id="hc-section" style="display:none; margin-top: 2rem;">
+  <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#595959;text-transform:uppercase;letter-spacing:0.05em;">
+    High Contrast Mode Preview (prefers-contrast: high)
+  </h3>
+  <div class="panels">
+    <div class="panel">
+      <div class="panel-header current">Current (no high-contrast support)</div>
+      <div class="panel-body">
+        <div class="guide-wrapper">
+          <div class="section-row">
+            <span class="toggle-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#595959" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+            <div class="section-info">
+              <div class="section-title">Main Entrance</div>
+              <div class="section-preview">Automatic glass sliding doors with a sheltered foyer area.</div>
+              <div class="badge-row">
+                <span class="cat-badge" style="background:#E3ECF0;color:#264854;font-size:11px;text-transform:uppercase;">SOUND</span>
+                <span class="cat-badge" style="background:#F4EBDA;color:#4D3F14;font-size:11px;text-transform:uppercase;">LIGHT</span>
+              </div>
+            </div>
+            <div class="level-badge" style="padding-left: 8px;">
+              <span class="level-square" style="width:12px;height:12px;background:#8A5F08;"></span>
+              <span class="level-text" style="font-size:11px;color:#8A5F08;text-transform:uppercase;">medium</span>
+            </div>
+          </div>
+          <p style="font-size:12px;color:#999;margin-top:12px;font-style:italic">Same as normal — no contrast adaptations</p>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header proposed">Proposed (with contrast-more: styles)</div>
+      <div class="panel-body">
+        <div class="guide-wrapper hc">
+          <div class="section-row" style="border-bottom-color:#888;">
+            <span class="toggle-circle" style="border-color:#888;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+            <div class="section-info">
+              <div class="section-title">Main Entrance</div>
+              <div class="section-preview" style="color:#333;">Automatic glass sliding doors with a sheltered foyer area.</div>
+              <div class="badge-row">
+                <span class="cat-badge" style="background:#E3ECF0;color:#264854;font-size:12px;text-transform:none;box-shadow:inset 0 0 0 1px #264854;">Sound <span class="anno">+border</span></span>
+                <span class="cat-badge" style="background:#F4EBDA;color:#4D3F14;font-size:12px;text-transform:none;box-shadow:inset 0 0 0 1px #4D3F14;">Light <span class="anno">+border</span></span>
+              </div>
+            </div>
+            <div class="level-badge" style="padding-left: 12px; margin-left: auto;">
+              <span class="level-square proposed-size" style="width:16px;height:16px;background:#8A5F08;"></span>
+              <span class="level-text" style="font-size:12px;color:#8A5F08;text-transform:none;">Medium <span class="anno">16px sq in HC</span></span>
+            </div>
+          </div>
+          <div style="margin-top:16px;padding:12px;background:#f8f8f6;border-radius:4px;font-size:12px;color:#333;">
+            <strong>High contrast changes:</strong>
+            <ul style="margin-top:4px;padding-left:16px;line-height:1.8;">
+              <li>Borders: #DDDDD9 → #888888, #E8E8E5 → #999999</li>
+              <li>Muted text: #595959 → #333333</li>
+              <li>Badges get 1px inset border matching text colour</li>
+              <li>Sensory squares: 14px → 16px</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ Change Summary ═══════ -->
+<div style="margin-top:2rem;background:white;border-radius:8px;padding:24px;">
+  <h3 style="font-size:14px;font-weight:700;margin-bottom:16px;">Change Summary</h3>
+  <table style="width:100%;font-size:13px;border-collapse:collapse;">
+    <thead>
+      <tr style="text-align:left;border-bottom:2px solid #E8E8E5;">
+        <th style="padding:6px 12px 6px 0;">Element</th>
+        <th style="padding:6px 12px;">Current</th>
+        <th style="padding:6px 12px;">Proposed</th>
+        <th style="padding:6px 12px;">Rationale</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom:1px solid #E8E8E5;">
+        <td style="padding:8px 12px 8px 0;font-weight:600;">Category badges</td>
+        <td style="padding:8px 12px;">11px, UPPERCASE</td>
+        <td style="padding:8px 12px;">12px (0.75rem), Title Case</td>
+        <td style="padding:8px 12px;color:#595959;">Scales with user font size; title case improves readability</td>
+      </tr>
+      <tr style="border-bottom:1px solid #E8E8E5;">
+        <td style="padding:8px 12px 8px 0;font-weight:600;">Level indicators</td>
+        <td style="padding:8px 12px;">11px UPPERCASE, 12px square, left of row end</td>
+        <td style="padding:8px 12px;">12px Title Case, 14px square, right-aligned (ml-auto)</td>
+        <td style="padding:8px 12px;color:#595959;">Consistent alignment; larger touch target</td>
+      </tr>
+      <tr style="border-bottom:1px solid #E8E8E5;">
+        <td style="padding:8px 12px 8px 0;font-weight:600;">Filter label</td>
+        <td style="padding:8px 12px;">11px</td>
+        <td style="padding:8px 12px;">13px (0.8125rem)</td>
+        <td style="padding:8px 12px;color:#595959;">Below WCAG min for body text</td>
+      </tr>
+      <tr style="border-bottom:1px solid #E8E8E5;">
+        <td style="padding:8px 12px 8px 0;font-weight:600;">"Expand all" button</td>
+        <td style="padding:8px 12px;">Right-aligned, no border, #595959</td>
+        <td style="padding:8px 12px;">Left-aligned, bordered, #3D3D3D</td>
+        <td style="padding:8px 12px;color:#595959;">More discoverable; clearer interactive affordance</td>
+      </tr>
+      <tr style="border-bottom:1px solid #E8E8E5;">
+        <td style="padding:8px 12px 8px 0;font-weight:600;">Map link in intro</td>
+        <td style="padding:8px 12px;">—</td>
+        <td style="padding:8px 12px;">Terracotta link at bottom of intro card</td>
+        <td style="padding:8px 12px;color:#595959;">Map FAB often missed; secondary entry point</td>
+      </tr>
+      <tr style="border-bottom:1px solid #E8E8E5;">
+        <td style="padding:8px 12px 8px 0;font-weight:600;">FAB entrance</td>
+        <td style="padding:8px 12px;">Instant</td>
+        <td style="padding:8px 12px;">Fade+slide after 1.5s delay</td>
+        <td style="padding:8px 12px;color:#595959;">Draws attention after page load; respects reduced-motion</td>
+      </tr>
+      <tr style="border-bottom:1px solid #E8E8E5;">
+        <td style="padding:8px 12px 8px 0;font-weight:600;">All px font sizes</td>
+        <td style="padding:8px 12px;">px units</td>
+        <td style="padding:8px 12px;">rem units</td>
+        <td style="padding:8px 12px;color:#595959;">Scales with browser font size settings (a11y requirement)</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px 8px 0;font-weight:600;">prefers-contrast: high</td>
+        <td style="padding:8px 12px;">Not supported</td>
+        <td style="padding:8px 12px;">Darker borders, text, badge outlines, larger squares</td>
+        <td style="padding:8px 12px;color:#595959;">WCAG 2.2 enhanced contrast support</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  const panels = document.getElementById('panels');
+  const hcSection = document.getElementById('hc-section');
+  const fabProposed = document.getElementById('fab-proposed');
+
+  document.getElementById('hc-toggle').addEventListener('change', function() {
+    hcSection.style.display = this.checked ? 'block' : 'none';
+    // Also add HC class to proposed panel
+    const proposedWrapper = panels.querySelectorAll('.panel')[1].querySelector('.guide-wrapper');
+    if (this.checked) {
+      proposedWrapper.classList.add('hc');
+    } else {
+      proposedWrapper.classList.remove('hc');
+    }
+  });
+
+  document.getElementById('motion-toggle').addEventListener('change', function() {
+    if (this.checked) {
+      document.body.classList.add('reduced-motion');
+      fabProposed.style.animation = 'none';
+      fabProposed.style.opacity = '1';
+    } else {
+      document.body.classList.remove('reduced-motion');
+      fabProposed.style.animation = '';
+      fabProposed.style.opacity = '';
+      // Re-trigger animation
+      void fabProposed.offsetWidth;
+    }
+  });
+
+  document.getElementById('viewport-select').addEventListener('change', function() {
+    if (this.value === 'mobile') {
+      document.body.classList.add('mobile');
+    } else {
+      document.body.classList.remove('mobile');
+    }
+  });
+</script>
+</body>
+</html>

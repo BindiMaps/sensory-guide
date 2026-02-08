@@ -40,18 +40,12 @@ export const republishEmbeddings = onCall<RepublishEmbeddingsRequest>(
       throw new HttpsError('invalid-argument', 'venueId is required')
     }
 
-    // 2. Check editor access
-    await requireEditorAccess(userEmail, venueId)
+    // 2. Check editor access (also returns the venue doc)
+    const venueSnap = await requireEditorAccess(userEmail, venueId)
 
     // 3. Get venue data for slug
     const db = getFirestore()
-    const venueRef = db.collection('venues').doc(venueId)
-    const venueSnap = await venueRef.get()
-
-    if (!venueSnap.exists) {
-      throw new HttpsError('not-found', 'Venue not found')
-    }
-
+    const venueRef = venueSnap.ref
     const venueData = venueSnap.data()
     const slug = venueData?.slug as string | undefined
     const status = venueData?.status as string | undefined
@@ -79,7 +73,16 @@ export const republishEmbeddings = onCall<RepublishEmbeddingsRequest>(
       const [guideContent] = await publicFile.download()
       let guide: Guide = JSON.parse(guideContent.toString('utf-8'))
 
-      // 5. Fetch embeddings from Firestore
+      // 5a. Merge global map URL from venue doc
+      const globalMapUrl = venueData?.globalMapUrl as string | undefined
+      if (globalMapUrl) {
+        guide = { ...guide, venue: { ...guide.venue, mapUrl: globalMapUrl } }
+      } else if (guide.venue.mapUrl) {
+        // Clear mapUrl if admin removed it
+        guide = { ...guide, venue: { ...guide.venue, mapUrl: undefined } }
+      }
+
+      // 5b. Fetch embeddings from Firestore
       const embeddingsRef = db.collection('venues').doc(venueId).collection('embeddings').doc('urls')
       const embeddingsSnap = await embeddingsRef.get()
 

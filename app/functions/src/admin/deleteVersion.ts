@@ -1,6 +1,5 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https'
 import { getStorage } from 'firebase-admin/storage'
-import { getFirestore } from 'firebase-admin/firestore'
 import { requireAuth, requireEditorAccess } from '../middleware/auth'
 
 interface DeleteVersionRequest {
@@ -31,18 +30,10 @@ export async function deleteVersionHandler(
     throw new HttpsError('invalid-argument', 'timestamp is required')
   }
 
-  // 3. Check editor access
-  await requireEditorAccess(userEmail, venueId)
+  // 3. Check editor access (also returns the venue doc)
+  const venueSnap = await requireEditorAccess(userEmail, venueId)
 
   // 4. Check if this is the live version (cannot delete)
-  const db = getFirestore()
-  const venueRef = db.collection('venues').doc(venueId)
-  const venueSnap = await venueRef.get()
-
-  if (!venueSnap.exists) {
-    throw new HttpsError('not-found', 'Venue not found')
-  }
-
   const venueData = venueSnap.data()
   const liveVersion = venueData?.liveVersion as string | undefined
 

@@ -177,7 +177,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
   const previewText = getPreviewText()
 
   return (
-    <article className="border-b border-[#E8E8E5] last:border-b-0">
+    <article className="border-b border-[#E8E8E5] contrast-more:border-[#999999] last:border-b-0">
       <button
         type="button"
         aria-expanded={isExpanded}
@@ -192,7 +192,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
           } ${
             isExpanded
               ? 'border-[#B8510D] bg-[#B8510D]'
-              : 'border-[#DDDDD9] bg-white'
+              : 'border-[#DDDDD9] contrast-more:border-[#888888] bg-white'
           }`}
           aria-hidden="true"
         >
@@ -226,7 +226,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
             ))}
             {/* Embed indicator - shows when collapsed and embeds exist */}
             {!isExpanded && embedUrls && embedUrls.length > 0 && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium text-[#264854] bg-[#E3ECF0] rounded-sm">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[0.75rem] font-medium text-[#264854] bg-[#E3ECF0] rounded-sm">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
@@ -236,8 +236,8 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
           </span>
         </span>
 
-        {/* Sensory level */}
-        <span className="flex-shrink-0 pt-0.5 pl-2">
+        {/* Sensory level — right-aligned */}
+        <span className="flex-shrink-0 pt-0.5 ml-auto pl-3">
           <LevelBadge level={overallLevel} />
         </span>
       </button>
@@ -259,7 +259,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
                   <button
                     type="button"
                     onClick={() => scrollCarousel('left')}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white border border-[#E8E8E5] shadow-md flex items-center justify-center hover:bg-[#F8F8F6] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D]"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white border border-[#E8E8E5] contrast-more:border-[#999999] shadow-md flex items-center justify-center hover:bg-[#F8F8F6] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D]"
                     aria-label="Scroll left"
                   >
                     <svg className="w-4 h-4 text-[#595959]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -276,7 +276,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
                   <button
                     type="button"
                     onClick={() => scrollCarousel('right')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white border border-[#E8E8E5] shadow-md flex items-center justify-center hover:bg-[#F8F8F6] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D]"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white border border-[#E8E8E5] contrast-more:border-[#999999] shadow-md flex items-center justify-center hover:bg-[#F8F8F6] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D]"
                     aria-label="Scroll right"
                   >
                     <svg className="w-4 h-4 text-[#595959]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -293,7 +293,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
                 {/* Embeds - square */}
                 {embedUrls && embedUrls.map((embedUrl, index) => (
                   <div key={`embed-${index}`} className="flex-shrink-0 w-72 h-72 snap-start">
-                    <div className="w-full h-full rounded-sm border border-[#E8E8E5] overflow-hidden">
+                    <div className="w-full h-full rounded-sm border border-[#E8E8E5] contrast-more:border-[#999999] overflow-hidden">
                       <iframe
                         src={embedUrl}
                         title={`Map ${index + 1} for ${area.name}`}
@@ -340,7 +340,7 @@ export function AreaSection({ area, venueSlug, isExpanded: controlledExpanded, o
             })}
           </div>
         ) : (
-          <p className="text-sm text-[#595959]">
+          <p className="text-sm text-[#595959] contrast-more:text-[#333333]">
             No sensory details recorded for this area.
           </p>
         )}

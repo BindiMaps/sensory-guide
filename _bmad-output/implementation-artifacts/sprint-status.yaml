@@ -101,6 +101,7 @@ development_status:
   6-3-super-admin-view-all-venues: done
   6-4-super-admin-global-analytics-dashboard: done
   6-5-section-embed-urls: done  # Embed maps/videos per section, persist across re-uploads
+  6-6-global-venue-map: done  # Global venue map: desktop lightbox FAB + mobile inline card + PDF QR
   epic-6-retrospective: optional
 
   # Epic 7: Final Audits & Polish (Pre-Release)

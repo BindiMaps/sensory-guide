@@ -46,18 +46,12 @@ export const publishGuide = onCall<PublishGuideRequest>(
       throw new HttpsError('invalid-argument', 'outputPath is required')
     }
 
-    // 2. Check editor access
-    await requireEditorAccess(userEmail, venueId)
+    // 2. Check editor access (also returns the venue doc)
+    const venueSnap = await requireEditorAccess(userEmail, venueId)
 
     // 3. Get venue data for slug
     const db = getFirestore()
-    const venueRef = db.collection('venues').doc(venueId)
-    const venueSnap = await venueRef.get()
-
-    if (!venueSnap.exists) {
-      throw new HttpsError('not-found', 'Venue not found')
-    }
-
+    const venueRef = venueSnap.ref
     const venueData = venueSnap.data()
     const slug = venueData?.slug as string | undefined
 
@@ -89,9 +83,15 @@ export const publishGuide = onCall<PublishGuideRequest>(
     }
 
     try {
-      // 6. Load guide JSON and merge embeddings
+      // 6. Load guide JSON and merge embeddings + global map URL
       const [guideContent] = await file.download()
       let guide: Guide = JSON.parse(guideContent.toString('utf-8'))
+
+      // Merge global map URL from venue doc
+      const globalMapUrl = venueData?.globalMapUrl as string | undefined
+      if (globalMapUrl) {
+        guide = { ...guide, venue: { ...guide.venue, mapUrl: globalMapUrl } }
+      }
 
       // Fetch embeddings from Firestore
       const embeddingsRef = db.collection('venues').doc(venueId).collection('embeddings').doc('urls')

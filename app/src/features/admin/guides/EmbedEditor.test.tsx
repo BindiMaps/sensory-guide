@@ -141,7 +141,7 @@ describe('EmbedEditor', () => {
     expect(onSave).toHaveBeenCalledWith({
       'entry-hall': ['https://bindiweb.com/map/venue123'],
       'main-concourse': ['https://www.youtube.com/embed/xyz789'],
-    })
+    }, '')
   })
 
   it('removes empty URLs from saved embeddings', async () => {
@@ -156,7 +156,7 @@ describe('EmbedEditor', () => {
     const saveButton = screen.getByRole('button', { name: /save/i })
     await user.click(saveButton)
 
-    expect(onSave).toHaveBeenCalledWith({})
+    expect(onSave).toHaveBeenCalledWith({}, '')
   })
 
   it('disables save button while saving', () => {

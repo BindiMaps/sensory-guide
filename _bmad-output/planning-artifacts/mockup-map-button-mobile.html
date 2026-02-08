@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Map Button Mobile Placement - 10 Variations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: #FFFFFF;
+      --surface: #F8F8F6;
+      --text: #1A1A1A;
+      --text-secondary: #3D3D3D;
+      --text-muted: #595959;
+      --border: #DDDDD9;
+      --border-light: #E8E8E5;
+      --accent: #B8510D;
+      --accent-hover: #9A4409;
+      --accent-light: #FEF7F2;
+      --sensory-low: #2A6339;
+      --sensory-medium: #8A5F08;
+      --sensory-high: #9E3322;
+      --font: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --radius: 4px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font);
+      background: #f0f0f0;
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ========== VARIATION SWITCHER ========== */
+    .switcher {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      background: #1A1A1A;
+      color: #fff;
+      padding: 10px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .switcher-label {
+      color: #999;
+      margin-right: 4px;
+      font-size: 10px;
+      width: 100%;
+      margin-bottom: 2px;
+    }
+
+    .switcher-btn {
+      background: transparent;
+      border: 1px solid #444;
+      color: #ccc;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .switcher-btn:hover { border-color: #666; color: #fff; }
+    .switcher-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .switcher-desc {
+      width: 100%;
+      color: #aaa;
+      font-size: 10px;
+      font-weight: 400;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* ========== PHONE FRAME ========== */
+    .phone-frame {
+      width: 375px;
+      height: 812px;
+      margin: 100px auto 40px;
+      background: var(--background);
+      border-radius: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 8px #1a1a1a;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      border-radius: 40px;
+    }
+
+    /* ========== GUIDE CONTENT ========== */
+    .guide-header {
+      background: var(--background);
+      border-bottom: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .header-btns { display: flex; gap: 6px; align-items: center; }
+    .header-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: var(--radius);
+    }
+
+    .guide-body { padding: 24px 20px 120px; }
+
+    .venue-name {
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .venue-meta {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .badge {
+      padding: 3px 8px;
+      border-radius: 2px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-sound { background: #E3ECF0; color: #264854; }
+    .badge-light { background: #F4EBDA; color: #4D3F14; }
+    .badge-crowds { background: #EDE6E0; color: #3F352C; }
+    .badge-scent { background: #E8F0E3; color: #2A4428; }
+
+    .intro {
+      background: var(--surface);
+      padding: 14px 16px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      border-left: 3px solid var(--accent);
+    }
+    .intro-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    .intro-text { color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
+
+    .section {
+      border-bottom: 1px solid var(--border-light);
+      padding: 14px 0;
+    }
+    .section:last-child { border-bottom: none; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .section-toggle {
+      width: 26px;
+      height: 26px;
+      min-width: 26px;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--background);
+    }
+    .section-toggle svg {
+      width: 10px; height: 10px;
+      stroke: var(--text-muted);
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .section-name {
+      font-size: 14px;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .level-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .level-square {
+      width: 10px;
+      height: 10px;
+    }
+
+    /* ========== ALL VARIATIONS HIDDEN BY DEFAULT ========== */
+    .variation { display: none; }
+    .variation.active { display: block; }
+
+    /* Inline variation slots hidden by default */
+    .v7-slot, .v9-slot { display: none; }
+    .v7-slot.active, .v9-slot.active { display: block; }
+
+    /* ========== V1: Current bold pill (baseline) ========== */
+    .v1-fab {
+      position: absolute;
+      bottom: 24px;
+      right: 20px;
+      z-index: 200;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(184,81,13,0.35);
+    }
+
+    /* ========== V2: Compact icon-only circle ========== */
+    .v2-fab {
+      position: absolute;
+      bottom: 24px;
+      right: 20px;
+      z-index: 200;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(184,81,13,0.35);
+    }
+
+    /* ========== V3: Bottom bar (full-width strip) ========== */
+    .v3-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: white;
+      border-top: 1px solid var(--border-light);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+    }
+    .v3-bar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent);
+      color: white;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ========== V4: Sticky header inline ========== */
+    .v4-header-btn {
+      display: none;
+    }
+    .v4-header-btn.active {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--accent);
+      color: white;
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 11px;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* ========== V5: Compact pill bottom-center ========== */
+    .v5-fab {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 12px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(184,81,13,0.35);
+    }
+
+    /* ========== V6: Right-edge tab ========== */
+    .v6-tab {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--accent);
+      color: white;
+      padding: 10px 8px 10px 10px;
+      border-radius: 8px 0 0 8px;
+      font-weight: 600;
+      font-size: 11px;
+      border: none;
+      cursor: pointer;
+      writing-mode: vertical-lr;
+      text-orientation: mixed;
+      box-shadow: -2px 0 10px rgba(184,81,13,0.2);
+    }
+
+    /* ========== V7: Inline card after intro ========== */
+    .v7-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent-light);
+      border: 1px solid #F0D6C0;
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+    .v7-card-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .v7-card-icon svg {
+      width: 16px; height: 16px;
+      fill: none; stroke: white; stroke-width: 2;
+    }
+    .v7-card-text { flex: 1; }
+    .v7-card-title { font-size: 13px; font-weight: 600; color: var(--accent); }
+    .v7-card-hint { font-size: 11px; color: var(--text-muted); }
+    .v7-card-arrow { color: var(--accent); font-size: 18px; font-weight: 300; }
+
+    /* ========== V8: Muted bottom-right, neutral ========== */
+    .v8-fab {
+      position: absolute;
+      bottom: 24px;
+      right: 20px;
+      z-index: 200;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: white;
+      color: var(--text-secondary);
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .v8-fab svg {
+      width: 14px; height: 14px;
+      fill: none; stroke: var(--text-muted); stroke-width: 2;
+    }
+
+    /* ========== V9: Minimal text link under venue name ========== */
+    .v9-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+    .v9-link svg {
+      width: 14px; height: 14px;
+      fill: none; stroke: var(--accent); stroke-width: 2;
+    }
+    .v9-link .v9-ext {
+      width: 11px; height: 11px;
+      stroke-width: 2.5;
+    }
+
+    /* ========== V10: Bottom bar slim, split with other actions ========== */
+    .v10-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: white;
+      border-top: 1px solid var(--border-light);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+    }
+    .v10-map-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--accent);
+      color: white;
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 12px;
+      border: none;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .v10-map-btn svg {
+      width: 14px; height: 14px;
+      fill: none; stroke: white; stroke-width: 2;
+    }
+    .v10-spacer { flex: 1; }
+    .v10-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    /* ========== V10: hide header btns ========== */
+    .header-btns.v10-hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- Variation Switcher -->
+<div class="switcher">
+  <div class="switcher-label">MOBILE MAP BUTTON PLACEMENT</div>
+  <button class="switcher-btn active" onclick="show(1)">1</button>
+  <button class="switcher-btn" onclick="show(2)">2</button>
+  <button class="switcher-btn" onclick="show(3)">3</button>
+  <button class="switcher-btn" onclick="show(4)">4</button>
+  <button class="switcher-btn" onclick="show(5)">5</button>
+  <button class="switcher-btn" onclick="show(6)">6</button>
+  <button class="switcher-btn" onclick="show(7)">7</button>
+  <button class="switcher-btn" onclick="show(8)">8</button>
+  <button class="switcher-btn" onclick="show(9)">9</button>
+  <button class="switcher-btn" onclick="show(10)">10</button>
+  <div class="switcher-desc" id="desc">1. Bold pill, bottom-right (current) &mdash; prominent but eats into content space</div>
+</div>
+
+<!-- Phone Frame -->
+<div class="phone-frame">
+  <div class="phone-screen" id="phone-screen">
+
+    <!-- Sticky header -->
+    <div class="guide-header">
+      <span class="brand">Sensory Guide</span>
+      <div class="header-btns" id="header-btns">
+        <!-- V4 header map button (hidden by default) -->
+        <button class="v4-header-btn" id="v4-btn">
+          <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:white;stroke-width:2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Map
+        </button>
+        <button class="header-btn" id="hdr-print">Print</button>
+        <button class="header-btn" id="hdr-save">Save</button>
+      </div>
+    </div>
+
+    <div class="guide-body">
+
+      <!-- Venue info -->
+      <h1 class="venue-name">Adelaide Railway Station</h1>
+      <p class="venue-meta">North Terrace, Adelaide SA 5000 &bull; January 2026</p>
+
+      <!-- V9: text link slot -->
+      <div class="v9-slot" id="v9-slot">
+        <a class="v9-link" href="javascript:void(0)">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Open venue map
+          <svg class="v9-ext" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+
+      <div class="badge-row">
+        <span class="badge badge-sound">Sound</span>
+        <span class="badge badge-light">Light</span>
+        <span class="badge badge-crowds">Crowds</span>
+        <span class="badge badge-scent">Scent</span>
+      </div>
+
+      <div class="intro">
+        <div class="intro-title">About this guide</div>
+        <div class="intro-text">This sensory guide describes what you might see, hear, and experience at Adelaide Railway Station to help you prepare for your visit.</div>
+      </div>
+
+      <!-- V7: inline card slot -->
+      <div class="v7-slot" id="v7-slot">
+        <div class="v7-card">
+          <div class="v7-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div class="v7-card-text">
+            <div class="v7-card-title">Open Venue Map</div>
+            <div class="v7-card-hint">Interactive map opens in a new tab</div>
+          </div>
+          <div class="v7-card-arrow">&rsaquo;</div>
+        </div>
+      </div>
+
+      <!-- Sections -->
+      <div class="sections">
+        <div class="section">
+          <div class="section-header">
+            <div class="section-toggle"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            <div class="section-name">Main Concourse</div>
+            <div class="level-badge">
+              <div class="level-square" style="background:#8A5F08"></div>
+              <span style="color:#8A5F08">Medium</span>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <div class="section-toggle"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            <div class="section-name">Ticket Hall</div>
+            <div class="level-badge">
+              <div class="level-square" style="background:#2A6339"></div>
+              <span style="color:#2A6339">Low</span>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <div class="section-toggle"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            <div class="section-name">Platforms 1-4</div>
+            <div class="level-badge">
+              <div class="level-square" style="background:#9E3322"></div>
+              <span style="color:#9E3322">High</span>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <div class="section-toggle"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            <div class="section-name">Platforms 5-10</div>
+            <div class="level-badge">
+              <div class="level-square" style="background:#8A5F08"></div>
+              <span style="color:#8A5F08">Medium</span>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <div class="section-toggle"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            <div class="section-name">Food Court</div>
+            <div class="level-badge">
+              <div class="level-square" style="background:#9E3322"></div>
+              <span style="color:#9E3322">High</span>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <div class="section-toggle"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            <div class="section-name">Waiting Area</div>
+            <div class="level-badge">
+              <div class="level-square" style="background:#2A6339"></div>
+              <span style="color:#2A6339">Low</span>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <div class="section-toggle"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            <div class="section-name">Bathrooms</div>
+            <div class="level-badge">
+              <div class="level-square" style="background:#2A6339"></div>
+              <span style="color:#2A6339">Low</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLOATING VARIATIONS -->
+
+    <!-- V1: Bold pill bottom-right (current) -->
+    <div class="variation active" id="v1">
+      <button class="v1-fab">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Open Map
+        <svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </button>
+    </div>
+
+    <!-- V2: Icon-only circle -->
+    <div class="variation" id="v2">
+      <button class="v2-fab">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </button>
+    </div>
+
+    <!-- V3: Full-width bottom bar -->
+    <div class="variation" id="v3">
+      <div class="v3-bar">
+        <button class="v3-bar-btn">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Open Venue Map
+          <svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- V4: In the sticky header (button toggled via JS) -->
+    <div class="variation" id="v4"></div>
+
+    <!-- V5: Compact pill bottom-center -->
+    <div class="variation" id="v5">
+      <button class="v5-fab">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Map
+        <svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </button>
+    </div>
+
+    <!-- V6: Right-edge vertical tab -->
+    <div class="variation" id="v6">
+      <button class="v6-tab">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;transform:rotate(90deg)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Map
+      </button>
+    </div>
+
+    <!-- V7: Inline card (shown/hidden via slot) -->
+    <div class="variation" id="v7"></div>
+
+    <!-- V8: Muted/neutral pill bottom-right -->
+    <div class="variation" id="v8">
+      <button class="v8-fab">
+        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Map
+        <svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke-width:2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </button>
+    </div>
+
+    <!-- V9: Text link (shown/hidden via slot) -->
+    <div class="variation" id="v9"></div>
+
+    <!-- V10: Slim toolbar -->
+    <div class="variation" id="v10">
+      <div class="v10-bar">
+        <button class="v10-map-btn">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Map
+        </button>
+        <div class="v10-spacer"></div>
+        <button class="v10-action-btn" title="Print">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/></svg>
+        </button>
+        <button class="v10-action-btn" title="Save">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  var descriptions = {
+    1:  '1. Bold pill, bottom-right (current) \u2014 prominent but eats into content space',
+    2:  '2. Icon-only circle \u2014 smallest footprint, relies on universal map pin recognition',
+    3:  '3. Full-width bottom bar \u2014 very discoverable, but steals the most vertical space',
+    4:  '4. In the sticky header \u2014 zero extra space, always visible, but might feel buried',
+    5:  '5. Compact pill, bottom-center \u2014 smaller than current, centred for thumb reach',
+    6:  '6. Right-edge vertical tab \u2014 out of the content flow entirely, peeking from the side',
+    7:  '7. Inline card after intro \u2014 part of the content, no floating element at all',
+    8:  '8. Muted neutral pill \u2014 white bg, subtle border, doesn\u2019t compete with content',
+    9:  '9. Text link under venue name \u2014 most minimal, like a \u201cDirections\u201d link on Google',
+    10: '10. Slim toolbar \u2014 map button + print/save icons, replaces header actions on mobile',
+  };
+
+  function show(n) {
+    // Hide all floating variations
+    var variations = document.querySelectorAll('.variation');
+    for (var i = 0; i < variations.length; i++) variations[i].classList.remove('active');
+
+    // Reset switcher buttons
+    var btns = document.querySelectorAll('.switcher-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+
+    // Show selected
+    document.getElementById('v' + n).classList.add('active');
+    btns[n - 1].classList.add('active');
+    document.getElementById('desc').textContent = descriptions[n];
+
+    // V4: toggle header map button
+    var v4Btn = document.getElementById('v4-btn');
+    if (n === 4) {
+      v4Btn.classList.add('active');
+    } else {
+      v4Btn.classList.remove('active');
+    }
+
+    // V7: toggle inline card slot
+    var v7Slot = document.getElementById('v7-slot');
+    if (n === 7) {
+      v7Slot.classList.add('active');
+    } else {
+      v7Slot.classList.remove('active');
+    }
+
+    // V9: toggle text link slot
+    var v9Slot = document.getElementById('v9-slot');
+    if (n === 9) {
+      v9Slot.classList.add('active');
+    } else {
+      v9Slot.classList.remove('active');
+    }
+
+    // V10: toggle header buttons
+    var headerBtns = document.getElementById('header-btns');
+    var hdrPrint = document.getElementById('hdr-print');
+    var hdrSave = document.getElementById('hdr-save');
+    if (n === 10) {
+      hdrPrint.style.display = 'none';
+      hdrSave.style.display = 'none';
+    } else {
+      hdrPrint.style.display = '';
+      hdrSave.style.display = '';
+    }
+
+    // Scroll phone to top
+    document.getElementById('phone-screen').scrollTop = 0;
+  }
+</script>
+
+</body>
+</html>

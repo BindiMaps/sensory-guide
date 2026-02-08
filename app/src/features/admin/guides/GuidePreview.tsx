@@ -5,23 +5,31 @@ import { SuggestionsPanel } from './SuggestionsPanel'
 import { ImageAssignmentEditor } from './components/ImageAssignmentEditor'
 import { EmbedEditor } from './EmbedEditor'
 import { useEmbeddings, type Embeddings } from './useEmbeddings'
+import { useGlobalMapUrl } from './useGlobalMapUrl'
+import { useRepublishEmbeddings } from './useRepublishEmbeddings'
 import { trackEvent, AnalyticsEvent } from '@/lib/analytics'
 
 /**
- * Merge embeddings into guide areas.
- * Creates a new guide object with embedUrls fields populated.
+ * Merge embeddings and global map URL into guide.
+ * Creates a new guide object with embedUrls + venue.mapUrl populated.
  */
-function mergeEmbeddingsIntoGuide(guide: Guide, embeddings: Embeddings): Guide {
-  if (Object.keys(embeddings).length === 0) {
+function mergeEmbeddingsIntoGuide(guide: Guide, embeddings: Embeddings, globalMapUrl?: string): Guide {
+  const hasEmbeds = Object.keys(embeddings).length > 0
+  if (!hasEmbeds && !globalMapUrl) {
     return guide
   }
 
   return {
     ...guide,
-    areas: guide.areas.map((area) => ({
-      ...area,
-      embedUrls: embeddings[area.id] || area.embedUrls || [],
-    })),
+    venue: globalMapUrl
+      ? { ...guide.venue, mapUrl: globalMapUrl }
+      : guide.venue,
+    areas: hasEmbeds
+      ? guide.areas.map((area) => ({
+          ...area,
+          embedUrls: embeddings[area.id] || area.embedUrls || [],
+        }))
+      : guide.areas,
   }
 }
 
@@ -30,6 +38,7 @@ interface GuidePreviewProps {
   onPublish?: () => void
   onReupload?: () => void
   isPublishing?: boolean
+  isPublished?: boolean
   outputPath?: string
   venueId?: string
   onImagesSaved?: () => void
@@ -44,6 +53,7 @@ export function GuidePreview({
   onPublish,
   onReupload,
   isPublishing = false,
+  isPublished = false,
   outputPath,
   venueId,
   onImagesSaved,
@@ -52,15 +62,22 @@ export function GuidePreview({
   const [isSavingImages, setIsSavingImages] = useState(false)
   const [isEmbedEditorOpen, setIsEmbedEditorOpen] = useState(false)
   const [isSavingEmbeds, setIsSavingEmbeds] = useState(false)
+  const [republishSuccess, setRepublishSuccess] = useState(false)
 
   // Fetch embeddings for this venue, with title-based matching
   const { embeddings, orphaned, saveEmbeddings, resolveOrphan } =
     useEmbeddings(venueId, guide.areas)
 
-  // Merge embeddings into guide for display
+  // Fetch global venue map URL
+  const { globalMapUrl, save: saveGlobalMapUrl } = useGlobalMapUrl(venueId)
+
+  // Auto-republish when guide is already published
+  const { republish, isRepublishing, error: republishError } = useRepublishEmbeddings()
+
+  // Merge embeddings + global map URL into guide for display
   const guideWithEmbeds = useMemo(
-    () => mergeEmbeddingsIntoGuide(guide, embeddings),
-    [guide, embeddings]
+    () => mergeEmbeddingsIntoGuide(guide, embeddings, globalMapUrl),
+    [guide, embeddings, globalMapUrl]
   )
 
   // Check if guide has any images to edit
@@ -73,12 +90,21 @@ export function GuidePreview({
     setIsEmbedEditorOpen(true)
   }
 
-  const handleSaveEmbeds = async (newEmbeddings: Embeddings) => {
+  const handleSaveEmbeds = async (newEmbeddings: Embeddings, newGlobalMapUrl: string) => {
     setIsSavingEmbeds(true)
     try {
       await saveEmbeddings(newEmbeddings)
+      await saveGlobalMapUrl(newGlobalMapUrl)
       if (venueId) {
         trackEvent(AnalyticsEvent.VENUE_EMBED_EDITOR_SAVE, { venue_id: venueId })
+      }
+      // Auto-republish if guide is already live so changes appear immediately
+      if (isPublished && venueId) {
+        const success = await republish(venueId)
+        if (success) {
+          setRepublishSuccess(true)
+          setTimeout(() => setRepublishSuccess(false), 3000)
+        }
       }
       setIsEmbedEditorOpen(false)
     } finally {
@@ -136,6 +162,24 @@ export function GuidePreview({
         <SuggestionsPanel suggestions={guide.suggestions} defaultExpanded />
       </div>
 
+      {/* Republish feedback */}
+      {republishSuccess && (
+        <div className="max-w-[720px] mx-auto mb-4">
+          <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-lg p-3">
+            <p className="text-sm text-green-800" role="status" aria-live="polite">
+              Maps &amp; media updated on live guide.
+            </p>
+          </div>
+        </div>
+      )}
+      {republishError && (
+        <div className="max-w-[720px] mx-auto mb-4">
+          <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-lg p-3">
+            <p className="text-sm text-red-800" role="alert">{republishError}</p>
+          </div>
+        </div>
+      )}
+
       {/* Guide content - shared with public view, with embeddings merged */}
       <GuideContent guide={guideWithEmbeds} />
 
@@ -153,7 +197,7 @@ export function GuidePreview({
               Edit Images
             </button>
           )}
-          {/* Edit Embeds button - show when we have venueId */}
+          {/* Edit Maps & Media button - show when we have venueId */}
           {venueId && (
             <button
               type="button"
@@ -161,7 +205,7 @@ export function GuidePreview({
               disabled={isPublishing || isSavingEmbeds}
               className="px-5 py-2.5 border border-[#DDDDD9] text-[#3D3D3D] rounded hover:bg-[#F8F8F6] disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm min-h-[44px] transition-colors"
             >
-              Edit Embeds
+              Edit Maps &amp; Media
             </button>
           )}
           <button
@@ -203,7 +247,8 @@ export function GuidePreview({
           orphaned={orphaned}
           onSave={handleSaveEmbeds}
           onResolveOrphan={resolveOrphan}
-          isSaving={isSavingEmbeds}
+          isSaving={isSavingEmbeds || isRepublishing}
+          globalMapUrl={globalMapUrl}
         />
       )}
     </div>

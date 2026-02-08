@@ -26,11 +26,13 @@ import {
   getAllowedEmails,
   addAllowedEmail,
   removeAllowedEmail,
+  _clearSuperAdminCache,
 } from './accessControl'
 
 describe('accessControl', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    _clearSuperAdminCache()
   })
 
   describe('isSuperAdmin', () => {

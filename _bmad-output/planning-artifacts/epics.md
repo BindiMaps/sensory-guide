@@ -2084,6 +2084,36 @@ So that **I can support growth, handle issues, and manage the user base**.
 - User deletion requires Cloud Function (cascades, Auth deletion)
 - Consider soft-delete with 30-day grace period for GDPR (optional)
 
+### Story 6.10: Global Venue Map (DONE)
+
+As an **end user viewing a sensory guide**,
+I want **a single, prominent venue map accessible from anywhere in the guide**,
+So that **I can orient myself within the venue without hunting through multiple small section maps**.
+
+> **Context:** Extension of Story 6.5 (section embeds). Adds a venue-level map URL that's accessible globally — desktop via FAB + lightbox, mobile via inline card + new tab. PDF gets a QR code at the top. Implementation artifact: `6-6-global-venue-map.md`.
+
+**Acceptance Criteria:**
+
+**Given** a venue has a `mapUrl` set
+**When** I view the guide on desktop
+**Then** I see a terracotta pill FAB (bottom-right) that opens a near-fullscreen lightbox with the map iframe
+
+**Given** a venue has a `mapUrl` set
+**When** I view the guide on mobile
+**Then** I see an inline card after the intro that opens the map in a new tab
+
+**Given** I'm an admin editing a venue
+**When** I open "Maps & Media"
+**Then** I see a "Venue Map URL" field that validates against the embed URL allowlist
+
+**Given** I save a venue map URL on an already-published guide
+**When** I click Save
+**Then** the live guide is auto-republished with the new map URL
+
+**Given** I generate a PDF
+**When** the venue has a map URL
+**Then** a QR code linking to the map appears at the top of the PDF
+
 ---
 
 ## Epic 7: Polish & Quality (New Epic)

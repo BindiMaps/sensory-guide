@@ -28,17 +28,17 @@ describe('CategoryBadge', () => {
     expect(badge.className).toContain('custom-class')
   })
 
-  it('uses uppercase text styling', () => {
+  it('uses rem-based font size', () => {
     const { container } = render(<CategoryBadge category="Crowds" />)
     const badge = container.firstChild as HTMLElement
-    expect(badge.className).toContain('uppercase')
+    expect(badge.className).toContain('text-[0.75rem]')
   })
 })
 
 describe('LevelBadge', () => {
-  it('renders level name', () => {
+  it('renders title-case level name', () => {
     render(<LevelBadge level="low" />)
-    expect(screen.getByText('low')).toBeInTheDocument()
+    expect(screen.getByText('Low')).toBeInTheDocument()
   })
 
   it('includes colour square indicator', () => {

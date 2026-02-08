@@ -19,9 +19,10 @@ interface EmbedEditorProps {
   areas: Area[]
   embeddings: Embeddings
   orphaned: OrphanedEmbed[]
-  onSave: (embeddings: Embeddings) => void
+  onSave: (embeddings: Embeddings, globalMapUrl: string) => void
   onResolveOrphan: (originalId: string, targetAreaId: string | null) => void
   isSaving: boolean
+  globalMapUrl?: string
 }
 
 interface UrlFieldState {
@@ -44,9 +45,12 @@ export function EmbedEditor({
   onSave,
   onResolveOrphan,
   isSaving,
+  globalMapUrl = '',
 }: EmbedEditorProps) {
   const [formState, setFormState] = useState<FormState>({})
   const [orphanTargets, setOrphanTargets] = useState<Record<string, string>>({})
+  const [mapUrlValue, setMapUrlValue] = useState('')
+  const [mapUrlError, setMapUrlError] = useState<string | null>(null)
 
   // Initialize form state from embeddings when dialog opens
   useEffect(() => {
@@ -59,6 +63,8 @@ export function EmbedEditor({
           : [{ value: '', error: null }]
       }
       setFormState(initial)
+      setMapUrlValue(globalMapUrl)
+      setMapUrlError(null)
 
       // Pre-select suggested matches for orphans
       const targets: Record<string, string> = {}
@@ -69,7 +75,7 @@ export function EmbedEditor({
       }
       setOrphanTargets(targets)
     }
-  }, [open, areas, embeddings, orphaned])
+  }, [open, areas, embeddings, orphaned, globalMapUrl])
 
   const handleChange = useCallback((areaId: string, index: number, value: string) => {
     setFormState((prev) => {
@@ -113,13 +119,25 @@ export function EmbedEditor({
     })
   }, [])
 
-  const hasErrors = Object.values(formState).some((fields) =>
+  const hasErrors = mapUrlError !== null || Object.values(formState).some((fields) =>
     fields.some((field) => field.error !== null)
   )
+
+  const handleMapUrlBlur = useCallback(() => {
+    const validation = isEmbeddableUrl(mapUrlValue)
+    setMapUrlError(validation.valid ? null : validation.error || 'Invalid URL')
+  }, [mapUrlValue])
 
   const handleSave = () => {
     let hasValidationErrors = false
     const newState = { ...formState }
+
+    // Validate global map URL
+    const mapValidation = isEmbeddableUrl(mapUrlValue)
+    if (!mapValidation.valid) {
+      hasValidationErrors = true
+      setMapUrlError(mapValidation.error || 'Invalid URL')
+    }
 
     for (const areaId of Object.keys(newState)) {
       newState[areaId] = newState[areaId].map((field) => {
@@ -147,7 +165,7 @@ export function EmbedEditor({
       }
     }
 
-    onSave(result)
+    onSave(result, mapUrlValue.trim())
   }
 
   const handleCancel = () => {
@@ -160,16 +178,41 @@ export function EmbedEditor({
     <Dialog open={open} onOpenChange={isSaving ? undefined : onOpenChange}>
       <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Section Embeds</DialogTitle>
+          <DialogTitle>Maps &amp; Media</DialogTitle>
           <DialogDescription>
-            Add embed URLs (BindiWeb maps, YouTube videos, etc.) for each section.
+            Set a venue-wide map and add embed URLs (BindiWeb maps, YouTube videos, etc.) per section.
             <br />
             <br />
-            Be aware that a lot of embedded webpages (specially maps) can slow things down.
+            Be aware that a lot of embedded webpages (especially maps) can slow things down.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
+          {/* Global venue map URL */}
+          <div className="space-y-2 pb-4 border-b border-[#E8E8E5]">
+            <label className="block text-sm font-medium text-gray-700" htmlFor="global-map-url">
+              Venue Map URL
+            </label>
+            <p className="text-xs text-gray-500">
+              A single map for the whole venue. Shows as a floating &ldquo;View Map&rdquo; button on the guide.
+            </p>
+            <input
+              id="global-map-url"
+              type="url"
+              value={mapUrlValue}
+              onChange={(e) => { setMapUrlValue(e.target.value); setMapUrlError(null) }}
+              onBlur={handleMapUrlBlur}
+              placeholder="Paste BindiWeb venue map URL"
+              aria-invalid={mapUrlError ? 'true' : 'false'}
+              className={`w-full px-3 py-2 text-sm border rounded-sm focus:outline-none focus:ring-2 focus:ring-[#B8510D] focus:border-transparent ${
+                mapUrlError ? 'border-red-500 focus:ring-red-500' : 'border-[#DDDDD9]'
+              }`}
+            />
+            {mapUrlError && (
+              <p className="text-xs text-red-600 mt-1" role="alert">{mapUrlError}</p>
+            )}
+          </div>
+
           {/* Orphaned embeds section */}
           {orphaned.length > 0 && (
             <div className="bg-amber-50 border border-amber-200 rounded-md p-3 space-y-3">
@@ -303,7 +346,7 @@ export function EmbedEditor({
                 Saving...
               </>
             ) : (
-              'Save Embeds'
+              'Save'
             )}
           </button>
         </DialogFooter>

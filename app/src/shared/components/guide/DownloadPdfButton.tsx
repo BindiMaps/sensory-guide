@@ -5,7 +5,7 @@ import { useAnalytics } from '@/hooks/useAnalytics'
 import { AnalyticsEvent } from '@/lib/analytics'
 import { useSensoryProfile } from '@/stores/sensoryProfileStore'
 import { PdfOptionsDialog, type PdfFilterMode } from './PdfOptionsDialog'
-import { generateQRCodesForAreas } from '@/shared/utils/qrCode'
+import { generateQRCodesForAreas, generateQRCode, getEmbedLabel, type QRCodeData } from '@/shared/utils/qrCode'
 
 // Polyfill Buffer for @react-pdf/renderer in browser
 if (typeof (globalThis as unknown as { Buffer?: typeof Buffer }).Buffer === 'undefined') {
@@ -35,11 +35,20 @@ export function GuidePdfActions({ guide, venueSlug }: GuidePdfActionsProps) {
   const { activeCategories, hasActiveFilters } = useSensoryProfile()
 
   const generatePdf = useCallback(async (filterMode: PdfFilterMode = 'none') => {
-    // Generate QR codes for areas with embeds (parallel with module loading)
-    const [{ pdf }, { GuidePdf }, qrDataUrls] = await Promise.all([
+    // Generate QR codes for areas with embeds + venue map (parallel with module loading)
+    const mapQrPromise: Promise<QRCodeData | undefined> = guide.venue.mapUrl
+      ? generateQRCode(guide.venue.mapUrl).then(({ dataUrl, buffer }) => ({
+          dataUrl,
+          buffer,
+          label: getEmbedLabel(guide.venue.mapUrl!),
+        })).catch(() => undefined)
+      : Promise.resolve(undefined)
+
+    const [{ pdf }, { GuidePdf }, qrDataUrls, mapQrCode] = await Promise.all([
       import('@react-pdf/renderer'),
       import('./GuidePdf'),
       generateQRCodesForAreas(guide.areas),
+      mapQrPromise,
     ])
 
     return pdf(
@@ -48,6 +57,7 @@ export function GuidePdfActions({ guide, venueSlug }: GuidePdfActionsProps) {
         filterMode={filterMode}
         activeCategories={activeCategories}
         qrDataUrls={qrDataUrls}
+        mapQrCode={mapQrCode}
       />
     ).toBlob()
   }, [guide, activeCategories])

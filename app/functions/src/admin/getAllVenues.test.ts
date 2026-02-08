@@ -1,17 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { HttpsError } from 'firebase-functions/v2/https'
 
-// Mock firebase-admin/firestore
-const mockOrderBy = vi.fn()
+// Mock firebase-admin/firestore with chainable query methods
 const mockGet = vi.fn()
+const mockStartAfter = vi.fn()
+const mockLimit = vi.fn()
+const mockOrderBy = vi.fn()
+
+// Chain: collection → orderBy → limit → (startAfter →) get
+const queryObj = {
+  get: mockGet,
+  startAfter: mockStartAfter,
+}
+mockLimit.mockReturnValue(queryObj)
+mockStartAfter.mockReturnValue({ get: mockGet })
+mockOrderBy.mockReturnValue({ limit: mockLimit })
+
 const mockCollection = vi.fn(() => ({
-  orderBy: mockOrderBy.mockReturnValue({ get: mockGet }),
+  orderBy: mockOrderBy,
 }))
 
 vi.mock('firebase-admin/firestore', () => ({
   getFirestore: () => ({
     collection: mockCollection,
   }),
+  Timestamp: {
+    fromDate: (d: Date) => d,
+  },
 }))
 
 // Mock middleware
@@ -34,6 +49,10 @@ import { getAllVenuesHandler } from './getAllVenues'
 describe('getAllVenues', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // Re-establish mock chain after clear
+    mockOrderBy.mockReturnValue({ limit: mockLimit })
+    mockLimit.mockReturnValue({ get: mockGet, startAfter: mockStartAfter })
+    mockStartAfter.mockReturnValue({ get: mockGet })
   })
 
   it('throws unauthenticated when not logged in', async () => {
@@ -98,6 +117,7 @@ describe('getAllVenues', () => {
 
     expect(mockCollection).toHaveBeenCalledWith('venues')
     expect(mockOrderBy).toHaveBeenCalledWith('updatedAt', 'desc')
+    expect(mockLimit).toHaveBeenCalledWith(101) // PAGE_SIZE + 1
 
     expect(result.venues).toHaveLength(2)
     expect(result.venues[0]).toEqual({
@@ -118,6 +138,7 @@ describe('getAllVenues', () => {
       createdAt: '2026-01-10T08:00:00.000Z',
       updatedAt: '2026-01-18T16:00:00.000Z',
     })
+    expect(result.nextPageToken).toBeUndefined()
   })
 
   it('returns empty array when no venues exist', async () => {

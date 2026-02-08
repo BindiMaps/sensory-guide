@@ -1,6 +1,6 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https'
 import { getStorage } from 'firebase-admin/storage'
-import { getFirestore, FieldValue } from 'firebase-admin/firestore'
+import { FieldValue } from 'firebase-admin/firestore'
 import { requireAuth, requireEditorAccess } from '../middleware/auth'
 
 interface SetLiveVersionRequest {
@@ -33,18 +33,11 @@ export async function setLiveVersionHandler(
     throw new HttpsError('invalid-argument', 'timestamp is required')
   }
 
-  // 3. Check editor access
-  await requireEditorAccess(userEmail, venueId)
+  // 3. Check editor access (also returns the venue doc)
+  const venueSnap = await requireEditorAccess(userEmail, venueId)
 
   // 4. Get venue data for slug
-  const db = getFirestore()
-  const venueRef = db.collection('venues').doc(venueId)
-  const venueSnap = await venueRef.get()
-
-  if (!venueSnap.exists) {
-    throw new HttpsError('not-found', 'Venue not found')
-  }
-
+  const venueRef = venueSnap.ref
   const venueData = venueSnap.data()
   const slug = venueData?.slug as string | undefined
 

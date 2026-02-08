@@ -5,6 +5,7 @@ import {
   where,
   onSnapshot,
   orderBy,
+  limit,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { useAuthStore } from '@/stores/authStore'
@@ -33,7 +34,8 @@ export function useVenues() {
     const q = query(
       venuesRef,
       where('editors', 'array-contains', userEmail),
-      orderBy('updatedAt', 'desc')
+      orderBy('updatedAt', 'desc'),
+      limit(50)
     )
 
     const unsubscribe = onSnapshot(

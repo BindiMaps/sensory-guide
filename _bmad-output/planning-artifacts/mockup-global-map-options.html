@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Map Trigger Options</title>
+  <style>
+    :root {
+      --accent: #B8510D;
+      --text: #1A1A1A;
+      --surface: #F8F8F6;
+      --header-height: 60px;
+    }
+    body { font-family: sans-serif; color: var(--text); margin: 0; background: #fff; }
+    
+    /* CONTROLS (For the User to Toggle Designs) */
+    .design-controls {
+      position: fixed; top: 10px; left: 10px; z-index: 2000;
+      background: #333; color: white; padding: 10px; border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .design-controls h3 { margin: 0 0 10px 0; font-size: 14px; }
+    .control-row { margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+    
+    /* LAYOUT */
+    .header {
+      height: var(--header-height);
+      border-bottom: 1px solid #eee;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      position: sticky; top: 0; background: rgba(255,255,255,0.95);
+      z-index: 100;
+    }
+    .brand { font-weight: bold; text-transform: uppercase; letter-spacing: 1px; font-size: 14px; }
+    
+    .main { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+    
+    .hero { margin-bottom: 40px; }
+    .venue-title { font-size: 32px; font-weight: 700; margin: 0 0 10px 0; }
+    .venue-meta { color: #666; margin-bottom: 20px; }
+    
+    .content-placeholder {
+      height: 200px; background: var(--surface); margin-bottom: 20px; border-radius: 8px;
+    }
+
+    /* --- OPTION 1: HEADER BUTTON --- */
+    .header-actions { display: flex; gap: 10px; }
+    .btn-header {
+      padding: 8px 16px; border: 1px solid #ddd; background: white; border-radius: 4px; font-weight: 500; cursor: pointer;
+    }
+    .btn-header-primary {
+      background: var(--accent); color: white; border-color: var(--accent);
+      display: none; /* Hidden by default */
+    }
+    
+    /* --- OPTION 2: FAB --- */
+    .fab {
+      position: fixed; bottom: 30px; right: 30px;
+      background: var(--accent); color: white;
+      padding: 16px 24px; border-radius: 50px;
+      box-shadow: 0 4px 12px rgba(184, 81, 13, 0.4);
+      font-weight: 600; cursor: pointer;
+      display: none; /* Hidden by default */
+      align-items: center; gap: 8px;
+      z-index: 90;
+      transition: transform 0.2s;
+    }
+    .fab:hover { transform: translateY(-2px); }
+    
+    /* --- OPTION 3: HERO BUTTON --- */
+    .hero-actions {
+      margin-top: 20px;
+      display: none; /* Hidden by default */
+    }
+    .btn-hero {
+      background: white; border: 2px solid var(--accent); color: var(--accent);
+      padding: 12px 24px; border-radius: 4px; font-weight: 600; font-size: 16px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-hero:hover { background: #fff5f0; }
+
+    /* UTILS */
+    .show { display: flex !important; }
+    .show-inline { display: inline-flex !important; }
+  </style>
+</head>
+<body>
+
+  <!-- TOGGLE CONTROLS -->
+  <div class="design-controls">
+    <h3>Select Design Option:</h3>
+    <div class="control-row">
+      <input type="radio" name="design" id="opt-header" onchange="setDesign('header')" checked>
+      <label for="opt-header">Option A: Sticky Header</label>
+    </div>
+    <div class="control-row">
+      <input type="radio" name="design" id="opt-fab" onchange="setDesign('fab')">
+      <label for="opt-fab">Option B: Floating Button (FAB)</label>
+    </div>
+    <div class="control-row">
+      <input type="radio" name="design" id="opt-hero" onchange="setDesign('hero')">
+      <label for="opt-hero">Option C: Hero / Intro Only</label>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="brand">Sensory Guide</div>
+    <div class="header-actions">
+      <!-- OPTION A ELEMENT -->
+      <button class="btn-header btn-header-primary" id="headerBtn" onclick="alert('Opens Map Lightbox')">
+        📍 Map
+      </button>
+      <button class="btn-header">Print</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="hero">
+      <h1 class="venue-title">Adelaide Railway Station</h1>
+      <p class="venue-meta">North Terrace, Adelaide SA 5000</p>
+      
+      <!-- OPTION C ELEMENT -->
+      <div class="hero-actions" id="heroBtn">
+        <button class="btn-hero" onclick="alert('Opens Map Lightbox')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          View Interactive Map
+        </button>
+      </div>
+    </div>
+
+    <p>Scroll down to see how the controls behave...</p>
+    
+    <div class="content-placeholder"></div>
+    <div class="content-placeholder"></div>
+    <div class="content-placeholder"></div>
+    <div class="content-placeholder"></div>
+    <div class="content-placeholder"></div>
+  </main>
+
+  <!-- OPTION B ELEMENT -->
+  <div class="fab" id="fabBtn" onclick="alert('Opens Map Lightbox')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M1 6v16l7-4 7 4 7-4V2l-7 4-7-4-7 4z"></path>
+      <line x1="8" y1="2" x2="8" y2="18"></line>
+      <line x1="16" y1="6" x2="16" y2="22"></line>
+    </svg>
+    View Map
+  </div>
+
+  <script>
+    function setDesign(type) {
+      // Reset all
+      document.getElementById('headerBtn').classList.remove('show-inline');
+      document.getElementById('fabBtn').classList.remove('show');
+      document.getElementById('heroBtn').classList.remove('show');
+      
+      // Activate selected
+      if (type === 'header') {
+        document.getElementById('headerBtn').classList.add('show-inline');
+      } else if (type === 'fab') {
+        document.getElementById('fabBtn').classList.add('show');
+      } else if (type === 'hero') {
+        document.getElementById('heroBtn').classList.add('show');
+      }
+    }
+
+    // Init
+    setDesign('header');
+  </script>
+</body>
+</html>

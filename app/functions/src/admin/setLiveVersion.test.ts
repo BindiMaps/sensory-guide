@@ -2,20 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { HttpsError } from 'firebase-functions/v2/https'
 
 // Mock firebase-admin/firestore
-const mockFirestoreGet = vi.fn()
 const mockFirestoreUpdate = vi.fn()
-const mockFirestoreDoc = vi.fn(() => ({
-  get: mockFirestoreGet,
-  update: mockFirestoreUpdate,
-}))
-const mockFirestoreCollection = vi.fn(() => ({
-  doc: mockFirestoreDoc,
-}))
+const mockVenueRef = { update: mockFirestoreUpdate }
 
 vi.mock('firebase-admin/firestore', () => ({
-  getFirestore: () => ({
-    collection: mockFirestoreCollection,
-  }),
   FieldValue: {
     serverTimestamp: () => 'SERVER_TIMESTAMP',
   },
@@ -25,10 +15,12 @@ vi.mock('firebase-admin/firestore', () => ({
 const mockFileExists = vi.fn()
 const mockFileCopy = vi.fn()
 const mockFileMakePublic = vi.fn()
+const mockFileSetMetadata = vi.fn().mockResolvedValue([{}])
 const mockFile = vi.fn(() => ({
   exists: mockFileExists,
   copy: mockFileCopy,
   makePublic: mockFileMakePublic,
+  setMetadata: mockFileSetMetadata,
 }))
 const mockBucket = vi.fn(() => ({
   file: mockFile,
@@ -41,18 +33,26 @@ vi.mock('firebase-admin/storage', () => ({
   }),
 }))
 
-// Mock middleware
+// Mock middleware - requireEditorAccess returns the venue doc snapshot
+const mockRequireEditorAccess = vi.fn()
 vi.mock('../middleware/auth', () => ({
   requireAuth: vi.fn((request) => {
     if (!request.auth) throw new HttpsError('unauthenticated', 'Must be logged in')
     return request.auth.token.email
   }),
-  requireEditorAccess: vi.fn(),
+  requireEditorAccess: (...args: unknown[]) => mockRequireEditorAccess(...args),
 }))
+
+function mockVenueSnap(data: Record<string, unknown>) {
+  return {
+    exists: true,
+    data: () => data,
+    ref: mockVenueRef,
+  }
+}
 
 // Import after mocks
 import { setLiveVersionHandler } from './setLiveVersion'
-import { requireEditorAccess } from '../middleware/auth'
 
 describe('setLiveVersion', () => {
   beforeEach(() => {
@@ -95,13 +95,7 @@ describe('setLiveVersion', () => {
       data: { venueId: 'venue-123', timestamp: '2026-01-28T10:00:00Z' },
     }
 
-    // Venue exists
-    mockFirestoreGet.mockResolvedValue({
-      exists: true,
-      data: () => ({ slug: 'test-venue' }),
-    })
-
-    // Version exists
+    mockRequireEditorAccess.mockResolvedValue(mockVenueSnap({ slug: 'test-venue' }))
     mockFileExists.mockResolvedValue([true])
     mockFileCopy.mockResolvedValue([{}])
     mockFileMakePublic.mockResolvedValue([{}])
@@ -109,20 +103,7 @@ describe('setLiveVersion', () => {
 
     await setLiveVersionHandler(request as never)
 
-    expect(requireEditorAccess).toHaveBeenCalledWith('user@example.com', 'venue-123')
-  })
-
-  it('throws not-found when venue does not exist', async () => {
-    const request = {
-      auth: { token: { email: 'user@example.com' } },
-      data: { venueId: 'venue-123', timestamp: '2026-01-28T10:00:00Z' },
-    }
-
-    mockFirestoreGet.mockResolvedValue({ exists: false })
-
-    await expect(setLiveVersionHandler(request as never)).rejects.toThrow(
-      expect.objectContaining({ code: 'not-found' })
-    )
+    expect(mockRequireEditorAccess).toHaveBeenCalledWith('user@example.com', 'venue-123')
   })
 
   it('throws not-found when version file does not exist', async () => {
@@ -131,10 +112,7 @@ describe('setLiveVersion', () => {
       data: { venueId: 'venue-123', timestamp: '2026-01-28T10:00:00Z' },
     }
 
-    mockFirestoreGet.mockResolvedValue({
-      exists: true,
-      data: () => ({ slug: 'test-venue' }),
-    })
+    mockRequireEditorAccess.mockResolvedValue(mockVenueSnap({ slug: 'test-venue' }))
     mockFileExists.mockResolvedValue([false])
 
     await expect(setLiveVersionHandler(request as never)).rejects.toThrow(
@@ -148,10 +126,7 @@ describe('setLiveVersion', () => {
       data: { venueId: 'venue-123', timestamp: '2026-01-28T10:00:00Z' },
     }
 
-    mockFirestoreGet.mockResolvedValue({
-      exists: true,
-      data: () => ({ slug: 'my-venue' }),
-    })
+    mockRequireEditorAccess.mockResolvedValue(mockVenueSnap({ slug: 'my-venue' }))
     mockFileExists.mockResolvedValue([true])
 
     const mockPublicFile = {
@@ -176,10 +151,7 @@ describe('setLiveVersion', () => {
       data: { venueId: 'venue-123', timestamp: '2026-01-28T10:00:00Z' },
     }
 
-    mockFirestoreGet.mockResolvedValue({
-      exists: true,
-      data: () => ({ slug: 'test-venue' }),
-    })
+    mockRequireEditorAccess.mockResolvedValue(mockVenueSnap({ slug: 'test-venue' }))
     mockFileExists.mockResolvedValue([true])
 
     const mockPublicFile = { makePublic: mockFileMakePublic }
@@ -202,10 +174,7 @@ describe('setLiveVersion', () => {
       data: { venueId: 'venue-123', timestamp: '2026-01-28T10:00:00Z' },
     }
 
-    mockFirestoreGet.mockResolvedValue({
-      exists: true,
-      data: () => ({ slug: 'my-venue' }),
-    })
+    mockRequireEditorAccess.mockResolvedValue(mockVenueSnap({ slug: 'my-venue' }))
     mockFileExists.mockResolvedValue([true])
 
     const mockPublicFile = { makePublic: mockFileMakePublic }

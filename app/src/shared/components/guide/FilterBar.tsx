@@ -29,7 +29,7 @@ export function FilterBar({ categories }: FilterBarProps) {
 
   return (
     <div className="mb-6">
-      <p className="text-[11px] text-[#595959] mb-2">
+      <p className="text-[0.8125rem] text-[#595959] contrast-more:text-[#333333] mb-2">
         Tap to highlight
         {activeCount > 0 && (
           <>
@@ -69,7 +69,7 @@ export function FilterBar({ categories }: FilterBarProps) {
             }}
             aria-pressed={isActive}
             aria-label={`${isActive ? 'Remove' : 'Add'} ${category} highlight`}
-            className="inline-flex items-center px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide rounded-sm transition-all duration-150 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2"
+            className="inline-flex items-center px-2 py-0.5 text-[0.75rem] font-semibold tracking-wide rounded-sm transition-all duration-150 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 contrast-more:shadow-[inset_0_0_0_1px_currentColor]"
             style={{
               backgroundColor: colours.bg,
               color: colours.text,

@@ -48,47 +48,40 @@ export async function getGlobalAnalyticsHandler(
 
   const db = getFirestore()
   const startOfMonth = getStartOfMonth()
+  const venuesCol = db.collection('venues')
+  const logsCol = db.collection('llmLogs')
 
-  // Query venues
-  const venuesSnapshot = await db.collection('venues').get()
-  const venueStats = {
-    total: venuesSnapshot.size,
-    published: 0,
-    draft: 0,
-  }
-  venuesSnapshot.docs.forEach((doc) => {
-    const status = doc.data().status
-    if (status === 'published') {
-      venueStats.published++
-    } else {
-      venueStats.draft++
-    }
-  })
+  // Use aggregation queries to avoid fetching full documents
+  const [
+    totalVenuesSnap,
+    publishedVenuesSnap,
+    allLogsSnap,
+    allCompleteLogsSnap,
+    monthLogsSnap,
+    monthCompleteLogsSnap,
+  ] = await Promise.all([
+    venuesCol.count().get(),
+    venuesCol.where('status', '==', 'published').count().get(),
+    logsCol.count().get(),
+    logsCol.where('status', '==', 'complete').count().get(),
+    logsCol.where('createdAt', '>=', startOfMonth).count().get(),
+    logsCol
+      .where('createdAt', '>=', startOfMonth)
+      .where('status', '==', 'complete')
+      .count()
+      .get(),
+  ])
 
-  // Query all llmLogs
-  const allLogsSnapshot = await db.collection('llmLogs').get()
+  const totalVenues = totalVenuesSnap.data().count
+  const publishedVenues = publishedVenuesSnap.data().count
 
-  // Query this month's llmLogs
-  const thisMonthLogsSnapshot = await db
-    .collection('llmLogs')
+  // Active users still needs doc iteration for unique email counting,
+  // but we use select() to only fetch the userEmail field
+  const thisMonthLogsSnapshot = await logsCol
     .where('createdAt', '>=', startOfMonth)
+    .select('userEmail')
     .get()
 
-  // Calculate transform stats
-  const transformStats = {
-    allTime: allLogsSnapshot.size,
-    thisMonth: thisMonthLogsSnapshot.size,
-  }
-
-  // Calculate published stats (status='complete')
-  const publishedAllTime = allLogsSnapshot.docs.filter(
-    (doc) => doc.data().status === 'complete'
-  ).length
-  const publishedThisMonth = thisMonthLogsSnapshot.docs.filter(
-    (doc) => doc.data().status === 'complete'
-  ).length
-
-  // Calculate active users (unique emails this month)
   const activeEmails = new Set<string>()
   thisMonthLogsSnapshot.docs.forEach((doc) => {
     const email = doc.data().userEmail
@@ -98,11 +91,18 @@ export async function getGlobalAnalyticsHandler(
   })
 
   return {
-    venues: venueStats,
-    transforms: transformStats,
+    venues: {
+      total: totalVenues,
+      published: publishedVenues,
+      draft: totalVenues - publishedVenues,
+    },
+    transforms: {
+      allTime: allLogsSnap.data().count,
+      thisMonth: monthLogsSnap.data().count,
+    },
     published: {
-      allTime: publishedAllTime,
-      thisMonth: publishedThisMonth,
+      allTime: allCompleteLogsSnap.data().count,
+      thisMonth: monthCompleteLogsSnap.data().count,
     },
     activeUsers: {
       thisMonth: activeEmails.size,

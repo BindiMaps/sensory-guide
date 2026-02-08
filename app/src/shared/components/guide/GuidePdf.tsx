@@ -239,6 +239,8 @@ interface GuidePdfProps {
   activeCategories?: Set<string>
   /** Pre-generated QR codes with labels, keyed by area ID */
   qrDataUrls?: Record<string, QRCodeData>
+  /** QR code for the global venue map URL */
+  mapQrCode?: QRCodeData
 }
 
 /**
@@ -246,7 +248,7 @@ interface GuidePdfProps {
  * Uses @react-pdf/renderer primitives
  * Supports filtering/highlighting based on user's sensory profile
  */
-export function GuidePdf({ guide, filterMode = 'none', activeCategories = new Set(), qrDataUrls = {} }: GuidePdfProps) {
+export function GuidePdf({ guide, filterMode = 'none', activeCategories = new Set(), qrDataUrls = {}, mapQrCode }: GuidePdfProps) {
   const { venue, areas, facilities, categories } = guide
 
   // Filter areas based on mode
@@ -301,6 +303,20 @@ export function GuidePdf({ guide, filterMode = 'none', activeCategories = new Se
                 </Text>
               )
             })}
+          </View>
+        )}
+
+        {/* Venue map QR code */}
+        {mapQrCode && (
+          <View style={styles.qrContainer}>
+            <Image
+              src={{ data: mapQrCode.buffer, format: 'png' }}
+              style={styles.qrCode}
+            />
+            <View style={styles.qrTextContainer}>
+              <Text style={styles.qrLabel}>Venue Map</Text>
+              <Text style={styles.qrHint}>Scan to view the interactive venue map</Text>
+            </View>
           </View>
         )}
 

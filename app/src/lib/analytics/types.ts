@@ -19,6 +19,7 @@ export const AnalyticsEvent = {
   GUIDE_IMAGE_VIEW: 'guide_image_view',
   GUIDE_PDF_DOWNLOAD: 'guide_pdf_download',
   GUIDE_EXTERNAL_LINK: 'guide_external_link',
+  GUIDE_MAP_OPEN: 'guide_map_open',
   GUIDE_FEEDBACK_SUBMIT: 'guide_feedback_submit',
   // GUIDE_FEEDBACK_TEXT removed - text feedback now goes to Firestore only
 

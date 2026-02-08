@@ -1,23 +1,46 @@
 import { getFirestore } from 'firebase-admin/firestore'
 
+// In-memory cache for super admin list.
+// Cloud Functions instances persist between invocations, so this avoids
+// a Firestore read on every auth check. 60s TTL keeps it fresh enough.
+const CACHE_TTL_MS = 60_000
+let cachedAdminEmails: string[] | null = null
+let cacheExpiry = 0
+
+/** Exported for testing only. */
+export function _clearSuperAdminCache(): void {
+  cachedAdminEmails = null
+  cacheExpiry = 0
+}
+
 /**
  * Check if an email is in the super admin list.
  * Super admins bypass all access restrictions.
  */
 export async function isSuperAdmin(email: string): Promise<boolean> {
+  if (cachedAdminEmails && Date.now() < cacheExpiry) {
+    return cachedAdminEmails.includes(email.toLowerCase())
+  }
+
   const db = getFirestore()
   const superAdminsDoc = await db.collection('config').doc('superAdmins').get()
 
   if (!superAdminsDoc.exists) {
+    cachedAdminEmails = []
+    cacheExpiry = Date.now() + CACHE_TTL_MS
     return false
   }
 
   const emails = superAdminsDoc.data()?.emails as string[] | undefined
   if (!emails || !Array.isArray(emails)) {
+    cachedAdminEmails = []
+    cacheExpiry = Date.now() + CACHE_TTL_MS
     return false
   }
 
-  return emails.map((e) => e.toLowerCase()).includes(email.toLowerCase())
+  cachedAdminEmails = emails.map((e) => e.toLowerCase())
+  cacheExpiry = Date.now() + CACHE_TTL_MS
+  return cachedAdminEmails.includes(email.toLowerCase())
 }
 
 /**

@@ -199,8 +199,8 @@ export const transformPdf = onCall<TransformPdfRequest>(
       throw new HttpsError('invalid-argument', 'logId is required')
     }
 
-    // 2. Check editor access
-    await requireEditorAccess(userEmail, venueId)
+    // 2. Check editor access (also returns the venue doc)
+    const venueSnap = await requireEditorAccess(userEmail, venueId)
 
     // 3. Check superadmin status
     const isAdmin = await isSuperAdmin(userEmail)
@@ -230,10 +230,8 @@ export const transformPdf = onCall<TransformPdfRequest>(
         )
       }
 
-      // 6. Get venue name for context
-      const db = getFirestore()
-      const venueDoc = await db.collection('venues').doc(venueId).get()
-      const venueName = venueDoc.data()?.name || 'Unknown Venue'
+      // 6. Get venue name from pre-fetched doc
+      const venueName = venueSnap.data()?.name || 'Unknown Venue'
 
       // 7. Transform via Gemini
       await updateProgress(venueId, logId, 'analysing', 40)

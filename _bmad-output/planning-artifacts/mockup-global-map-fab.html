@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Map FAB Variations - Sensory Guide Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: #FFFFFF;
+      --surface: #F8F8F6;
+      --surface-hover: #F2F2EF;
+      --text: #1A1A1A;
+      --text-secondary: #3D3D3D;
+      --text-muted: #595959;
+      --border: #DDDDD9;
+      --border-light: #E8E8E5;
+
+      --accent: #B8510D;
+      --accent-hover: #9A4409;
+      --accent-light: #FEF7F2;
+
+      --sensory-low: #2A6339;
+      --sensory-medium: #8A5F08;
+      --sensory-high: #9E3322;
+
+      --font: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --radius: 4px;
+      --radius-sm: 2px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :focus { outline: none; }
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ========== VARIATION SWITCHER ========== */
+    .switcher {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2000;
+      background: #1A1A1A;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .switcher-label {
+      color: #999;
+      margin-right: 4px;
+    }
+
+    .switcher-btn {
+      background: transparent;
+      border: 1px solid #444;
+      color: #ccc;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .switcher-btn:hover {
+      border-color: #666;
+      color: #fff;
+    }
+
+    .switcher-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ========== SKIP LINK ========== */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: white;
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 0.875rem;
+      z-index: 1000;
+      text-decoration: none;
+      transition: top 0.2s;
+    }
+    .skip-link:focus { top: 0.75rem; }
+
+    /* ========== HEADER ========== */
+    .header {
+      background: var(--background);
+      border-bottom: 1px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .header-actions { display: flex; gap: 0.5rem; }
+
+    .header-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.75rem;
+      font-family: var(--font);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-radius: var(--radius);
+      transition: all 0.12s ease;
+    }
+    .header-btn:hover { background: var(--surface); }
+
+    /* ========== MAIN ========== */
+    .main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+
+    /* ========== VENUE HEADER ========== */
+    .venue-header { margin-bottom: 2rem; }
+
+    .venue-name {
+      font-size: 1.625rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.375rem;
+    }
+
+    .venue-meta {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    /* ========== INTRO ========== */
+    .intro {
+      background: var(--surface);
+      padding: 1.25rem 1.5rem;
+      border-radius: var(--radius);
+      margin-bottom: 2.5rem;
+      border-left: 3px solid var(--accent);
+    }
+
+    .intro-title {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .intro-text {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+      line-height: 1.55;
+    }
+
+    /* ========== SECTIONS ========== */
+    .sections { display: flex; flex-direction: column; }
+
+    .section { border-bottom: 1px solid var(--border-light); }
+    .section:last-child { border-bottom: none; }
+
+    .section-header {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 1rem 0;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      text-align: left;
+      font-family: inherit;
+      color: inherit;
+      transition: background 0.1s ease;
+      border-radius: var(--radius-sm);
+    }
+
+    .section-header:hover {
+      background: var(--surface);
+      margin: 0 -1rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .section-header:focus-visible {
+      margin: 0 -0.5rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      outline-offset: 0;
+    }
+
+    .section-toggle {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      border: 1.5px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+      background: var(--background);
+    }
+
+    .section-toggle svg {
+      width: 12px;
+      height: 12px;
+      stroke: var(--text-muted);
+      stroke-width: 2;
+      fill: none;
+      transition: transform 0.15s ease;
+    }
+
+    .section[aria-expanded="true"] .section-toggle {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+
+    .section[aria-expanded="true"] .section-toggle svg {
+      stroke: white;
+      transform: rotate(90deg);
+    }
+
+    .section-info {
+      flex: 1;
+      min-width: 0;
+      padding-top: 0.1875rem;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.375rem;
+      line-height: 1.35;
+    }
+
+    .badges { display: flex; gap: 0.375rem; flex-wrap: wrap; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.1875rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-sound { background: #E3ECF0; color: #264854; }
+    .badge-light { background: #F4EBDA; color: #4D3F14; }
+    .badge-crowds { background: #EDE6E0; color: #3F352C; }
+    .badge-smells { background: #E6EEE7; color: #263D29; }
+
+    .sensory-level {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+      padding-left: 0.5rem;
+      padding-top: 0.1875rem;
+    }
+
+    .sensory-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .sensory-indicator.low { background: var(--sensory-low); }
+    .sensory-indicator.medium { background: var(--sensory-medium); }
+    .sensory-indicator.high { background: var(--sensory-high); }
+
+    .sensory-text {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .sensory-text.low { color: var(--sensory-low); }
+    .sensory-text.medium { color: var(--sensory-medium); }
+    .sensory-text.high { color: var(--sensory-high); }
+
+    .section-content {
+      display: none;
+      padding: 0 0 1.25rem 2.5rem;
+    }
+
+    .section[aria-expanded="true"] .section-content { display: block; }
+
+    .category { margin-bottom: 1rem; }
+    .category:last-child { margin-bottom: 0; }
+
+    .category-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 0.1875rem;
+    }
+
+    .category-text {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    /* ========== FOOTER ========== */
+    .footer {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .sensory-key {
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border-radius: var(--radius);
+    }
+
+    .sensory-key-title {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.625rem;
+    }
+
+    .sensory-key-items { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+
+    .sensory-key-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    /* ========== FAB BASE ========== */
+    .fab {
+      position: fixed;
+      z-index: 90;
+      cursor: pointer;
+      display: none; /* all hidden by default */
+      border: none;
+      font-family: var(--font);
+    }
+
+    .fab:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    /* ========== FAB A: BOLD PILL ========== */
+    .fab-a {
+      bottom: 24px;
+      right: 24px;
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 50px;
+      box-shadow: 0 4px 14px rgba(184, 81, 13, 0.35);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .fab-a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(184, 81, 13, 0.45);
+    }
+
+    .fab-a:active { transform: translateY(0); }
+
+    .fab-a svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    /* ========== FAB B: SUBTLE ICON-ONLY ========== */
+    .fab-b {
+      bottom: 24px;
+      right: 24px;
+      background: #fff;
+      border: 1.5px solid var(--border) !important;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .fab-b svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 2;
+      flex-shrink: 0;
+    }
+
+    .fab-b .fab-b-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      white-space: nowrap;
+      max-width: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-width 0.25s ease, opacity 0.2s ease, margin 0.25s ease;
+      margin-left: 0;
+    }
+
+    .fab-b:hover {
+      width: auto;
+      border-radius: 50px;
+      padding: 0 14px 0 10px;
+      border-color: var(--accent) !important;
+    }
+
+    .fab-b:hover .fab-b-label {
+      max-width: 80px;
+      opacity: 1;
+      margin-left: 6px;
+    }
+
+    /* ========== FAB C: SCROLL-TRIGGERED ========== */
+    .fab-c {
+      bottom: 24px;
+      right: 24px;
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 50px;
+      box-shadow: 0 4px 14px rgba(184, 81, 13, 0.35);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      align-items: center;
+      gap: 8px;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.15s ease;
+    }
+
+    .fab-c.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .fab-c:hover {
+      box-shadow: 0 6px 20px rgba(184, 81, 13, 0.45);
+    }
+
+    .fab-c svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    /* ========== FAB D: MUTED/NEUTRAL ========== */
+    .fab-d {
+      bottom: 24px;
+      right: 24px;
+      background: rgba(255,255,255,0.92);
+      color: var(--text-secondary);
+      padding: 10px 16px;
+      border-radius: 50px;
+      border: 1px solid var(--border) !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .fab-d:hover {
+      background: #fff;
+      opacity: 1 !important;
+      border-color: var(--accent) !important;
+      color: var(--accent);
+      box-shadow: 0 3px 12px rgba(184, 81, 13, 0.12);
+    }
+
+    .fab-d svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    /* ========== LIGHTBOX ========== */
+    .lightbox-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.15s ease;
+    }
+
+    .lightbox-backdrop.open { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .lightbox-panel {
+      background: #fff;
+      width: min(90vw, 900px);
+      height: min(80vh, 700px);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: slideUp 0.2s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .lightbox-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .lightbox-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
+
+    .lightbox-close {
+      background: none;
+      border: none;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: background 0.1s;
+    }
+
+    .lightbox-close:hover { background: var(--surface); }
+
+    .lightbox-close svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .lightbox-body {
+      flex: 1;
+      position: relative;
+      background: var(--surface);
+    }
+
+    .lightbox-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .lightbox-placeholder svg {
+      width: 48px;
+      height: 48px;
+      stroke: var(--border);
+      stroke-width: 1.5;
+      fill: none;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 640px) {
+      .main { padding: 2rem 1.25rem 3rem; }
+      .venue-name { font-size: 1.375rem; }
+      .section-header { padding: 0.875rem 0; }
+      .section-header:hover {
+        margin: 0 -1.25rem;
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+      }
+      .section-content { padding-left: 2.25rem; }
+      .sensory-key-items { flex-direction: column; gap: 0.625rem; }
+
+      .switcher {
+        top: auto;
+        bottom: 80px;
+        left: 12px;
+        right: 12px;
+        transform: none;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .fab-a, .fab-b, .fab-c, .fab-d {
+        bottom: 20px;
+        right: 16px;
+      }
+    }
+
+    /* ========== REDUCED MOTION ========== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+      .fab-c.visible { transform: translateY(0); opacity: 1; }
+      .fab-c { transform: translateY(0); }
+    }
+
+    /* ========== HIGH CONTRAST ========== */
+    @media (prefers-contrast: high) {
+      :root {
+        --border: #888;
+        --border-light: #999;
+        --text-muted: #333;
+      }
+      .badge { border: 1px solid currentColor; }
+    }
+
+    /* ========== PRINT ========== */
+    @media print {
+      .header, .skip-link, .switcher, .fab { display: none !important; }
+      .section-content { display: block !important; }
+      .section-toggle { display: none; }
+      .section-header { cursor: default; pointer-events: none; }
+      .section-header:hover { background: none; margin: 0; padding-left: 0; }
+      .section-info { padding-left: 0; }
+      .main { max-width: none; padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  <!-- ========== VARIATION SWITCHER ========== -->
+  <div class="switcher" role="toolbar" aria-label="FAB variation selector">
+    <span class="switcher-label">FAB:</span>
+    <button class="switcher-btn active" onclick="setVariation('a')" data-var="a">A: Bold Pill</button>
+    <button class="switcher-btn" onclick="setVariation('b')" data-var="b">B: Icon-Only</button>
+    <button class="switcher-btn" onclick="setVariation('c')" data-var="c">C: Scroll</button>
+    <button class="switcher-btn" onclick="setVariation('d')" data-var="d">D: Muted</button>
+  </div>
+
+  <!-- ========== HEADER ========== -->
+  <header class="header">
+    <div class="header-inner">
+      <span class="brand">Sensory Guide</span>
+      <div class="header-actions">
+        <button class="header-btn" type="button">Download PDF</button>
+        <button class="header-btn" type="button">Print</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <main class="main" id="main-content">
+    <div class="venue-header">
+      <h1 class="venue-name">Adelaide Railway Station</h1>
+      <p class="venue-meta">North Terrace, Adelaide SA 5000 · Updated January 2026</p>
+    </div>
+
+    <div class="intro">
+      <p class="intro-title">About this guide</p>
+      <p class="intro-text">This guide describes what you might see, hear, and experience at each area of the station. Select a section to view detailed sensory information.</p>
+    </div>
+
+    <div class="sections">
+
+      <!-- Section 1: Main Concourse -->
+      <article class="section" aria-expanded="true">
+        <button class="section-header" type="button" aria-expanded="true" aria-controls="section-1-content" onclick="toggleSection(this)">
+          <span class="section-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </span>
+          <span class="section-info">
+            <h2 class="section-title">Main Concourse</h2>
+            <span class="badges" aria-label="Sensory factors: Sound, Light, Crowds">
+              <span class="badge badge-sound">Sound</span>
+              <span class="badge badge-light">Light</span>
+              <span class="badge badge-crowds">Crowds</span>
+            </span>
+          </span>
+          <span class="sensory-level">
+            <span class="sensory-indicator medium" aria-hidden="true"></span>
+            <span class="sensory-text medium">Medium</span>
+          </span>
+        </button>
+        <div class="section-content" id="section-1-content">
+          <div class="category">
+            <p class="category-title">Sound</p>
+            <p class="category-text">PA announcements every 2–3 minutes. The high ceilings create echoes. Consider noise-cancelling headphones during peak hours (7:30–9:00am and 4:30–6:00pm).</p>
+          </div>
+          <div class="category">
+            <p class="category-title">Bright Light</p>
+            <p class="category-text">Large skylights create bright conditions around midday. Fluorescent backup lighting throughout. Sunglasses may help on sunny days.</p>
+          </div>
+          <div class="category">
+            <p class="category-title">Crowds</p>
+            <p class="category-text">Busiest 7:30–9:00am and 4:30–6:00pm weekdays. Quieter periods mid-morning and early afternoon. Weekend mornings are generally calmer.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 2: Ticketing Area -->
+      <article class="section" aria-expanded="false">
+        <button class="section-header" type="button" aria-expanded="false" aria-controls="section-2-content" onclick="toggleSection(this)">
+          <span class="section-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </span>
+          <span class="section-info">
+            <h2 class="section-title">Ticketing Area</h2>
+            <span class="badges" aria-label="Sensory factors: Crowds, Light">
+              <span class="badge badge-crowds">Crowds</span>
+              <span class="badge badge-light">Light</span>
+            </span>
+          </span>
+          <span class="sensory-level">
+            <span class="sensory-indicator low" aria-hidden="true"></span>
+            <span class="sensory-text low">Low</span>
+          </span>
+        </button>
+        <div class="section-content" id="section-2-content">
+          <div class="category">
+            <p class="category-title">Crowds</p>
+            <p class="category-text">Can get busy during peak times. Self-service ticket machines available to avoid queues. Staff at the counter can assist if needed.</p>
+          </div>
+          <div class="category">
+            <p class="category-title">Screens</p>
+            <p class="category-text">Ticket machines have bright screens. The staff counter has softer lighting.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 3: Platform Access -->
+      <article class="section" aria-expanded="false">
+        <button class="section-header" type="button" aria-expanded="false" aria-controls="section-3-content" onclick="toggleSection(this)">
+          <span class="section-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </span>
+          <span class="section-info">
+            <h2 class="section-title">Platform Access</h2>
+            <span class="badges" aria-label="Sensory factors: Sound">
+              <span class="badge badge-sound">Sound</span>
+            </span>
+          </span>
+          <span class="sensory-level">
+            <span class="sensory-indicator high" aria-hidden="true"></span>
+            <span class="sensory-text high">High</span>
+          </span>
+        </button>
+        <div class="section-content" id="section-3-content">
+          <div class="category">
+            <p class="category-title">Loud Sounds</p>
+            <p class="category-text">Train arrival announcements are loud and sudden. Trains make significant noise when arriving and departing. Noise-cancelling headphones strongly recommended.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 4: Restrooms -->
+      <article class="section" aria-expanded="false">
+        <button class="section-header" type="button" aria-expanded="false" aria-controls="section-4-content" onclick="toggleSection(this)">
+          <span class="section-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </span>
+          <span class="section-info">
+            <h2 class="section-title">Restrooms</h2>
+            <span class="badges" aria-label="Sensory factors: Sound, Smells">
+              <span class="badge badge-sound">Sound</span>
+              <span class="badge badge-smells">Smells</span>
+            </span>
+          </span>
+          <span class="sensory-level">
+            <span class="sensory-indicator medium" aria-hidden="true"></span>
+            <span class="sensory-text medium">Medium</span>
+          </span>
+        </button>
+        <div class="section-content" id="section-4-content">
+          <div class="category">
+            <p class="category-title">Sound</p>
+            <p class="category-text">Automatic hand dryers can be very loud. Paper towels are also available as a quieter alternative.</p>
+          </div>
+          <div class="category">
+            <p class="category-title">Smells</p>
+            <p class="category-text">Cleaning products used regularly. Some artificial air freshener scent present.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 5: Food Court -->
+      <article class="section" aria-expanded="false">
+        <button class="section-header" type="button" aria-expanded="false" aria-controls="section-5-content" onclick="toggleSection(this)">
+          <span class="section-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </span>
+          <span class="section-info">
+            <h2 class="section-title">Food Court</h2>
+            <span class="badges" aria-label="Sensory factors: Smells, Crowds, Sound">
+              <span class="badge badge-smells">Smells</span>
+              <span class="badge badge-crowds">Crowds</span>
+              <span class="badge badge-sound">Sound</span>
+            </span>
+          </span>
+          <span class="sensory-level">
+            <span class="sensory-indicator high" aria-hidden="true"></span>
+            <span class="sensory-text high">High</span>
+          </span>
+        </button>
+        <div class="section-content" id="section-5-content">
+          <div class="category">
+            <p class="category-title">Mixed Food Smells</p>
+            <p class="category-text">Multiple food vendors create a mix of cooking smells. Coffee, fried food, and baked goods are common scents. Strongest during lunch hours.</p>
+          </div>
+          <div class="category">
+            <p class="category-title">Seating</p>
+            <p class="category-text">Open seating area can be crowded at mealtimes. Some quieter tables available at the edges away from vendors.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 6: Waiting Area -->
+      <article class="section" aria-expanded="false">
+        <button class="section-header" type="button" aria-expanded="false" aria-controls="section-6-content" onclick="toggleSection(this)">
+          <span class="section-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </span>
+          <span class="section-info">
+            <h2 class="section-title">Waiting Area</h2>
+            <span class="badges" aria-label="Sensory factors: Sound, Light">
+              <span class="badge badge-sound">Sound</span>
+              <span class="badge badge-light">Light</span>
+            </span>
+          </span>
+          <span class="sensory-level">
+            <span class="sensory-indicator low" aria-hidden="true"></span>
+            <span class="sensory-text low">Low</span>
+          </span>
+        </button>
+        <div class="section-content" id="section-6-content">
+          <div class="category">
+            <p class="category-title">Sound</p>
+            <p class="category-text">Quieter than the main concourse. PA announcements still audible but muffled. Background conversation at normal levels.</p>
+          </div>
+          <div class="category">
+            <p class="category-title">Lighting</p>
+            <p class="category-text">Softer overhead lighting compared to the concourse. No direct sunlight. Display screens showing departure times are moderately bright.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 7: Exit to North Terrace -->
+      <article class="section" aria-expanded="false">
+        <button class="section-header" type="button" aria-expanded="false" aria-controls="section-7-content" onclick="toggleSection(this)">
+          <span class="section-toggle" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </span>
+          <span class="section-info">
+            <h2 class="section-title">Exit to North Terrace</h2>
+            <span class="badges" aria-label="Sensory factors: Sound, Light, Crowds">
+              <span class="badge badge-sound">Sound</span>
+              <span class="badge badge-light">Light</span>
+              <span class="badge badge-crowds">Crowds</span>
+            </span>
+          </span>
+          <span class="sensory-level">
+            <span class="sensory-indicator medium" aria-hidden="true"></span>
+            <span class="sensory-text medium">Medium</span>
+          </span>
+        </button>
+        <div class="section-content" id="section-7-content">
+          <div class="category">
+            <p class="category-title">Transition</p>
+            <p class="category-text">Moving from indoors to outdoors involves a sudden change in light and sound levels. Traffic noise from North Terrace becomes noticeable. Tram stop is directly outside.</p>
+          </div>
+          <div class="category">
+            <p class="category-title">Crowds</p>
+            <p class="category-text">Pedestrian traffic merges with commuters at this point. Can feel congested during peak periods, especially where the tram stop meets the station exit.</p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <footer class="footer">
+      <div class="sensory-key">
+        <p class="sensory-key-title">Sensory Level Key</p>
+        <div class="sensory-key-items">
+          <div class="sensory-key-item">
+            <span class="sensory-indicator low" aria-hidden="true"></span>
+            <span>Low — Generally calm</span>
+          </div>
+          <div class="sensory-key-item">
+            <span class="sensory-indicator medium" aria-hidden="true"></span>
+            <span>Medium — Some activity</span>
+          </div>
+          <div class="sensory-key-item">
+            <span class="sensory-indicator high" aria-hidden="true"></span>
+            <span>High — May be overwhelming</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ========== FAB VARIATIONS ========== -->
+
+  <!-- A: Bold Pill -->
+  <button class="fab fab-a" id="fab-a" onclick="openLightbox()" aria-label="View venue map">
+    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+    View Map
+  </button>
+
+  <!-- B: Subtle Icon-Only -->
+  <button class="fab fab-b" id="fab-b" onclick="openLightbox()" aria-label="View venue map">
+    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+    <span class="fab-b-label">View Map</span>
+  </button>
+
+  <!-- C: Scroll-Triggered -->
+  <button class="fab fab-c" id="fab-c" onclick="openLightbox()" aria-label="View venue map">
+    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+    View Map
+  </button>
+
+  <!-- D: Muted/Neutral -->
+  <button class="fab fab-d" id="fab-d" onclick="openLightbox()" aria-label="View venue map">
+    Map
+    <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+  </button>
+
+  <!-- ========== LIGHTBOX ========== -->
+  <div class="lightbox-backdrop" id="lightbox" onclick="closeLightbox(event)" role="dialog" aria-modal="true" aria-label="Venue map">
+    <div class="lightbox-panel" onclick="event.stopPropagation()">
+      <div class="lightbox-header">
+        <span class="lightbox-title">Adelaide Railway Station — Map</span>
+        <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close map">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="lightbox-body">
+        <!-- In production this would be an iframe with src set on open -->
+        <div class="lightbox-placeholder">
+          <svg viewBox="0 0 24 24">
+            <rect x="1" y="3" width="22" height="18" rx="2" ry="2"></rect>
+            <line x1="1" y1="9" x2="23" y2="9"></line>
+            <polyline points="8 3 8 9"></polyline>
+            <polyline points="16 3 16 9"></polyline>
+            <circle cx="12" cy="15" r="2"></circle>
+            <path d="M12 13v-1"></path>
+          </svg>
+          <span>BindiMaps iframe loads here</span>
+          <span style="font-size: 0.75rem; color: var(--border);">min(90vw, 900px) × min(80vh, 700px)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== VARIATION SWITCHING ==========
+    let currentVariation = 'a';
+
+    function setVariation(v) {
+      currentVariation = v;
+
+      // Update switcher buttons
+      document.querySelectorAll('.switcher-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.var === v);
+      });
+
+      // Hide all FABs
+      document.querySelectorAll('.fab').forEach(fab => {
+        fab.style.display = 'none';
+      });
+
+      // Show selected FAB
+      const fab = document.getElementById('fab-' + v);
+      if (fab) {
+        fab.style.display = 'flex';
+      }
+
+      // For C (scroll-triggered), check scroll position
+      if (v === 'c') {
+        handleScrollForC();
+      }
+    }
+
+    // ========== SECTION TOGGLE ==========
+    function toggleSection(button) {
+      const section = button.closest('.section');
+      const isExpanded = section.getAttribute('aria-expanded') === 'true';
+      const newState = !isExpanded;
+      section.setAttribute('aria-expanded', newState);
+      button.setAttribute('aria-expanded', newState);
+    }
+
+    // ========== SCROLL HANDLING FOR FAB C ==========
+    function handleScrollForC() {
+      const fabC = document.getElementById('fab-c');
+      if (currentVariation !== 'c') return;
+
+      if (window.scrollY > 200) {
+        fabC.classList.add('visible');
+      } else {
+        fabC.classList.remove('visible');
+      }
+    }
+
+    let scrollTicking = false;
+    window.addEventListener('scroll', function() {
+      if (!scrollTicking) {
+        window.requestAnimationFrame(function() {
+          handleScrollForC();
+          scrollTicking = false;
+        });
+        scrollTicking = true;
+      }
+    });
+
+    // ========== LIGHTBOX ==========
+    function openLightbox() {
+      document.getElementById('lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      // In production: set iframe src here
+    }
+
+    function closeLightbox(event) {
+      // If called from backdrop click, only close if clicking the backdrop itself
+      if (event && event.target !== document.getElementById('lightbox')) return;
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+      // In production: clear iframe src here for perf
+    }
+
+    // Close on Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    });
+
+    // ========== KEYBOARD NAV ==========
+    document.addEventListener('keydown', function(e) {
+      if (e.target.classList.contains('section-header')) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          e.target.click();
+        }
+      }
+    });
+
+    // ========== INIT ==========
+    setVariation('a');
+  </script>
+</body>
+</html>

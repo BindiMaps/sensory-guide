@@ -3,6 +3,7 @@ import { CheckCircle, Copy, ExternalLink, Upload, Link, Loader2 } from 'lucide-r
 import type { Area } from '@/lib/schemas/guideSchema'
 import { EmbedEditor } from './EmbedEditor'
 import { useEmbeddings, type Embeddings } from './useEmbeddings'
+import { useGlobalMapUrl } from './useGlobalMapUrl'
 import { useRepublishEmbeddings } from './useRepublishEmbeddings'
 
 interface PublishedSuccessProps {
@@ -35,12 +36,14 @@ export function PublishedSuccess({
   const [isSavingEmbeddings, setIsSavingEmbeddings] = useState(false)
 
   const { embeddings, orphaned, saveEmbeddings, resolveOrphan, refetch: refetchEmbeddings } = useEmbeddings(venueId, areas)
+  const { globalMapUrl, save: saveGlobalMapUrl } = useGlobalMapUrl(venueId)
   const { republish, isRepublishing, error: republishError } = useRepublishEmbeddings()
 
-  const handleSaveEmbeddings = async (newEmbeddings: Embeddings) => {
+  const handleSaveEmbeddings = async (newEmbeddings: Embeddings, newGlobalMapUrl: string) => {
     setIsSavingEmbeddings(true)
     try {
       await saveEmbeddings(newEmbeddings)
+      await saveGlobalMapUrl(newGlobalMapUrl)
       const success = await republish(venueId)
       if (success) {
         setIsEmbedEditorOpen(false)
@@ -120,7 +123,7 @@ export function PublishedSuccess({
         <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-lg p-4">
           <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" aria-hidden="true" />
           <p className="text-sm text-green-800" role="status" aria-live="polite">
-            Embeds updated and republished successfully.
+            Maps &amp; media updated and republished successfully.
           </p>
         </div>
       )}
@@ -156,7 +159,7 @@ export function PublishedSuccess({
           ) : (
             <Link className="h-4 w-4" aria-hidden="true" />
           )}
-          Edit Embeds
+          Edit Maps &amp; Media
         </button>
         <button
           type="button"
@@ -178,6 +181,7 @@ export function PublishedSuccess({
         onSave={handleSaveEmbeddings}
         onResolveOrphan={resolveOrphan}
         isSaving={isSavingEmbeddings || isRepublishing}
+        globalMapUrl={globalMapUrl}
       />
 
       {/* Debug info for development */}

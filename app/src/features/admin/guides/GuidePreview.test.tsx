@@ -208,19 +208,19 @@ describe('GuidePreview', () => {
     expect(screen.queryByText(/Content Suggestions/)).not.toBeInTheDocument()
   })
 
-  it('renders Edit Embeds button when venueId is provided', () => {
+  it('renders Edit Maps & Media button when venueId is provided', () => {
     render(<GuidePreview guide={mockGuide} venueId="venue123" outputPath="path/to/guide.json" />)
-    expect(screen.getByRole('button', { name: 'Edit Embeds' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Edit Maps & Media' })).toBeInTheDocument()
   })
 
-  it('opens EmbedEditor when Edit Embeds clicked', async () => {
+  it('opens EmbedEditor when Edit Maps & Media clicked', async () => {
     const user = userEvent.setup()
     render(<GuidePreview guide={mockGuide} venueId="venue123" outputPath="path/to/guide.json" />)
 
-    await user.click(screen.getByRole('button', { name: 'Edit Embeds' }))
+    await user.click(screen.getByRole('button', { name: 'Edit Maps & Media' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Edit Section Embeds')).toBeInTheDocument()
+      expect(screen.getByText('Maps & Media')).toBeInTheDocument()
     })
   })
 })

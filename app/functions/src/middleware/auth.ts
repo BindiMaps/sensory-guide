@@ -1,5 +1,5 @@
 import { HttpsError, CallableRequest } from 'firebase-functions/v2/https'
-import { getFirestore } from 'firebase-admin/firestore'
+import { getFirestore, DocumentSnapshot } from 'firebase-admin/firestore'
 import { isSuperAdmin } from '../utils/accessControl'
 
 export { isSuperAdmin }
@@ -23,20 +23,24 @@ export async function requireSuperAdmin(userEmail: string): Promise<void> {
   }
 }
 
+/**
+ * Verify editor access and return the venue document snapshot.
+ * Callers can reuse the returned snapshot instead of re-fetching.
+ */
 export async function requireEditorAccess(
   userEmail: string,
   venueId: string
-): Promise<void> {
-  // Super admins bypass editor check
-  if (await isSuperAdmin(userEmail)) {
-    return
-  }
-
+): Promise<DocumentSnapshot> {
   const db = getFirestore()
   const venueDoc = await db.collection('venues').doc(venueId).get()
 
   if (!venueDoc.exists) {
     throw new HttpsError('not-found', `Venue not found: ${venueId}`)
+  }
+
+  // Super admins bypass editor check
+  if (await isSuperAdmin(userEmail)) {
+    return venueDoc
   }
 
   const venueData = venueDoc.data()
@@ -52,4 +56,6 @@ export async function requireEditorAccess(
   if (!normalizedEditors.includes(normalizedEmail)) {
     throw new HttpsError('permission-denied', 'Not an editor of this venue')
   }
+
+  return venueDoc
 }

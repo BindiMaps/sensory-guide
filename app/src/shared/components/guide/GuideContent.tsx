@@ -139,20 +139,27 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
     }
   }, [venueSlug, track])
 
+  // Map lightbox tracking callback
+  const handleMapOpen = useCallback(() => {
+    if (venueSlug) {
+      track(AnalyticsEvent.GUIDE_MAP_OPEN, { venue_slug: venueSlug })
+    }
+  }, [venueSlug, track])
+
   return (
     <ImageLightboxProvider onImageOpen={handleImageOpen}>
       <div
-        className="max-w-[720px] mx-auto font-['Inter',system-ui,sans-serif] text-[15px] leading-relaxed text-[#1A1A1A]"
+        className="max-w-[720px] mx-auto font-['Inter',system-ui,sans-serif] text-[0.9375rem] leading-relaxed text-[#1A1A1A]"
         style={{ WebkitFontSmoothing: 'antialiased' }}
       >
         {/* Venue Header - v5 styling */}
         <header className="mb-8">
-          <h1 className="text-[26px] font-bold leading-tight tracking-tight mb-1.5">
+          <h1 className="text-[1.625rem] font-bold leading-tight tracking-tight mb-1.5">
             {venue.name}
           </h1>
 
           {/* Address, Contact, Last Updated */}
-          <p className="text-sm text-[#595959] mb-3">
+          <p className="text-sm text-[#595959] contrast-more:text-[#333333] mb-3">
             {venue.address && (
               <>
                 <a
@@ -200,17 +207,41 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
           </p>
 
           {/* Accuracy disclaimer */}
-          <p className="text-sm text-[#595959] italic">
+          <p className="text-sm text-[#595959] contrast-more:text-[#333333] italic">
             Information may change. Verify details on arrival.
           </p>
         </header>
 
         {/* Intro Card - v5 styling with terracotta left border */}
         <div className="bg-[#F8F8F6] rounded p-5 mb-6 border-l-[3px] border-l-[#B8510D]">
-          <p className="font-semibold text-[15px] mb-1">About this guide</p>
-          <p className="text-[15px] text-[#3D3D3D] leading-relaxed">
+          <p className="font-semibold text-[0.9375rem] mb-1">About this guide</p>
+          <p className="text-[0.9375rem] text-[#3D3D3D] leading-relaxed">
             {venue.summary || 'This guide describes what you might see, hear, and experience at each area of the venue. Select a section to view detailed sensory information.'}
           </p>
+          {venue.mapUrl && (
+            <a
+              href={venue.mapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleMapOpen}
+              className="flex items-center gap-3 mt-4 p-3 -mx-3 rounded hover:bg-[#F0EDE8] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 print:hidden"
+            >
+              <span className="w-9 h-9 flex-shrink-0 bg-[#B8510D] text-white rounded-full flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block text-[0.8125rem] font-semibold text-[#B8510D]">Open Venue Map</span>
+                <span className="block text-[0.75rem] text-[#595959] contrast-more:text-[#333333]">Interactive map opens in a new tab</span>
+              </span>
+              <svg viewBox="0 0 24 24" className="w-4 h-4 text-[#B8510D] flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+              <span className="sr-only">(opens in new tab)</span>
+            </a>
+          )}
         </div>
 
         {/* FilterBar - toggleable category highlights */}
@@ -222,11 +253,11 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
         <section className="mb-10">
           {/* Expand/Collapse All button */}
           {areaIds.length > 1 && (
-            <div className="flex justify-end mb-4">
+            <div className="flex mb-4">
               <button
                 type="button"
                 onClick={handleExpandCollapseAll}
-                className="inline-flex items-center gap-1 text-sm text-[#595959] hover:text-[#B8510D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 rounded-sm"
+                className="inline-flex items-center gap-1 text-[0.875rem] text-[#3D3D3D] border border-[#DDDDD9] contrast-more:border-[#888888] px-3 py-1.5 rounded hover:text-[#B8510D] hover:border-[#B8510D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2"
                 aria-label={allExpanded ? 'Collapse all sections' : 'Expand all sections'}
               >
                 {allExpanded ? 'Collapse all' : 'Expand all'}
@@ -266,6 +297,7 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
         {/* Sensory Key */}
         <SensoryKey />
       </div>
+
     </ImageLightboxProvider>
   )
 }

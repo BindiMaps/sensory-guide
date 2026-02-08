@@ -62,6 +62,8 @@ export const venueOverviewSchema = z.object({
   address: z.string().min(1, 'Address is required'),
   contact: z.string().optional(),
   summary: z.string().min(1, 'Summary is required'),
+  // Global venue map URL (BindiWeb embed) — set by admin, merged at publish
+  mapUrl: z.string().url().optional(),
   // Optional - only if source document has an explicit update date
   // LLM may return null, so we coerce null to undefined
   lastUpdated: z.string().nullish().transform((v) => v ?? undefined),

@@ -134,6 +134,7 @@ export function GuidePreviewWrapper({
         onPublish={handlePublishClick}
         onReupload={onReupload}
         isPublishing={isPublishing}
+        isPublished={isAlreadyPublished}
         outputPath={outputPath}
         venueId={venueId}
         onImagesSaved={() => refetch()}
