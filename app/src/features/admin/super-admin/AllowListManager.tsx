@@ -24,7 +24,8 @@ export function AllowListManager({ onClose }: AllowListManagerProps) {
   const [loading, setLoading] = useState(true)
   const [action, setAction] = useState<ActionState>({ type: 'idle' })
   const [error, setError] = useState<string | null>(null)
-  const [copiedEmail, setCopiedEmail] = useState<string | null>(null)
+  const [generatedLinks, setGeneratedLinks] = useState<Record<string, { link: string; inviteText: string }>>({})
+  const [copiedState, setCopiedState] = useState<{ email: string; type: 'link' | 'invite' } | null>(null)
 
   // Derived helpers
   const adding = action.type === 'adding'
@@ -145,15 +146,21 @@ export function AllowListManager({ onClose }: AllowListManagerProps) {
       const result = await generateLinkFn({ email })
 
       const inviteText = generateInviteText(result.data.resetLink, result.data.isNewUser)
-      await navigator.clipboard.writeText(inviteText)
-      setCopiedEmail(email)
-      setTimeout(() => setCopiedEmail(null), 3000)
+      setGeneratedLinks(prev => ({ ...prev, [email]: { link: result.data.resetLink, inviteText } }))
     } catch (err) {
       console.error('Failed to generate invite link:', err)
       setError('Failed to generate invite link')
     } finally {
       setAction({ type: 'idle' })
     }
+  }
+
+  const handleCopy = async (email: string, type: 'link' | 'invite') => {
+    const data = generatedLinks[email]
+    if (!data) return
+    await navigator.clipboard.writeText(type === 'link' ? data.link : data.inviteText)
+    setCopiedState({ email, type })
+    setTimeout(() => setCopiedState(null), 3000)
   }
 
   if (loading) {
@@ -217,7 +224,7 @@ export function AllowListManager({ onClose }: AllowListManagerProps) {
         ) : (
           emails.map((email) => {
             const isGenerating = generatingLink === email
-            const justCopied = copiedEmail === email
+            const hasLink = !!generatedLinks[email]
 
             return (
               <div
@@ -226,13 +233,30 @@ export function AllowListManager({ onClose }: AllowListManagerProps) {
               >
                 <span className="text-sm">{email}</span>
                 <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => handleGetInviteLink(email)}
-                    disabled={isGenerating}
-                    className="text-sm text-blue-600 hover:text-blue-800 disabled:opacity-50"
-                  >
-                    {justCopied ? 'Copied!' : isGenerating ? 'Loading...' : 'Copy invite'}
-                  </button>
+                  {hasLink ? (
+                    <>
+                      <button
+                        onClick={() => handleCopy(email, 'link')}
+                        className="text-sm text-blue-600 hover:text-blue-800"
+                      >
+                        {copiedState?.email === email && copiedState.type === 'link' ? 'Copied!' : 'Copy link'}
+                      </button>
+                      <button
+                        onClick={() => handleCopy(email, 'invite')}
+                        className="text-sm text-blue-600 hover:text-blue-800"
+                      >
+                        {copiedState?.email === email && copiedState.type === 'invite' ? 'Copied!' : 'Copy invite'}
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => handleGetInviteLink(email)}
+                      disabled={isGenerating}
+                      className="text-sm text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                    >
+                      {isGenerating ? 'Generating invite...' : 'Generate invite'}
+                    </button>
+                  )}
                   <button
                     onClick={() => handleRemoveEmail(email)}
                     disabled={removing === email}

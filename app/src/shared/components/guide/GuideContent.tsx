@@ -85,32 +85,30 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
   const sortedAreas = [...areas].sort((a, b) => a.order - b.order)
   const areaIds = sortedAreas.map((a) => a.id)
 
-  // Check if all sections are expanded
+  // Check if all sections are expanded / collapsed
   const allExpanded = venueSlug
     ? store.areAllExpanded(venueSlug, areaIds)
     : areaIds.every((id) => localExpanded.has(id))
 
-  const handleExpandCollapseAll = () => {
-    // Track expand/collapse all (only for public pages)
-    if (venueSlug) {
-      track(
-        allExpanded ? AnalyticsEvent.GUIDE_COLLAPSE_ALL : AnalyticsEvent.GUIDE_EXPAND_ALL,
-        { venue_slug: venueSlug }
-      )
-    }
+  const allCollapsed = venueSlug
+    ? !areaIds.some((id) => store.isExpanded(venueSlug, id))
+    : localExpanded.size === 0
 
+  const handleExpandAll = () => {
     if (venueSlug) {
-      if (allExpanded) {
-        store.collapseAll(venueSlug)
-      } else {
-        store.expandAll(venueSlug, areaIds)
-      }
+      track(AnalyticsEvent.GUIDE_EXPAND_ALL, { venue_slug: venueSlug })
+      store.expandAll(venueSlug, areaIds)
     } else {
-      if (allExpanded) {
-        setLocalExpanded(new Set())
-      } else {
-        setLocalExpanded(new Set(areaIds))
-      }
+      setLocalExpanded(new Set(areaIds))
+    }
+  }
+
+  const handleCollapseAll = () => {
+    if (venueSlug) {
+      track(AnalyticsEvent.GUIDE_COLLAPSE_ALL, { venue_slug: venueSlug })
+      store.collapseAll(venueSlug)
+    } else {
+      setLocalExpanded(new Set())
     }
   }
 
@@ -253,27 +251,29 @@ export function GuideContent({ guide, venueSlug }: GuideContentProps) {
         <section className="mb-10">
           {/* Expand/Collapse All button */}
           {areaIds.length > 1 && (
-            <div className="flex mb-4">
+            <div className="flex gap-2 mb-4">
               <button
                 type="button"
-                onClick={handleExpandCollapseAll}
-                className="inline-flex items-center gap-1 text-[0.875rem] text-[#3D3D3D] border border-[#DDDDD9] contrast-more:border-[#888888] px-3 py-1.5 rounded hover:text-[#B8510D] hover:border-[#B8510D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2"
-                aria-label={allExpanded ? 'Collapse all sections' : 'Expand all sections'}
+                onClick={handleExpandAll}
+                disabled={allExpanded}
+                className={`inline-flex items-center gap-1 text-[0.875rem] text-[#3D3D3D] border border-[#DDDDD9] contrast-more:border-[#888888] px-3 py-1.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 ${allExpanded ? 'opacity-40 cursor-default' : 'hover:text-[#B8510D] hover:border-[#B8510D]'}`}
+                aria-label="Expand all sections"
               >
-                {allExpanded ? 'Collapse all' : 'Expand all'}
-                <svg
-                  viewBox="0 0 24 24"
-                  className={`w-4 h-4 ${allExpanded ? 'rotate-180' : ''}`}
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <polyline
-                    points="6 9 12 15 18 9"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                Expand all
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={handleCollapseAll}
+                disabled={allCollapsed}
+                className={`inline-flex items-center gap-1 text-[0.875rem] text-[#3D3D3D] border border-[#DDDDD9] contrast-more:border-[#888888] px-3 py-1.5 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B8510D] focus-visible:ring-offset-2 ${allCollapsed ? 'opacity-40 cursor-default' : 'hover:text-[#B8510D] hover:border-[#B8510D]'}`}
+                aria-label="Collapse all sections"
+              >
+                Collapse all
+                <svg viewBox="0 0 24 24" className="w-4 h-4 rotate-180" fill="none" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             </div>

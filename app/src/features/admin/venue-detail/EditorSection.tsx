@@ -48,7 +48,8 @@ export function EditorSection({
   const [removingEditor, setRemovingEditor] = useState(false)
   const [editorToRemove, setEditorToRemove] = useState<string | null>(null)
   const [generatingLinkFor, setGeneratingLinkFor] = useState<string | null>(null)
-  const [copiedEmail, setCopiedEmail] = useState<string | null>(null)
+  const [generatedLinks, setGeneratedLinks] = useState<Record<string, { link: string; inviteText: string }>>({})
+  const [copiedState, setCopiedState] = useState<{ email: string; type: 'link' | 'invite' } | null>(null)
 
   const isLastEditor = editors.length === 1
   const currentUserIsEditor = currentUserEmail && editors.map(e => e.toLowerCase()).includes(currentUserEmail.toLowerCase())
@@ -87,18 +88,21 @@ export function EditorSection({
 
       const result = await generateResetLinkFn({ email, venueId })
       const inviteText = generateInviteText(result.data.resetLink, false)
-
-      await navigator.clipboard.writeText(inviteText)
-      setCopiedEmail(email)
-
-      // Clear copied state after 3s
-      setTimeout(() => setCopiedEmail(null), 3000)
+      setGeneratedLinks(prev => ({ ...prev, [email]: { link: result.data.resetLink, inviteText } }))
     } catch (err) {
       console.error('Failed to generate reset link:', err)
       setEditorError('Failed to generate invite link')
     } finally {
       setGeneratingLinkFor(null)
     }
+  }
+
+  const handleCopy = async (email: string, type: 'link' | 'invite') => {
+    const data = generatedLinks[email]
+    if (!data) return
+    await navigator.clipboard.writeText(type === 'link' ? data.link : data.inviteText)
+    setCopiedState({ email, type })
+    setTimeout(() => setCopiedState(null), 3000)
   }
 
   /**
@@ -148,10 +152,8 @@ export function EditorSection({
       setNewEditorEmail('')
 
       const inviteText = generateInviteText(result.resetLink, result.isNewUser)
-      await navigator.clipboard.writeText(inviteText)
-      setCopiedEmail(result.email)
-      setEditorSuccess(`Added ${result.email}. Invite text copied to clipboard!`)
-      setTimeout(() => setCopiedEmail(null), 3000)
+      setGeneratedLinks(prev => ({ ...prev, [result.email]: { link: result.resetLink, inviteText } }))
+      setEditorSuccess(`Added ${result.email}. Use the copy buttons to share their invite.`)
 
       // Auto-clear success message after 5s
       setTimeout(() => setEditorSuccess(''), 5000)
@@ -215,7 +217,7 @@ export function EditorSection({
         {editors.map((email) => {
           const isSelf = email.toLowerCase() === currentUserEmail?.toLowerCase()
           const isGenerating = generatingLinkFor === email
-          const justCopied = copiedEmail === email
+          const hasLink = !!generatedLinks[email]
 
           return (
             <li key={email} className="flex justify-between items-center py-2 px-3 bg-muted/30 rounded">
@@ -229,16 +231,31 @@ export function EditorSection({
                 )}
               </span>
               <div className="flex items-center gap-2">
-                {!isSelf && (
+                {!isSelf && hasLink ? (
+                  <>
+                    <button
+                      onClick={() => handleCopy(email, 'link')}
+                      className="text-xs text-blue-600 hover:text-blue-800"
+                    >
+                      {copiedState?.email === email && copiedState.type === 'link' ? 'Copied!' : 'Copy link'}
+                    </button>
+                    <button
+                      onClick={() => handleCopy(email, 'invite')}
+                      className="text-xs text-blue-600 hover:text-blue-800"
+                    >
+                      {copiedState?.email === email && copiedState.type === 'invite' ? 'Copied!' : 'Copy invite'}
+                    </button>
+                  </>
+                ) : !isSelf ? (
                   <button
                     onClick={() => handleGenerateResetLink(email)}
                     disabled={isGenerating}
                     className="text-xs text-blue-600 hover:text-blue-800 disabled:opacity-50"
                     title="Generate invite link and copy to clipboard"
                   >
-                    {justCopied ? 'Copied!' : isGenerating ? 'Loading...' : 'Copy invite'}
+                    {isGenerating ? 'Generating invite...' : 'Generate invite'}
                   </button>
-                )}
+                ) : null}
                 {canRemoveEditor(email) && (
                   <button
                     onClick={() => handleRemoveClick(email)}
