@@ -5,9 +5,12 @@
  * Images are grouped by page number for section mapping.
  */
 
+import { applyPdfjsPolyfills } from './pdfjsPolyfills'
+
 // Lazy-loaded to avoid crashing non-PDF functions at startup
 // (pdf-parse v2 bundles pdfjs-dist which requires browser globals like DOMMatrix)
 function getPDFParse(): typeof import('pdf-parse').PDFParse {
+  applyPdfjsPolyfills()
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   return require('pdf-parse').PDFParse
 }

@@ -7,6 +7,7 @@ import { isSuperAdmin } from '../utils/accessControl'
 import { transformPdfToGuide, isRetryableError, getModelInfo } from '../utils/gemini'
 import type { TransformProgressStatus, Guide } from '../schemas/guideSchema'
 import { processPdfImages, pdfLikelyHasImages } from '../utils/pdfImagePipeline'
+import { applyPdfjsPolyfills } from '../utils/pdfjsPolyfills'
 
 // Lazy-loaded: pdf-parse v2 bundles pdfjs-dist which requires browser globals (DOMMatrix)
 // and crashes all functions at startup if imported eagerly
@@ -106,6 +107,7 @@ async function downloadPdf(uploadPath: string): Promise<Buffer> {
  */
 async function extractPdfText(pdfBuffer: Buffer): Promise<string> {
   // Parse PDF using pdf-parse v2 class API (lazy require to avoid startup crash)
+  applyPdfjsPolyfills()
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PDFParse } = require('pdf-parse') as { PDFParse: new (opts: { data: Buffer }) => PDFParseType }
   let parser: PDFParseType | null = null
