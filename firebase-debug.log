@@ -887,3 +887,28 @@
 [debug] [2026-02-09T03:43:48.020Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo {"name":"projects/sensory-guide/billingInfo","projectId":"sensory-guide","billingAccountName":"billingAccounts/012169-B6A4BD-8D5D5A","billingEnabled":true}
 [debug] [2026-02-09T03:43:48.021Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
 [debug] [2026-02-09T03:43:48.021Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-09T03:50:35.492Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-09T03:50:35.493Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-09T03:50:35.494Z] Checked if tokens are valid: false, expires at: 1770609857692
+[debug] [2026-02-09T03:50:35.494Z] Checked if tokens are valid: false, expires at: 1770609857692
+[debug] [2026-02-09T03:50:35.494Z] > refreshing access token with scopes: []
+[debug] [2026-02-09T03:50:35.495Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-02-09T03:50:35.495Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-09T03:50:35.744Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-02-09T03:50:35.744Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-09T03:50:35.756Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo [none]
+[debug] [2026-02-09T03:50:37.306Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo 200
+[debug] [2026-02-09T03:50:37.306Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo {"name":"projects/sensory-guide/billingInfo","projectId":"sensory-guide","billingAccountName":"billingAccounts/012169-B6A4BD-8D5D5A","billingEnabled":true}
+[debug] [2026-02-09T03:50:37.309Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-09T03:50:37.309Z] > authorizing via signed-in user (keith@bindimaps.com)
+[debug] [2026-02-09T03:50:37.309Z] Checked if tokens are valid: true, expires at: 1770612634744
+[debug] [2026-02-09T03:50:37.309Z] Checked if tokens are valid: true, expires at: 1770612634744
+[debug] [2026-02-09T03:50:37.309Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo [none]
+[debug] [2026-02-09T03:50:37.684Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo 200
+[debug] [2026-02-09T03:50:37.684Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/sensory-guide/billingInfo {"name":"projects/sensory-guide/billingInfo","projectId":"sensory-guide","billingAccountName":"billingAccounts/012169-B6A4BD-8D5D5A","billingEnabled":true}
+[debug] [2026-02-09T03:50:37.685Z] Checked if tokens are valid: true, expires at: 1770612634744
+[debug] [2026-02-09T03:50:37.685Z] Checked if tokens are valid: true, expires at: 1770612634744
+[debug] [2026-02-09T03:50:37.685Z] >>> [apiv2][query] POST https://firestore.googleapis.com/v1/projects/sensory-guide/databases/(default)/documents:batchGet [none]
+[debug] [2026-02-09T03:50:37.686Z] >>> [apiv2][body] POST https://firestore.googleapis.com/v1/projects/sensory-guide/databases/(default)/documents:batchGet {"documents":["projects/sensory-guide/databases/(default)/documents/config/access","projects/sensory-guide/databases/(default)/documents/config/superAdmins"]}
+[debug] [2026-02-09T03:50:38.013Z] <<< [apiv2][status] POST https://firestore.googleapis.com/v1/projects/sensory-guide/databases/(default)/documents:batchGet 200
+[debug] [2026-02-09T03:50:38.013Z] <<< [apiv2][body] POST https://firestore.googleapis.com/v1/projects/sensory-guide/databases/(default)/documents:batchGet [{"found":{"name":"projects/sensory-guide/databases/(default)/documents/config/access","fields":{"allowedEmails":{"arrayValue":{"values":[{"stringValue":"keith@bindimaps.com"},{"stringValue":"tourtourtracks@gmail.com"},{"stringValue":"qwertykeith@gmail.com"},{"stringValue":"moastler@aspect.org.au"}]}}},"createTime":"2026-01-30T05:24:24.249336Z","updateTime":"2026-02-05T00:17:31.595156Z"},"readTime":"2026-02-09T03:50:37.981299Z"},{"found":{"name":"projects/sensory-guide/databases/(default)/documents/config/superAdmins","fields":{"emails":{"arrayValue":{"values":[{"stringValue":"keith@bindimaps.com"},{"stringValue":"joash@bindimaps.com"}]}}},"createTime":"2026-01-30T05:24:24.177280Z","updateTime":"2026-01-30T05:24:57.616956Z"},"readTime":"2026-02-09T03:50:37.981299Z"}]

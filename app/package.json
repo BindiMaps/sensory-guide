@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:full": "concurrently -k -n tsc,functions,vite -c yellow,blue,green \"yarn --cwd functions build:watch\" \"yarn emulators:functions\" \"yarn dev\"",
+    "dev:full": "concurrently -k -n tsc,functions,vite -c yellow,blue,green \"npm --prefix functions run build:watch\" \"yarn emulators:functions\" \"yarn dev\"",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

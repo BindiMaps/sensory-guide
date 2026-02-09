@@ -94,7 +94,7 @@ export function CreateVenue() {
     }
   }
 
-  // Show pending approval message (approval loading handled by parent layout)
+  // Only approved users (allow-list or super admin) can create venues
   if (!approved) {
     return (
       <div className="max-w-md">
@@ -105,10 +105,10 @@ export function CreateVenue() {
           ← Back to venues
         </Link>
 
-        <div className="p-6 bg-amber-50 border border-amber-200 rounded-lg">
-          <h1 className="text-xl font-semibold text-amber-800 mb-2">Account Pending Approval</h1>
-          <p className="text-amber-700">
-            Your account is pending approval. Contact support to request access to create venues.
+        <div className="p-6 bg-muted/20 border rounded-lg">
+          <h1 className="text-xl font-semibold mb-2">Access Restricted</h1>
+          <p className="text-muted-foreground">
+            Only approved users can create new venues. Contact your administrator to request access.
           </p>
         </div>
       </div>

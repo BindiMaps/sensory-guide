@@ -2,7 +2,6 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https'
 import { FieldValue } from 'firebase-admin/firestore'
 import { requireAuth, requireEditorAccess } from '../middleware/auth'
 import { ensureUserWithResetLink } from '../utils/userAuth'
-import { addAllowedEmail } from '../utils/accessControl'
 
 interface InviteEditorRequest {
   email: string
@@ -76,12 +75,11 @@ export const inviteEditor = onCall<InviteEditorRequest>(
     // 5. Ensure Firebase Auth user exists, get reset link
     const { isNewUser, resetLink } = await ensureUserWithResetLink(normalizedEmail)
 
-    // 6. Add to editors array and approve for platform access
+    // 6. Add to editors array
     await venueRef.update({
       editors: FieldValue.arrayUnion(normalizedEmail),
       updatedAt: FieldValue.serverTimestamp(),
     })
-    await addAllowedEmail(normalizedEmail)
 
     console.log(
       `Editor invited: venue=${venueId}, email=${normalizedEmail}, isNew=${isNewUser}, by=${callerEmail}`

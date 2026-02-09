@@ -45,22 +45,9 @@ export function AdminDashboard() {
     return <AccessSetup onSetupComplete={refetch} />
   }
 
-  // Show pending approval message for non-approved users
-  const showPendingApproval = !approved
-
   // Render My Venues content
   const renderMyVenues = () => (
     <>
-      {/* Pending approval notice */}
-      {showPendingApproval && (
-        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-          <h2 className="font-semibold text-amber-800 mb-1">Account Pending Approval</h2>
-          <p className="text-sm text-amber-700">
-            Your account is pending approval. Contact support to request access to create venues.
-          </p>
-        </div>
-      )}
-
       {venues.length === 0 ? (
         <div className="text-center py-12 border rounded-lg bg-muted/20">
           {approved ? (
@@ -76,7 +63,7 @@ export function AdminDashboard() {
             </>
           ) : (
             <p className="text-muted-foreground">
-              You don't have any venues yet. Contact support to get approved for venue creation.
+              You don't have any venues yet. You'll see venues here when you're invited to one.
             </p>
           )}
         </div>
