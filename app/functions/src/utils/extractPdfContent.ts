@@ -5,7 +5,12 @@
  * Images are grouped by page number for section mapping.
  */
 
-import { PDFParse } from 'pdf-parse'
+// Lazy-loaded to avoid crashing non-PDF functions at startup
+// (pdf-parse v2 bundles pdfjs-dist which requires browser globals like DOMMatrix)
+function getPDFParse(): typeof import('pdf-parse').PDFParse {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require('pdf-parse').PDFParse
+}
 
 /**
  * Text block - simplified (no position data, just page-level)
@@ -47,7 +52,7 @@ export interface PdfContent {
 async function extractImages(pdfBuffer: Buffer): Promise<{ images: ExtractedImage[]; pageCount: number }> {
   const images: ExtractedImage[] = []
 
-  const parser = new PDFParse({ data: pdfBuffer })
+  const parser = new (getPDFParse())({ data: pdfBuffer })
 
   try {
     const imageResult = await parser.getImage({
@@ -80,7 +85,7 @@ async function extractImages(pdfBuffer: Buffer): Promise<{ images: ExtractedImag
  * Extract text per page using pdf-parse v2
  */
 async function extractTextPerPage(pdfBuffer: Buffer): Promise<Map<number, string>> {
-  const parser = new PDFParse({ data: pdfBuffer })
+  const parser = new (getPDFParse())({ data: pdfBuffer })
   const pageTexts = new Map<number, string>()
 
   try {
@@ -134,7 +139,7 @@ export async function extractPdfContent(pdfBuffer: Buffer): Promise<PdfContent> 
  * Extract just text (for backward compatibility with Gemini pipeline)
  */
 export async function extractPdfTextOnly(pdfBuffer: Buffer): Promise<string> {
-  const parser = new PDFParse({ data: pdfBuffer })
+  const parser = new (getPDFParse())({ data: pdfBuffer })
 
   try {
     const result = await parser.getText()

@@ -8,8 +8,9 @@ import { transformPdfToGuide, isRetryableError, getModelInfo } from '../utils/ge
 import type { TransformProgressStatus, Guide } from '../schemas/guideSchema'
 import { processPdfImages, pdfLikelyHasImages } from '../utils/pdfImagePipeline'
 
-// pdf-parse v2 uses class-based API
-import { PDFParse } from 'pdf-parse'
+// Lazy-loaded: pdf-parse v2 bundles pdfjs-dist which requires browser globals (DOMMatrix)
+// and crashes all functions at startup if imported eagerly
+type PDFParseType = import('pdf-parse').PDFParse
 
 interface TransformPdfRequest {
   venueId: string
@@ -104,8 +105,10 @@ async function downloadPdf(uploadPath: string): Promise<Buffer> {
  * Extract text from PDF buffer
  */
 async function extractPdfText(pdfBuffer: Buffer): Promise<string> {
-  // Parse PDF using pdf-parse v2 class API
-  let parser: PDFParse | null = null
+  // Parse PDF using pdf-parse v2 class API (lazy require to avoid startup crash)
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { PDFParse } = require('pdf-parse') as { PDFParse: new (opts: { data: Buffer }) => PDFParseType }
+  let parser: PDFParseType | null = null
   try {
     parser = new PDFParse({ data: pdfBuffer })
     const result = await parser.getText()
