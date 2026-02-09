@@ -17,6 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -25,7 +28,7 @@ jobs:
           cache-dependency-path: './app/yarn.lock'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Lint
         run: yarn lint
@@ -53,6 +56,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -61,10 +67,10 @@ jobs:
           cache-dependency-path: './app/yarn.lock'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Audit for vulnerabilities
-        run: yarn audit --level high || echo "::warning::Vulnerabilities found - review required"
+        run: yarn npm audit --all --severity high || echo "::warning::Vulnerabilities found - review required"
 
   lighthouse:
     name: Lighthouse CI
@@ -102,6 +108,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -116,7 +125,7 @@ jobs:
           path: ./app/dist
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
         working-directory: ./app
 
       - name: Run Pa11y CI
