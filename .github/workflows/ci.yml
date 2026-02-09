@@ -159,8 +159,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'yarn'
-          cache-dependency-path: './app/functions/yarn.lock'
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -174,7 +172,7 @@ jobs:
           path: ./app/dist
 
       - name: Install Functions dependencies
-        run: cd functions && yarn install --frozen-lockfile
+        run: cd functions && npm ci
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
