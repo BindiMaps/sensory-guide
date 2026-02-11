@@ -15,10 +15,10 @@
     "test:a11y": "pa11y-ci",
     "setup:service-account": "./scripts/setup-service-account.sh",
     "setup:cors": "gsutil cors set cors.json gs://sensory-guide.firebasestorage.app",
-    "emulators": "firebase emulators:start",
-    "emulators:functions": "GOOGLE_APPLICATION_CREDENTIALS=$HOME/.config/firebase/sensory-guide-service-account.json firebase emulators:start --only functions",
+    "emulators": "GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-$HOME/.config/firebase/sensory-guide-service-account.json} firebase emulators:start",
+    "emulators:functions": "GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-$HOME/.config/firebase/sensory-guide-service-account.json} firebase emulators:start --only functions",
     "emulators:export": "firebase emulators:export ./emulator-data",
-    "emulators:import": "firebase emulators:start --import=./emulator-data",
+    "emulators:import": "GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-$HOME/.config/firebase/sensory-guide-service-account.json} firebase emulators:start --import=./emulator-data",
     "deploy": "yarn build && firebase deploy --only hosting",
     "deploy:preview": "yarn build && firebase hosting:channel:deploy preview"
   },
